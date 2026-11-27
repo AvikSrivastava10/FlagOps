@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { offsetDate, runSeed } from '../../src/cli/seed-runner.js';
 import { seedFlags } from '../../src/cli/seed-data.js';
-import { findDescriptionLine, withDescriptionLine } from '../../src/exitplan/description-line.js';
+import { withDescriptionLine } from '../../src/exitplan/description-line.js';
 import { listEnvironments } from '../../src/flagsmith/environments.js';
 import {
   getFeature,
@@ -131,7 +131,9 @@ describe.skipIf(skip !== undefined)(`seed, live${skip === undefined ? '' : ` (${
     for (const seedFlag of seedFlags) {
       const feature = features.find((item) => item.name === seedFlag.name);
       const plan = seedFlag.exitPlan;
-      const line = findDescriptionLine(feature?.description ?? '');
+      const line =
+        (feature?.description ?? '').split('\n').findLast((text) => text.startsWith('FlagOps: ')) ??
+        null;
       const labels = (feature?.tags ?? []).map((id) => tags.find((tag) => tag.id === id)?.label);
       if (plan === null) {
         expect(line, seedFlag.name).toBeNull();

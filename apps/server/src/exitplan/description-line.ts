@@ -19,24 +19,15 @@ export function formatDescriptionLine(plan: DescriptionLinePlan): string {
   return descriptionLinePrefix + [plan.type, deadline, ...plan.cleanupPrs].join(' · ');
 }
 
-function lastLineIndex(lines: readonly string[]): number {
-  return lines.findLastIndex((line) => line.startsWith(descriptionLinePrefix));
-}
-
-/** The last line of the description that starts with `FlagOps: `, or null. */
-export function findDescriptionLine(description: string): string | null {
-  const lines = description.split('\n');
-  return lines[lastLineIndex(lines)] ?? null;
-}
-
 /**
- * The description with its FlagOps line replaced by `line`, or added at the end. The other text
- * keeps every byte, except the whitespace at its ends: Flagsmith trims descriptions anyway
- * (architecture.md 6.5), so the result is what Flagsmith stores.
+ * The description with its FlagOps line, the last line that starts with `FlagOps: `, replaced by
+ * `line`, or `line` added at the end. The other text keeps every byte, except the whitespace at its
+ * ends: Flagsmith trims descriptions anyway (architecture.md 6.5), so the result is what Flagsmith
+ * stores. FlagOps writes the line and never reads it back: the exit plan lives in metadata (5.7).
  */
 export function withDescriptionLine(description: string, line: string): string {
   const lines = description.split('\n');
-  const index = lastLineIndex(lines);
+  const index = lines.findLastIndex((text) => text.startsWith(descriptionLinePrefix));
   const rest = (index === -1 ? lines : lines.toSpliced(index, 1)).join('\n').trim();
   return rest === '' ? line : `${rest}\n${line}`;
 }

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { parseResponse, readAllPages, type FlagsmithClient } from './client.js';
 import { authHeaders, type FlagsmithCredential } from './credentials.js';
+import { unexpectedResponse } from './errors.js';
 
 const identitySchema = z.object({ id: z.number().int(), identifier: z.string() });
 
@@ -87,7 +88,9 @@ export type TraitUpsert = { identifier: string; key: string; value: TraitValue |
 /**
  * `PUT /api/v1/traits/bulk/` with the environment's client key: creates the identities it names
  * and sets their traits; a null value deletes the trait. It needs the organisation's
- * `persist_trait_data`.
+ * `persist_trait_data`. Its answer echoes the request rather than the stored traits
+ * (`BulkTraitListSerializer.save` sets no instance), so only a later read confirms it
+ * (architecture.md 6.6).
  */
 export async function upsertTraits(
   client: FlagsmithClient,
@@ -140,6 +143,34 @@ export async function listIdentityOverrides(
   });
 }
 
+/** The feature state Flagsmith answers an identity-override write with (`FeatureStateSerializerBasic`). */
+const writtenOverrideSchema = z.object({
+  feature: z.number().int(),
+  identity: z.number().int().nullable(),
+  enabled: z.boolean(),
+});
+
+/** Every write is confirmed by the state Flagsmith returns (architecture.md 6.6). */
+function confirmOverride(
+  client: FlagsmithClient,
+  data: unknown,
+  request: { method: 'POST' | 'PATCH'; path: string },
+  expected: { feature?: number; identity: number; enabled: boolean },
+): void {
+  const written = parseResponse(client, writtenOverrideSchema, data, request);
+  if (
+    (expected.feature !== undefined && written.feature !== expected.feature) ||
+    written.identity !== expected.identity ||
+    written.enabled !== expected.enabled
+  ) {
+    throw unexpectedResponse(
+      request,
+      'an identity override that differs from the one just written',
+      client.observedVersion(),
+    );
+  }
+}
+
 /**
  * Writes an identity override directly. Flagsmith allows this in v2 environments too, because
  * identity overrides are not versioned (`versioning_service.py` `require_direct_state_write`).
@@ -152,14 +183,13 @@ export async function createIdentityOverride(
   state: { feature: number; enabled: boolean },
 ): Promise<void> {
   client.writeGuard.checkEnvironment(environmentKey);
-  await client.api.POST(
-    '/api/v1/environments/{environment_api_key}/identities/{identity_pk}/featurestates/',
-    {
-      params: { path: { environment_api_key: environmentKey, identity_pk: identityId } },
-      body: state,
-      headers: authHeaders(credential),
-    },
-  );
+  const path = '/api/v1/environments/{environment_api_key}/identities/{identity_pk}/featurestates/';
+  const { data } = await client.api.POST(path, {
+    params: { path: { environment_api_key: environmentKey, identity_pk: identityId } },
+    body: state,
+    headers: authHeaders(credential),
+  });
+  confirmOverride(client, data, { method: 'POST', path }, { ...state, identity: identityId });
 }
 
 export async function updateIdentityOverride(
@@ -169,18 +199,23 @@ export async function updateIdentityOverride(
   override: { identityId: number; featureStateId: number; enabled: boolean },
 ): Promise<void> {
   client.writeGuard.checkEnvironment(environmentKey);
-  await client.api.PATCH(
-    '/api/v1/environments/{environment_api_key}/identities/{identity_pk}/featurestates/{id}/',
-    {
-      params: {
-        path: {
-          environment_api_key: environmentKey,
-          identity_pk: override.identityId,
-          id: override.featureStateId,
-        },
+  const path =
+    '/api/v1/environments/{environment_api_key}/identities/{identity_pk}/featurestates/{id}/';
+  const { data } = await client.api.PATCH(path, {
+    params: {
+      path: {
+        environment_api_key: environmentKey,
+        identity_pk: override.identityId,
+        id: override.featureStateId,
       },
-      body: { enabled: override.enabled },
-      headers: authHeaders(credential),
     },
+    body: { enabled: override.enabled },
+    headers: authHeaders(credential),
+  });
+  confirmOverride(
+    client,
+    data,
+    { method: 'PATCH', path },
+    { identity: override.identityId, enabled: override.enabled },
   );
 }

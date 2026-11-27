@@ -81,6 +81,25 @@ describe('setupTypeTags', () => {
     expect(fake.state.tags.find((tag) => tag.id === 8)?.is_permanent).toBe(false);
   });
 
+  it('reports a correction whose answer still shows the wrong is_permanent', async () => {
+    addTag(7, 'type:ops', false);
+    const originalFetch = fake.fetch;
+    fake.fetch = async (request) =>
+      request.method === 'PATCH'
+        ? Response.json({ id: 7, label: 'type:ops', is_permanent: false })
+        : originalFetch(request);
+    ({ client } = fakeClient(fake));
+    client.writeGuard.manage(
+      { id: 1, name: 'FlagOps Demo' },
+      { id: 1, name: 'Shop', organisation: 1 },
+      [],
+    );
+
+    await expect(setupTypeTags(client, organisationKey, 1, { ops: 7 })).rejects.toMatchObject({
+      code: 'flagsmith_unexpected_response',
+    });
+  });
+
   it('writes nothing on a second run', async () => {
     const first = await setupTypeTags(client, organisationKey, 1, {});
     const writes = fake.writes().length;

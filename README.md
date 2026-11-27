@@ -60,7 +60,7 @@ To try FlagOps on a Flagsmith instance of your own, create an organisation for t
 pnpm seed
 ```
 
-The seed creates the project "FlagOps Demo Shop" with three environments (Development, Staging, Production) on feature versioning v2, two segments, ten flags with their exit plans, and 1,250 identities with traits. It refuses to run in an organisation that already holds another project, because open-source Flagsmith allows one project per organisation. Running it again changes nothing, and it repairs anything a demo changed in the seeded objects. A run takes about a minute and a half, most of it reading the identities' traits.
+The seed creates the project "FlagOps Demo Shop" with three environments (Development, Staging, Production) on feature versioning v2, two segments, ten flags, nine of them with exit plans, and 1,250 identities with traits. It refuses to run in an organisation that already holds another project, because open-source Flagsmith allows one project per organisation. Running it again changes nothing, and it repairs anything a demo changed in the seeded objects. A run takes about a minute and a half, most of it reading the identities' traits.
 
 If a required variable is missing or invalid, FlagOps exits with code 1 and logs one line per problem, naming the variable, for example `FLAGSMITH_URL is required (URL of your Flagsmith API)`.
 

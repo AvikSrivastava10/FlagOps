@@ -1,9 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  findDescriptionLine,
-  formatDescriptionLine,
-  withDescriptionLine,
-} from './description-line.js';
+import { formatDescriptionLine, withDescriptionLine } from './description-line.js';
 
 describe('formatDescriptionLine', () => {
   it('writes the type, the deadline and the cleanup PRs, joined by middle dots', () => {
@@ -23,19 +19,6 @@ describe('formatDescriptionLine', () => {
   });
 });
 
-describe('findDescriptionLine', () => {
-  it('finds the last line that starts with "FlagOps: "', () => {
-    expect(
-      findDescriptionLine('Text\nFlagOps: release · old\nMore\nFlagOps: ops · permanent'),
-    ).toBe('FlagOps: ops · permanent');
-  });
-
-  it('returns null without such a line', () => {
-    expect(findDescriptionLine('Text that mentions FlagOps: inline')).toBeNull();
-    expect(findDescriptionLine('')).toBeNull();
-  });
-});
-
 describe('withDescriptionLine', () => {
   const line = 'FlagOps: release · remove by 2026-12-31';
 
@@ -49,6 +32,12 @@ describe('withDescriptionLine', () => {
     expect(withDescriptionLine('Above.\nFlagOps: ops · permanent\nBelow.', line)).toBe(
       `Above.\nBelow.\n${line}`,
     );
+  });
+
+  it('replaces only the last line that starts with "FlagOps: "', () => {
+    expect(
+      withDescriptionLine('FlagOps: release · old\nText\nFlagOps: ops · permanent', line),
+    ).toBe(`FlagOps: release · old\nText\n${line}`);
   });
 
   it('writes only the line when the description is empty, with no leading newline', () => {

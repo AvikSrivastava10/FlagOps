@@ -226,8 +226,8 @@ describe('runSeed on an empty organisation', () => {
 
     expect(report.changes).toEqual([
       'Set dark_mode in Production',
-      'Wrote the traits of 1 identities in Production, 0 of them new',
-      'Turned dark_mode back on for user-0010 in Production',
+      'Wrote the traits of 1 identity in Production, 0 of them new',
+      'Turned dark_mode back on for 1 identity in Production',
       'Wrote the exit plan of new_checkout',
     ]);
     expect(override?.enabled).toBe(true);
@@ -264,7 +264,7 @@ describe('runSeed on an empty organisation', () => {
 
     expect(report.changes).toEqual([]);
     expect(report.warnings).toEqual([
-      'gift_wrap has an identity override for user-0001 in Production, which is not part of the demo data and changes its impact preview. Remove it in Flagsmith.',
+      'gift_wrap has identity overrides for 1 identity in Production that are not part of the demo data and change its impact preview. Remove them in Flagsmith.',
     ]);
     expect(run.fake.state.identityOverrides.some((override) => override.id === 99_999)).toBe(true);
   });

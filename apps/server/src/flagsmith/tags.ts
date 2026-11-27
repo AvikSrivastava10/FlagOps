@@ -2,6 +2,7 @@ import { flagTypes, permanentFlagTypes, type FlagType } from '@flagops/shared';
 import { z } from 'zod';
 import { parseResponse, readAllPages, type FlagsmithClient } from './client.js';
 import { authHeaders, type FlagsmithCredential } from './credentials.js';
+import { unexpectedResponse } from './errors.js';
 
 const tagSchema = z.object({
   id: z.number().int(),
@@ -140,5 +141,13 @@ async function patchTagPermanence(
     body: { is_permanent: isPermanent },
     headers: authHeaders(credential),
   });
-  parseResponse(client, tagSchema, data, { method: 'PATCH', path });
+  const tag = parseResponse(client, tagSchema, data, { method: 'PATCH', path });
+  // The answer is the stored tag, which confirms the change (architecture.md 6.6).
+  if (tag.is_permanent !== isPermanent) {
+    throw unexpectedResponse(
+      { method: 'PATCH', path },
+      `a tag whose is_permanent is still ${tag.is_permanent}`,
+      client.observedVersion(),
+    );
+  }
 }

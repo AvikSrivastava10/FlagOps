@@ -74,6 +74,11 @@ const v2PollTimeoutMs = 120_000;
 
 type Run = SeedContext & { report: SeedReport };
 
+/** "1 identity", "3 identities": report lines count identities and never name them (18.3). */
+function identityCount(count: number): string {
+  return `${count} ${count === 1 ? 'identity' : 'identities'}`;
+}
+
 function changed(run: Run, change: string): void {
   run.report.changes.push(change);
   run.logger.info({ change }, change);
@@ -428,7 +433,7 @@ async function ensureIdentities(run: Run, environments: SeedEnvironments): Promi
       ).length;
       changed(
         run,
-        `Wrote the traits of ${upserts.length} identities in ${name}, ${created} of them new`,
+        `Wrote the traits of ${identityCount(upserts.length)} in ${name}, ${created} of them new`,
       );
     }
   }
@@ -466,11 +471,13 @@ async function ensureIdentityOverrides(
         environment.api_key,
         feature.id,
       );
+      let turnedOn = 0;
+      let turnedBackOn = 0;
       for (const identifier of wanted) {
         const identityId = identities.get(identifier);
         if (identityId === undefined) {
           throw new Error(
-            `The identity ${identifier} is missing in ${name} after the trait upload`,
+            `A demo identity of ${seed.name} is missing in ${name} after the trait upload`,
           );
         }
         const override = current.find((item) => item.identity.identifier === identifier);
@@ -485,23 +492,30 @@ async function ensureIdentityOverrides(
               enabled: true,
             },
           );
-          changed(run, `Turned ${seed.name} on for ${identifier} in ${name}`);
+          turnedOn += 1;
         } else if (!override.enabled) {
           await updateIdentityOverride(run.client, run.credential, environment.api_key, {
             identityId,
             featureStateId: override.id,
             enabled: true,
           });
-          changed(run, `Turned ${seed.name} back on for ${identifier} in ${name}`);
+          turnedBackOn += 1;
         }
       }
-      for (const override of current) {
-        if (!wanted.includes(override.identity.identifier)) {
-          warn(
-            run,
-            `${seed.name} has an identity override for ${override.identity.identifier} in ${name}, which is not part of the demo data and changes its impact preview. Remove it in Flagsmith.`,
-          );
-        }
+      if (turnedOn > 0) {
+        changed(run, `Turned ${seed.name} on for ${identityCount(turnedOn)} in ${name}`);
+      }
+      if (turnedBackOn > 0) {
+        changed(run, `Turned ${seed.name} back on for ${identityCount(turnedBackOn)} in ${name}`);
+      }
+      const foreign = current.filter(
+        (override) => !wanted.includes(override.identity.identifier),
+      ).length;
+      if (foreign > 0) {
+        warn(
+          run,
+          `${seed.name} has identity overrides for ${identityCount(foreign)} in ${name} that are not part of the demo data and change its impact preview. Remove them in Flagsmith.`,
+        );
       }
     }
   }

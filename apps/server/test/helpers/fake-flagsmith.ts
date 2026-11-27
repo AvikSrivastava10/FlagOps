@@ -378,6 +378,17 @@ export function createFakeFlagsmith(): FakeFlagsmith {
       });
   }
 
+  /** An identity override as Flagsmith answers its writes, with `FeatureStateSerializerBasic`. */
+  function overrideBody(override: FakeState['identityOverrides'][number]) {
+    return {
+      id: override.id,
+      feature: override.feature,
+      identity: override.identity,
+      enabled: override.enabled,
+      feature_state_value: null,
+    };
+  }
+
   type Handler = (
     match: RegExpMatchArray,
     request: Request,
@@ -967,14 +978,15 @@ export function createFakeFlagsmith(): FakeFlagsmith {
       /^\/api\/v1\/environments\/([^/]+)\/identities\/(\d+)\/featurestates\/$/,
       (m, _r, body) => {
         const input = body as { feature: number; enabled: boolean };
-        state.identityOverrides.push({
+        const override = {
           id: id(),
           environment: m[1] ?? '',
           identity: Number(m[2]),
           feature: input.feature,
           enabled: input.enabled,
-        });
-        return json(201, {});
+        };
+        state.identityOverrides.push(override);
+        return json(201, overrideBody(override));
       },
     ],
     [
@@ -982,10 +994,11 @@ export function createFakeFlagsmith(): FakeFlagsmith {
       /^\/api\/v1\/environments\/([^/]+)\/identities\/(\d+)\/featurestates\/(\d+)\/$/,
       (m, _r, body) => {
         const override = state.identityOverrides.find((item) => item.id === Number(m[3]));
-        if (override !== undefined) {
-          override.enabled = (body as { enabled: boolean }).enabled;
+        if (override === undefined) {
+          return json(404, { detail: 'Not found.' });
         }
-        return json(200, {});
+        override.enabled = (body as { enabled: boolean }).enabled;
+        return json(200, overrideBody(override));
       },
     ],
     [
