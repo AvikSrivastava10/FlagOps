@@ -161,6 +161,49 @@ describe('loadConfig', () => {
   });
 });
 
+describe('GitHub configuration', () => {
+  const token = 'test-github-token-000000000001';
+
+  it('holds the token in a Secret and lists the repositories, trimmed', () => {
+    const config = loadConfig({
+      ...minimal,
+      GITHUB_TOKEN: token,
+      GITHUB_REPOSITORIES: ' acme/shop , acme/api ',
+    });
+
+    expect(config.github.repositories).toEqual(['acme/shop', 'acme/api']);
+    expect(config.github.token?.reveal()).toBe(token);
+    expect(config.github.problem).toBeUndefined();
+    expect(JSON.stringify(config)).not.toContain(token);
+  });
+
+  it.each([
+    [{}, 'GITHUB_TOKEN is not set'],
+    [{ GITHUB_TOKEN: 'too-short' }, 'GITHUB_TOKEN must be 20 to 255 characters'],
+    [{ GITHUB_TOKEN: token }, 'GITHUB_REPOSITORIES is not set'],
+  ])('starts with scanning and Retire off for %o', (github, problem) => {
+    const config = loadConfig({ ...minimal, ...github });
+
+    expect(config.github.token).toBeUndefined();
+    expect(config.github.problem).toMatch(new RegExp(`^${problem} \\(`));
+    expect(config.github.problem).not.toContain('too-short');
+  });
+
+  it('exits on a repository entry that is not owner/name, naming it', () => {
+    expect(problemsOf({ ...minimal, GITHUB_REPOSITORIES: 'acme/shop, not a repo' })).toEqual([
+      'GITHUB_REPOSITORIES has the entry "not a repo", which is not an owner/name repository (comma-separated owner/name repositories that FlagOps scans)',
+    ]);
+  });
+
+  it('exits on more than 20 repositories', () => {
+    const repositories = Array.from({ length: 21 }, (_, index) => `acme/repo-${index}`).join(',');
+
+    expect(problemsOf({ ...minimal, GITHUB_REPOSITORIES: repositories })).toEqual([
+      'GITHUB_REPOSITORIES lists more than 20 repositories (comma-separated owner/name repositories that FlagOps scans)',
+    ]);
+  });
+});
+
 describe('Flagsmith URLs', () => {
   it('sends requests to FLAGSMITH_INTERNAL_URL when it is set, also in Docker', () => {
     const { flagsmith } = loadConfig({
