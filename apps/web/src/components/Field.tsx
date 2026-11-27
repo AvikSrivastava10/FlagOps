@@ -17,11 +17,17 @@ type FieldFrame = {
   error?: string | null | undefined;
 };
 
-function useFieldIds(hint: string | undefined, error: string | null | undefined) {
+/** The field's ids. The control is described by the hint, the message, then the caller's ids. */
+function useFieldIds(
+  hint: string | undefined,
+  error: string | null | undefined,
+  callerDescribedBy: string | undefined,
+) {
   const id = useId();
   const hintId = `${id}-hint`;
   const errorId = `${id}-error`;
-  const describedBy = cx(hint !== undefined && hintId, error != null && errorId) || undefined;
+  const describedBy =
+    cx(hint !== undefined && hintId, error != null && errorId, callerDescribedBy) || undefined;
   return { id, hintId, errorId, describedBy };
 }
 
@@ -64,9 +70,22 @@ export type TextFieldProps = FieldFrame &
     ref?: Ref<HTMLInputElement> | undefined;
   };
 
-/** A labelled text input: 2px ink border, paper-raised fill, the line-colour focus ring. */
-export function TextField({ label, hint, error, mono = false, icon, ...props }: TextFieldProps) {
-  const { id, hintId, errorId, describedBy } = useFieldIds(hint, error);
+/**
+ * A labelled text input: 2px ink border, paper-raised fill, the line-colour focus ring. A
+ * `className` joins the input's own, and an `aria-describedby` follows the hint and the message.
+ */
+export function TextField({
+  label,
+  hint,
+  error,
+  mono = false,
+  icon,
+  className,
+  'aria-describedby': callerDescribedBy,
+  'aria-invalid': invalid,
+  ...props
+}: TextFieldProps) {
+  const { id, hintId, errorId, describedBy } = useFieldIds(hint, error, callerDescribedBy);
   return (
     <Frame {...{ id, label, hint, hintId, error, errorId }}>
       <span className={cx(styles.control, icon !== undefined && styles.withIcon)}>
@@ -74,9 +93,9 @@ export function TextField({ label, hint, error, mono = false, icon, ...props }: 
         <input
           {...props}
           id={id}
-          className={cx(styles.input, mono && styles.mono)}
+          className={cx(styles.input, mono && styles.mono, className)}
           aria-describedby={describedBy}
-          aria-invalid={error != null || undefined}
+          aria-invalid={error != null || invalid}
         />
       </span>
     </Frame>
@@ -88,18 +107,27 @@ export type SelectFieldProps = FieldFrame &
     options: readonly { value: string; label: string }[];
   };
 
-/** A labelled native select, styled like the text input. */
-export function SelectField({ label, hint, error, options, ...props }: SelectFieldProps) {
-  const { id, hintId, errorId, describedBy } = useFieldIds(hint, error);
+/** A labelled native select, styled like the text input; extra classes and ids join as there. */
+export function SelectField({
+  label,
+  hint,
+  error,
+  options,
+  className,
+  'aria-describedby': callerDescribedBy,
+  'aria-invalid': invalid,
+  ...props
+}: SelectFieldProps) {
+  const { id, hintId, errorId, describedBy } = useFieldIds(hint, error, callerDescribedBy);
   return (
     <Frame {...{ id, label, hint, hintId, error, errorId }}>
       <span className={cx(styles.control, styles.select)}>
         <select
           {...props}
           id={id}
-          className={styles.input}
+          className={cx(styles.input, className)}
           aria-describedby={describedBy}
-          aria-invalid={error != null || undefined}
+          aria-invalid={error != null || invalid}
         >
           {options.map((option) => (
             <option key={option.value} value={option.value}>

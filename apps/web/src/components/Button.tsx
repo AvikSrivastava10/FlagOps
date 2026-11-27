@@ -15,7 +15,7 @@ type Common = {
 };
 
 export type ButtonProps = Common &
-  Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'disabled' | 'children'> & {
+  Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'disabled' | 'aria-disabled' | 'children'> & {
     /**
      * Why the action is not allowed now. The button is then disabled, and the reason shows in a
      * tooltip and in text beside it (ui-design.md 5). It stays focusable, so keyboard users can
@@ -38,6 +38,14 @@ const ignore = (event: MouseEvent<HTMLButtonElement>) => {
   event.preventDefault();
 };
 
+/** Calls the caller's handler, then the tooltip's, so neither is lost. */
+function both<Event>(caller: ((event: Event) => void) | undefined, tooltip: () => void) {
+  return (event: Event) => {
+    caller?.(event);
+    tooltip();
+  };
+}
+
 /** A square button with a plain verb (ui-design.md 7). */
 export function Button({
   variant = 'primary',
@@ -47,6 +55,11 @@ export function Button({
   className,
   type = 'button',
   onClick,
+  onMouseEnter,
+  onMouseLeave,
+  onFocus,
+  onBlur,
+  'aria-describedby': describedBy,
   ...props
 }: ButtonProps) {
   const disabled = disabledReason !== null;
@@ -56,11 +69,16 @@ export function Button({
         {(trigger) => (
           <button
             {...props}
-            {...trigger}
+            ref={trigger.ref}
             type={type}
             className={cx(styles.button, styles[variant], disabled && styles.disabled, className)}
+            aria-describedby={cx(describedBy, trigger['aria-describedby']) || undefined}
             aria-disabled={disabled || undefined}
             onClick={disabled ? ignore : onClick}
+            onMouseEnter={both(onMouseEnter, trigger.onMouseEnter)}
+            onMouseLeave={both(onMouseLeave, trigger.onMouseLeave)}
+            onFocus={both(onFocus, trigger.onFocus)}
+            onBlur={both(onBlur, trigger.onBlur)}
           >
             <Content icon={icon}>{children}</Content>
           </button>
