@@ -8,6 +8,7 @@ import {
   unexpectedResponseError,
   unreachableError,
 } from './errors.js';
+import { isAllowedRedirect, readCapped } from './download.js';
 import { RateLimiter, rateLimitOf } from './rate-limit.js';
 import { RepoGuard } from './repo-guard.js';
 
@@ -32,8 +33,8 @@ export type GitHubClient = {
   /** Follows `Link: rel="next"` until the last page and returns the items of every page. */
   paginate<T>(spec: GitHubRequest<T[]>): Promise<T[]>;
   /**
-   * Downloads a repository's binary resource, such as its tarball (architecture.md 7.2). A
-   * redirect is followed only to `codeload.github.com`, or to the API's own host in tests (19).
+   * Downloads a repository's binary resource, such as its tarball (architecture.md 7.2). The
+   * redirect is followed only as `download.ts` allows, and the body is capped at 200 MB (19).
    */
   download(spec: { repository: string; path: string }): Promise<Uint8Array>;
 };
@@ -53,10 +54,10 @@ export type GitHubClientOptions = {
 
 const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
-/** Downloads take longer than API calls (architecture.md 18.1), and are capped in size. */
+const defaultBaseUrl = 'https://api.github.com';
+
+/** Downloads take longer than API calls (architecture.md 18.1). */
 const downloadTimeoutMs = 60_000;
-const maxDownloadBytes = 200 * 1024 * 1024;
-const downloadHost = 'codeload.github.com';
 
 function messageOf(body: unknown): string | undefined {
   return typeof body === 'object' && body !== null && 'message' in body
@@ -96,8 +97,10 @@ function nextPage(link: string | null, origin: string): URL | undefined {
 }
 
 export function createGitHubClient(options: GitHubClientOptions): GitHubClient {
-  const baseUrl = (options.baseUrl ?? 'https://api.github.com').replace(/\/+$/, '');
+  const baseUrl = (options.baseUrl ?? defaultBaseUrl).replace(/\/+$/, '');
   const origin = new URL(baseUrl).origin;
+  // Only a test's own API server may stand in for the download host (architecture.md 19).
+  const testOrigin = baseUrl === defaultBaseUrl ? undefined : origin;
   const guard = new RepoGuard(options.repositories);
   const retryDelaysMs = options.retryDelaysMs ?? [500, 1500];
   const timeoutMs = options.timeoutMs ?? 15_000;
@@ -218,6 +221,7 @@ export function createGitHubClient(options: GitHubClientOptions): GitHubClient {
   async function downloadOnce(url: URL): Promise<Uint8Array> {
     const request = `GET ${url.pathname}`;
     await limiter.beforeRequest();
+    const started = Date.now();
     let response: Response;
     try {
       response = await fetch(url, {
@@ -233,8 +237,9 @@ export function createGitHubClient(options: GitHubClientOptions): GitHubClient {
       if (response.status >= 300 && response.status < 400) {
         await response.body?.cancel();
         const target = new URL(response.headers.get('location') ?? '', url);
-        if (target.host !== downloadHost && target.host !== url.host) {
-          throw unexpectedResponseError(request, `a redirect to ${target.host}`);
+        // The origin only: a download URL can carry a token in its query.
+        if (!isAllowedRedirect(target, testOrigin)) {
+          throw unexpectedResponseError(request, `a redirect to ${target.origin}`);
         }
         response = await fetch(target, {
           headers: { 'User-Agent': 'flagops' },
@@ -258,12 +263,17 @@ export function createGitHubClient(options: GitHubClientOptions): GitHubClient {
           hit,
         );
       }
-      const bytes = new Uint8Array(await response.arrayBuffer());
-      if (bytes.byteLength > maxDownloadBytes) {
-        throw new GitHubError('github_validation', `${request} is larger than 200 MB.`, {
-          details: { request },
-        });
-      }
+      const bytes = await readCapped(response, request);
+      options.logger?.debug(
+        {
+          method: 'GET',
+          host: url.host,
+          path: url.pathname,
+          status: response.status,
+          durationMs: Date.now() - started,
+        },
+        'GitHub download',
+      );
       return bytes;
     } catch (cause) {
       throw cause instanceof GitHubError ? cause : unreachableError(request, cause);
