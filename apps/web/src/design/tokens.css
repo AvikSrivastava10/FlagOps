@@ -110,6 +110,8 @@
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
   --ease-exit: cubic-bezier(0.4, 0, 1, 1);
   --flap-step: 45ms;
+  /* One tile's flip. At most 8 tiles animate, so the last starts after 7 steps and ends at 400ms. */
+  --flap-flip: 85ms;
 
   /* 3.5 Layers */
   --z-base: 0;
@@ -134,5 +136,6 @@
     --dur-base: 0ms;
     --dur-slow: 0ms;
     --flap-step: 0ms;
+    --flap-flip: 0ms;
   }
 }

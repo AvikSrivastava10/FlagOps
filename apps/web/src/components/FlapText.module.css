@@ -1,0 +1,64 @@
+.flap {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  max-inline-size: 100%;
+  vertical-align: middle;
+}
+
+.small {
+  font: var(--weight-medium) var(--text-meta) var(--font-mono);
+}
+
+.regular {
+  font: var(--weight-medium) var(--text-body) var(--font-mono);
+}
+
+.large {
+  font: var(--weight-medium) var(--text-h3) var(--font-mono);
+}
+
+.tiles {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.125em;
+  perspective: 12em;
+}
+
+/* Tile proportions are set in em, so every size keeps the same board look. */
+.tile {
+  position: relative;
+  display: inline-block;
+  min-inline-size: 1.3em;
+  padding: 0.1em 0.15em;
+  background: var(--color-flap-tile);
+  color: var(--color-flap-ink);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The split line across the middle of every tile. */
+.tile::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 50%;
+  block-size: 1px;
+  background: var(--color-ink-2);
+}
+
+.flip {
+  animation: flap var(--flap-flip) var(--ease-standard) both;
+  transform-origin: 50% 50%;
+}
+
+@keyframes flap {
+  from {
+    transform: rotateX(-90deg);
+  }
+
+  to {
+    transform: rotateX(0);
+  }
+}

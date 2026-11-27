@@ -1,0 +1,15 @@
+.line {
+  max-inline-size: 72ch;
+  color: var(--color-ink-2);
+  font: var(--weight-regular) var(--text-small) var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.separator {
+  color: var(--color-ink-3);
+}
+
+.number {
+  font-weight: var(--weight-semibold);
+}

@@ -1,0 +1,40 @@
+.band {
+  min-inline-size: 0;
+  padding: var(--space-2) var(--space-3);
+  border-block-start: var(--rule-decorative) solid var(--color-rule-soft);
+}
+
+.label,
+.tag {
+  color: var(--color-ink-3);
+  font: var(--weight-semibold) var(--text-meta) var(--font-sign);
+  letter-spacing: var(--sign-tracking);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.tag {
+  display: inline-block;
+  padding: 0 var(--space-2);
+}
+
+/* Every zone tint keeps ink-3 text at 5.15:1 or more (ui-design.md 3.1). */
+:is(.band, .tag)[data-zone='new'] {
+  background: var(--color-zone-new);
+}
+
+:is(.band, .tag)[data-zone='live'] {
+  background: var(--color-zone-live);
+}
+
+:is(.band, .tag)[data-zone='stale'] {
+  background: var(--color-zone-stale);
+}
+
+:is(.band, .tag)[data-zone='to_remove'] {
+  background: var(--color-zone-to-remove);
+}
+
+:is(.band, .tag)[data-zone='permanent'] {
+  background: var(--color-zone-permanent);
+}
