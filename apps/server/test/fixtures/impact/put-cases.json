@@ -1,0 +1,299 @@
+[
+  {
+    "name": "put_environment_default__replaces_environment_default",
+    "source": "api/tests/integration/features/future/test_flag_endpoint.py::test_update_flag__put_environment_default__replaces_environment_default",
+    "note": "An omitted value is cleared. Without a segment_overrides key the overrides stay.",
+    "featureId": 300003,
+    "body": { "environment_default": { "enabled": true } },
+    "expected": {
+      "flag": {
+        "environmentDefault": { "enabled": true, "value": null, "variants": [] },
+        "segmentOverrides": [
+          { "segment": 103, "priority": 0, "enabled": true, "value": "Winterschlussverkauf", "variants": [] },
+          { "segment": 108, "priority": 1, "enabled": false, "value": "Winter Sale", "variants": [] }
+        ]
+      },
+      "createdSegmentIds": [],
+      "updatedSegmentIds": [],
+      "deletedSegmentIds": [],
+      "estimatedSplitSegmentIds": []
+    }
+  },
+  {
+    "name": "put_segment_overrides__replaces_segment_overrides",
+    "source": "api/tests/integration/features/future/test_flag_endpoint.py::test_update_flag__put_segment_overrides__replaces_segment_overrides",
+    "note": "The omitted override is deleted; the kept one takes enabled from the environment default.",
+    "featureId": 300003,
+    "body": {
+      "segment_overrides": [
+        { "segment": { "id": 103 }, "priority": 10, "value": { "type": "string", "value": "enterprise" } }
+      ]
+    },
+    "expected": {
+      "flag": {
+        "environmentDefault": { "enabled": true, "value": "Winter Sale", "variants": [] },
+        "segmentOverrides": [
+          { "segment": 103, "priority": 10, "enabled": true, "value": "enterprise", "variants": [] }
+        ]
+      },
+      "createdSegmentIds": [],
+      "updatedSegmentIds": [103],
+      "deletedSegmentIds": [108],
+      "estimatedSplitSegmentIds": []
+    }
+  },
+  {
+    "name": "put_without_priorities__ranks_overrides_after_system_segment_override",
+    "source": "api/tests/integration/features/future/test_flag_endpoint.py::test_update_flag__put_without_priorities__ranks_overrides_after_system_segment_override",
+    "note": "The dependency override keeps priority 0 and follows the new default. The existing override keeps priority 1; the new one takes the second free slot.",
+    "featureId": 300005,
+    "body": {
+      "environment_default": {
+        "enabled": false,
+        "variants": [{ "id": 201, "weight": 20 }, { "id": 202, "weight": 20 }]
+      },
+      "segment_overrides": [
+        { "segment": { "id": 102 }, "enabled": true },
+        { "segment": { "id": 101 }, "enabled": true }
+      ]
+    },
+    "expected": {
+      "flag": {
+        "environmentDefault": {
+          "enabled": false,
+          "value": null,
+          "variants": [{ "id": 201, "weight": 20 }, { "id": 202, "weight": 20 }]
+        },
+        "segmentOverrides": [
+          { "segment": 112, "priority": 0, "enabled": false, "value": null, "variants": [{ "id": 201, "weight": 20 }, { "id": 202, "weight": 20 }] },
+          { "segment": 102, "priority": 1, "enabled": true, "value": null, "variants": [{ "id": 201, "weight": 20 }, { "id": 202, "weight": 20 }] },
+          { "segment": 101, "priority": 2, "enabled": true, "value": null, "variants": [{ "id": 201, "weight": 20 }, { "id": 202, "weight": 20 }] }
+        ]
+      },
+      "createdSegmentIds": [101],
+      "updatedSegmentIds": [102],
+      "deletedSegmentIds": [],
+      "estimatedSplitSegmentIds": [101]
+    }
+  },
+  {
+    "name": "new_segment_override_without_state__inherits_environment_default_state",
+    "source": "api/tests/integration/features/future/test_flag_endpoint.py::test_update_flag__new_segment_override_without_state__inherits_environment_default_state",
+    "note": "Overrides take enabled, value and weights from the default written by the same body.",
+    "featureId": 300005,
+    "body": {
+      "environment_default": {
+        "enabled": true,
+        "value": { "type": "string", "value": "v1" },
+        "variants": [{ "id": 201, "weight": 30 }, { "id": 202, "weight": 10 }]
+      },
+      "segment_overrides": [
+        { "segment": { "id": 102 }, "priority": 1 },
+        { "segment": { "id": 101 }, "priority": 2 }
+      ]
+    },
+    "expected": {
+      "flag": {
+        "environmentDefault": {
+          "enabled": true,
+          "value": "v1",
+          "variants": [{ "id": 201, "weight": 30 }, { "id": 202, "weight": 10 }]
+        },
+        "segmentOverrides": [
+          { "segment": 112, "priority": 0, "enabled": false, "value": "v1", "variants": [{ "id": 201, "weight": 30 }, { "id": 202, "weight": 10 }] },
+          { "segment": 102, "priority": 1, "enabled": true, "value": "v1", "variants": [{ "id": 201, "weight": 30 }, { "id": 202, "weight": 10 }] },
+          { "segment": 101, "priority": 2, "enabled": true, "value": "v1", "variants": [{ "id": 201, "weight": 30 }, { "id": 202, "weight": 10 }] }
+        ]
+      },
+      "createdSegmentIds": [101],
+      "updatedSegmentIds": [102],
+      "deletedSegmentIds": [],
+      "estimatedSplitSegmentIds": [101]
+    }
+  },
+  {
+    "name": "put_flag_as_read__responds_409",
+    "source": "api/tests/integration/features/future/test_flag_endpoint.py::test_update_flag__put_flag_as_read__responds_409",
+    "note": "The body is the flag exactly as GET returns it, which names the dependency's system segment.",
+    "featureId": 300005,
+    "body": {
+      "environment_default": {
+        "enabled": true,
+        "value": { "type": "string", "value": "v1" },
+        "variants": [{ "id": 201, "weight": 20 }, { "id": 202, "weight": 20 }]
+      },
+      "segment_overrides": [
+        {
+          "segment": { "id": 112 },
+          "priority": 0,
+          "enabled": false,
+          "value": { "type": "string", "value": "v1" },
+          "variants": [{ "id": 201, "weight": 20 }, { "id": 202, "weight": 20 }]
+        },
+        {
+          "segment": { "id": 102 },
+          "priority": 1,
+          "enabled": true,
+          "value": { "type": "string", "value": "v1" },
+          "variants": [{ "id": 201, "weight": 50 }, { "id": 202, "weight": 30 }]
+        }
+      ]
+    },
+    "expected": {
+      "rejection": {
+        "status": 409,
+        "code": "system_segment_modification",
+        "message": "System segments and their overrides can't be changed directly. Change this one through flag dependency instead."
+      }
+    }
+  },
+  {
+    "name": "duplicate_segment_overrides__responds_400",
+    "source": "api/tests/integration/features/future/test_flag_endpoint.py::test_update_flag__duplicate_segment_overrides__responds_400",
+    "featureId": 300003,
+    "body": {
+      "segment_overrides": [
+        { "segment": { "id": 103 }, "enabled": true },
+        { "segment": { "id": 103 }, "enabled": false }
+      ]
+    },
+    "expected": {
+      "rejection": { "status": 400, "message": "Duplicate segment: 103.", "field": "segment_overrides" }
+    }
+  },
+  {
+    "name": "unknown_segment__responds_400",
+    "source": "api/tests/integration/features/future/test_flag_endpoint.py::test_update_flag__unknown_segment__responds_400",
+    "featureId": 300003,
+    "body": { "segment_overrides": [{ "segment": { "id": 999999 }, "enabled": true }] },
+    "expected": {
+      "rejection": { "status": 400, "message": "Segment not found.", "field": "segment_overrides[0].segment.id" }
+    }
+  },
+  {
+    "name": "segment_override_priority_in_use__responds_400",
+    "source": "api/tests/integration/features/future/test_flag_endpoint.py::test_update_flag__patch_segment_override_priority_in_use__responds_400",
+    "featureId": 300003,
+    "body": {
+      "segment_overrides": [
+        { "segment": { "id": 103 }, "priority": 3 },
+        { "segment": { "id": 108 }, "priority": 3 }
+      ]
+    },
+    "expected": { "rejection": { "status": 400, "message": "Duplicate priority: 3." } }
+  },
+  {
+    "name": "put_environment_default_without_variants__responds_400",
+    "source": "api/tests/integration/features/future/test_flag_endpoint.py::test_update_flag__put_environment_default_without_variants__responds_400",
+    "featureId": 300005,
+    "body": { "environment_default": { "enabled": true } },
+    "expected": {
+      "rejection": { "status": 400, "message": "Must include all feature's variants.", "field": "environment_default.variants" }
+    }
+  },
+  {
+    "name": "unknown_variant__responds_400",
+    "source": "api/tests/integration/features/future/test_flag_endpoint.py::test_update_flag__unknown_variant__responds_400",
+    "featureId": 300005,
+    "body": {
+      "environment_default": { "variants": [{ "id": 201, "weight": 10 }, { "id": 12345, "weight": 20 }] }
+    },
+    "expected": {
+      "rejection": { "status": 400, "message": "Variant not found: 12345.", "field": "environment_default.variants" }
+    }
+  },
+  {
+    "name": "duplicate_variant__responds_400",
+    "source": "api/tests/integration/features/future/test_flag_endpoint.py::test_update_flag__duplicate_variant__responds_400",
+    "featureId": 300005,
+    "body": {
+      "environment_default": {
+        "variants": [{ "id": 201, "weight": 30 }, { "id": 201, "weight": 40 }, { "id": 202, "weight": 20 }]
+      }
+    },
+    "expected": {
+      "rejection": { "status": 400, "message": "Duplicate variant: 201.", "field": "environment_default.variants" }
+    }
+  },
+  {
+    "name": "variant_omitted__responds_400",
+    "source": "api/tests/integration/features/future/test_flag_endpoint.py::test_update_flag__variant_omitted__responds_400",
+    "featureId": 300005,
+    "body": { "environment_default": { "variants": [{ "id": 201, "weight": 30 }] } },
+    "expected": {
+      "rejection": { "status": 400, "message": "Must include all feature's variants.", "field": "environment_default.variants" }
+    }
+  },
+  {
+    "name": "variant_weights_over_100__responds_400",
+    "source": "api/tests/integration/features/future/test_flag_endpoint.py::test_update_flag__variant_weights_over_100__responds_400",
+    "featureId": 300005,
+    "body": {
+      "environment_default": { "variants": [{ "id": 201, "weight": 60 }, { "id": 202, "weight": 50 }] }
+    },
+    "expected": {
+      "rejection": { "status": 400, "message": "Total weight must not exceed 100, got 110.0.", "field": "environment_default.variants" }
+    }
+  },
+  {
+    "name": "variants_on_standard_feature__responds_400",
+    "source": "api/tests/integration/features/future/test_flag_endpoint.py::test_update_flag__variants_on_standard_feature__responds_400",
+    "featureId": 300003,
+    "body": { "environment_default": { "variants": [{ "id": 201, "weight": 10 }] } },
+    "expected": {
+      "rejection": { "status": 400, "message": "Feature is not multivariate.", "field": "environment_default.variants" }
+    }
+  },
+  {
+    "name": "value_not_matching_type__responds_400",
+    "source": "api/tests/integration/features/future/test_flag_endpoint.py::test_update_flag__value_not_matching_type__responds_400",
+    "featureId": 300007,
+    "body": { "environment_default": { "value": { "type": "integer", "value": "abc" } } },
+    "expected": {
+      "rejection": { "status": 400, "message": "'abc' is not a valid integer", "field": "environment_default.value" }
+    }
+  },
+  {
+    "name": "values_are_typed_like_set_value",
+    "source": "api/features/feature_states/models.py::FeatureStateValue.set_value",
+    "note": "int() accepts whitespace and underscores, booleans are case-insensitive, and an override without a value takes the default's.",
+    "featureId": 300007,
+    "body": {
+      "environment_default": { "enabled": true, "value": { "type": "integer", "value": " 1_000 " } },
+      "segment_overrides": [
+        { "segment": { "id": 110 }, "priority": 0 },
+        { "segment": { "id": 109 }, "priority": 1, "value": { "type": "boolean", "value": "TRUE" } }
+      ]
+    },
+    "expected": {
+      "flag": {
+        "environmentDefault": { "enabled": true, "value": 1000, "variants": [] },
+        "segmentOverrides": [
+          { "segment": 110, "priority": 0, "enabled": true, "value": 1000, "variants": [] },
+          { "segment": 109, "priority": 1, "enabled": true, "value": true, "variants": [] }
+        ]
+      },
+      "createdSegmentIds": [],
+      "updatedSegmentIds": [110, 109],
+      "deletedSegmentIds": [],
+      "estimatedSplitSegmentIds": []
+    }
+  },
+  {
+    "name": "input_document_is_never_modified",
+    "source": "the port: applyFlagPut works on a copy",
+    "note": "An empty list deletes every override that is not on a system segment, in the copy only.",
+    "featureId": 300003,
+    "body": { "segment_overrides": [] },
+    "expected": {
+      "flag": {
+        "environmentDefault": { "enabled": true, "value": "Winter Sale", "variants": [] },
+        "segmentOverrides": []
+      },
+      "createdSegmentIds": [],
+      "updatedSegmentIds": [],
+      "deletedSegmentIds": [103, 108],
+      "estimatedSplitSegmentIds": []
+    }
+  }
+]

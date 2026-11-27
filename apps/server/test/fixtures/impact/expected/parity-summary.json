@@ -1,0 +1,201 @@
+{
+  "engine": "@flagsmith/nodejs 9.5.0",
+  "scenarios": [
+    {
+      "label": "seeded",
+      "identities": 250,
+      "reference": "flagsmith-flag-engine 11.1.2",
+      "c5": {
+        "results": 5000,
+        "mismatches": []
+      },
+      "c1": {
+        "results": 5000,
+        "mismatches": 0
+      },
+      "sha256": "d75ee4975dcd5143ee8690b9e623b8a8fa8157fbe8517b8977b34a4dbb4ef013"
+    },
+    {
+      "label": "proposed",
+      "identities": 250,
+      "reference": "flagsmith-flag-engine 11.1.2",
+      "c5": {
+        "results": 5000,
+        "mismatches": []
+      },
+      "c1": {
+        "results": 5000,
+        "mismatches": 0
+      },
+      "sha256": "5e3289401ac16e08e5bf5c54213f7f2950dbbf5031c06b5f86c83e29990d5961"
+    },
+    {
+      "label": "seeded-legacy-hashing",
+      "identities": 250,
+      "reference": "flagsmith-flag-engine 11.1.2",
+      "c5": {
+        "results": 5000,
+        "mismatches": []
+      },
+      "c1": {
+        "results": 5000,
+        "mismatches": 0
+      },
+      "sha256": "d48b3ba29a7476bfa0031e73ef18c6870701c0154b72f8c8da2a091972009846"
+    },
+    {
+      "label": "proposed-legacy-hashing",
+      "identities": 250,
+      "reference": "flagsmith-flag-engine 11.1.2",
+      "c5": {
+        "results": 5000,
+        "mismatches": []
+      },
+      "c1": {
+        "results": 5000,
+        "mismatches": 0
+      },
+      "sha256": "0f2119c16adcb9937302ff7df5f925f01416538308faf8fe76576751190f56f1"
+    },
+    {
+      "label": "edge-probes",
+      "identities": 19,
+      "reference": "flagsmith-flag-engine 11.1.2",
+      "c5": {
+        "results": 456,
+        "mismatches": [
+          "edge_01 probe_bool_modulo enabled,segment",
+          "edge_01 probe_bool_regex enabled,segment",
+          "edge_01 probe_float_in enabled,segment",
+          "edge_01 probe_in_empty_string enabled,segment",
+          "edge_01 probe_int_vs_decimal_condition enabled,segment",
+          "edge_01 probe_not_equal_non_numeric enabled,segment",
+          "edge_01 probe_whole_float_regex enabled,segment",
+          "edge_02 probe_not_equal_non_numeric enabled,segment",
+          "edge_02 probe_regex_python_syntax enabled,segment",
+          "edge_02 probe_split_on_trait enabled,segment",
+          "edge_03 probe_float_in enabled,segment",
+          "edge_03 probe_not_equal_non_numeric enabled,segment",
+          "edge_03 probe_split_on_trait enabled,segment",
+          "edge_04 probe_bool_modulo enabled,segment",
+          "edge_04 probe_bool_regex enabled,segment",
+          "edge_04 probe_int_vs_decimal_condition enabled,segment",
+          "edge_04 probe_not_equal_non_numeric enabled,segment",
+          "edge_04 probe_split_on_trait enabled,segment",
+          "edge_04 probe_whole_float_regex enabled,segment",
+          "edge_05 probe_float_in enabled,segment",
+          "edge_05 probe_not_equal_non_numeric enabled,segment",
+          "edge_06 probe_bool_modulo enabled,segment",
+          "edge_06 probe_bool_regex enabled,segment",
+          "edge_06 probe_float_in enabled,segment",
+          "edge_06 probe_int_vs_decimal_condition enabled,segment",
+          "edge_06 probe_not_equal_non_numeric enabled,segment",
+          "edge_06 probe_split_on_trait enabled,segment",
+          "edge_06 probe_whole_float_regex enabled,segment",
+          "edge_07 probe_not_equal_non_numeric enabled,segment",
+          "edge_07 probe_regex_python_syntax enabled,segment",
+          "edge_08 probe_bool_modulo enabled,segment",
+          "edge_08 probe_bool_regex enabled,segment",
+          "edge_08 probe_not_equal_non_numeric enabled,segment",
+          "edge_08 probe_split_on_trait enabled,segment",
+          "edge_09 probe_split_on_trait enabled,segment",
+          "edge_11 probe_split_on_trait enabled,segment",
+          "edge_12 probe_in_json_numbers enabled,segment",
+          "edge_13 probe_in_zero enabled,segment",
+          "edge_13 probe_split_on_trait enabled,segment"
+        ]
+      },
+      "c1": {
+        "results": 456,
+        "mismatches": 0
+      },
+      "sha256": "1ba31011e44dd43477367a2c6d02e34bfeade5aae48d5e78ebc29628218ae6c5"
+    }
+  ],
+  "edgeProbesApproximate": {
+    "probe_bool_modulo": [
+      {
+        "code": "R7",
+        "description": "MODULO on a boolean trait"
+      }
+    ],
+    "probe_bool_regex": [
+      {
+        "code": "R3",
+        "description": "REGEX on a boolean trait"
+      }
+    ],
+    "probe_equal_decimal_string": [
+      {
+        "code": "R5",
+        "description": "integer trait compared with a value that is not an integer"
+      }
+    ],
+    "probe_float_in": [
+      {
+        "code": "R6",
+        "description": "IN on a float trait"
+      },
+      {
+        "code": "R13",
+        "description": "float trait with whole values, such as 3.0, which JavaScript reads as integers"
+      }
+    ],
+    "probe_in_empty_string": [
+      {
+        "code": "R6",
+        "description": "IN on a trait that is 0 or \"\""
+      }
+    ],
+    "probe_in_json_numbers": [
+      {
+        "code": "R13",
+        "description": "float trait with whole values, such as 3.0, which JavaScript reads as integers"
+      },
+      {
+        "code": "R6",
+        "description": "IN on a trait that is 0 or \"\""
+      }
+    ],
+    "probe_in_zero": [
+      {
+        "code": "R13",
+        "description": "float trait with whole values, such as 3.0, which JavaScript reads as integers"
+      },
+      {
+        "code": "R6",
+        "description": "IN on a trait that is 0 or \"\""
+      }
+    ],
+    "probe_int_vs_decimal_condition": [
+      {
+        "code": "R5",
+        "description": "integer trait compared with a value that is not an integer"
+      }
+    ],
+    "probe_not_equal_non_numeric": [
+      {
+        "code": "R5",
+        "description": "integer trait compared with a value that is not an integer"
+      }
+    ],
+    "probe_regex_python_syntax": [
+      {
+        "code": "R2",
+        "description": "REGEX pattern that JavaScript rejects"
+      }
+    ],
+    "probe_split_on_trait": [
+      {
+        "code": "R8",
+        "description": "percentage split on a plain trait name"
+      }
+    ],
+    "probe_whole_float_regex": [
+      {
+        "code": "R13",
+        "description": "float trait with whole values, such as 3.0, which JavaScript reads as integers"
+      }
+    ]
+  }
+}

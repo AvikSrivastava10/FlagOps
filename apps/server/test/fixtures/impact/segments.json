@@ -1,0 +1,282 @@
+[
+  {
+    "id": 101,
+    "name": "beta_testers",
+    "rules": [
+      {
+        "type": "ALL",
+        "rules": [
+          {
+            "type": "ANY",
+            "rules": [],
+            "conditions": [
+              {
+                "operator": "EQUAL",
+                "property_": "is_beta",
+                "value": "true"
+              }
+            ]
+          }
+        ],
+        "conditions": []
+      }
+    ]
+  },
+  {
+    "id": 102,
+    "name": "enterprise_accounts",
+    "rules": [
+      {
+        "type": "ALL",
+        "rules": [
+          {
+            "type": "ANY",
+            "rules": [],
+            "conditions": [
+              {
+                "operator": "IN",
+                "property_": "plan",
+                "value": "enterprise,business"
+              }
+            ]
+          }
+        ],
+        "conditions": []
+      }
+    ]
+  },
+  {
+    "id": 103,
+    "name": "eu_customers",
+    "rules": [
+      {
+        "type": "ALL",
+        "rules": [
+          {
+            "type": "ANY",
+            "rules": [],
+            "conditions": [
+              {
+                "operator": "IN",
+                "property_": "country",
+                "value": "[\"DE\",\"FR\",\"ES\",\"IT\",\"NL\"]"
+              }
+            ]
+          }
+        ],
+        "conditions": []
+      }
+    ]
+  },
+  {
+    "id": 104,
+    "name": "power_buyers",
+    "rules": [
+      {
+        "type": "ALL",
+        "rules": [
+          {
+            "type": "ANY",
+            "rules": [],
+            "conditions": [
+              {
+                "operator": "GREATER_THAN_INCLUSIVE",
+                "property_": "orders",
+                "value": "20"
+              }
+            ]
+          }
+        ],
+        "conditions": []
+      }
+    ]
+  },
+  {
+    "id": 105,
+    "name": "mobile_app_v2",
+    "rules": [
+      {
+        "type": "ALL",
+        "rules": [
+          {
+            "type": "ANY",
+            "rules": [],
+            "conditions": [
+              {
+                "operator": "EQUAL",
+                "property_": "platform",
+                "value": "ios"
+              },
+              {
+                "operator": "EQUAL",
+                "property_": "platform",
+                "value": "android"
+              }
+            ]
+          },
+          {
+            "type": "ALL",
+            "rules": [],
+            "conditions": [
+              {
+                "operator": "GREATER_THAN_INCLUSIVE",
+                "property_": "app_version",
+                "value": "2.0.0:semver"
+              }
+            ]
+          }
+        ],
+        "conditions": []
+      }
+    ]
+  },
+  {
+    "id": 106,
+    "name": "internal_staff",
+    "rules": [
+      {
+        "type": "ALL",
+        "rules": [
+          {
+            "type": "ANY",
+            "rules": [],
+            "conditions": [
+              {
+                "operator": "REGEX",
+                "property_": "email",
+                "value": ".*@flagsmith\\.com$"
+              }
+            ]
+          }
+        ],
+        "conditions": []
+      }
+    ]
+  },
+  {
+    "id": 107,
+    "name": "ten_percent_rollout",
+    "rules": [
+      {
+        "type": "ALL",
+        "rules": [
+          {
+            "type": "ANY",
+            "rules": [],
+            "conditions": [
+              {
+                "operator": "PERCENTAGE_SPLIT",
+                "property_": null,
+                "value": "10"
+              }
+            ]
+          }
+        ],
+        "conditions": []
+      }
+    ]
+  },
+  {
+    "id": 108,
+    "name": "dormant_users",
+    "rules": [
+      {
+        "type": "ALL",
+        "rules": [
+          {
+            "type": "ANY",
+            "rules": [],
+            "conditions": [
+              {
+                "operator": "GREATER_THAN",
+                "property_": "last_seen_days",
+                "value": "90"
+              }
+            ]
+          },
+          {
+            "type": "NONE",
+            "rules": [],
+            "conditions": [
+              {
+                "operator": "EQUAL",
+                "property_": "is_beta",
+                "value": "true"
+              }
+            ]
+          }
+        ],
+        "conditions": []
+      }
+    ]
+  },
+  {
+    "id": 109,
+    "name": "no_country",
+    "rules": [
+      {
+        "type": "ALL",
+        "rules": [
+          {
+            "type": "ANY",
+            "rules": [],
+            "conditions": [
+              {
+                "operator": "IS_NOT_SET",
+                "property_": "country",
+                "value": null
+              }
+            ]
+          }
+        ],
+        "conditions": []
+      }
+    ]
+  },
+  {
+    "id": 110,
+    "name": "odd_user_ids",
+    "rules": [
+      {
+        "type": "ALL",
+        "rules": [
+          {
+            "type": "ANY",
+            "rules": [],
+            "conditions": [
+              {
+                "operator": "MODULO",
+                "property_": "user_id",
+                "value": "2|1"
+              }
+            ]
+          }
+        ],
+        "conditions": []
+      }
+    ]
+  },
+  {
+    "id": 111,
+    "name": "qa_allowlist",
+    "rules": [
+      {
+        "type": "ALL",
+        "rules": [
+          {
+            "type": "ANY",
+            "rules": [],
+            "conditions": [
+              {
+                "operator": "IN",
+                "property_": "$.identity.identifier",
+                "value": "user_00003,user_00011,user_00042"
+              }
+            ]
+          }
+        ],
+        "conditions": []
+      }
+    ]
+  }
+]

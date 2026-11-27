@@ -1,0 +1,127 @@
+[
+  {
+    "title": "Enable new_checkout in the environment default",
+    "featureId": 300001,
+    "body": {
+      "environment_default": {
+        "enabled": true,
+        "value": null
+      }
+    }
+  },
+  {
+    "title": "holiday_banner: add a power_buyers override ranked above dormant_users",
+    "featureId": 300003,
+    "body": {
+      "environment_default": {
+        "enabled": true,
+        "value": {
+          "type": "string",
+          "value": "Winter Sale"
+        }
+      },
+      "segment_overrides": [
+        {
+          "segment": {
+            "id": 103
+          },
+          "priority": 0,
+          "enabled": true,
+          "value": {
+            "type": "string",
+            "value": "Winterschlussverkauf"
+          }
+        },
+        {
+          "segment": {
+            "id": 104
+          },
+          "priority": 1,
+          "enabled": true,
+          "value": {
+            "type": "string",
+            "value": "VIP Winter Sale"
+          }
+        },
+        {
+          "segment": {
+            "id": 108
+          },
+          "priority": 2,
+          "enabled": false,
+          "value": {
+            "type": "string",
+            "value": "Winter Sale"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "title": "recommendations_v2: re-weight the splits and add a mobile_app_v2 split",
+    "featureId": 300005,
+    "body": {
+      "environment_default": {
+        "enabled": true,
+        "value": {
+          "type": "string",
+          "value": "v1"
+        },
+        "variants": [
+          {
+            "id": 201,
+            "weight": 50
+          },
+          {
+            "id": 202,
+            "weight": 10
+          }
+        ]
+      },
+      "segment_overrides": [
+        {
+          "segment": {
+            "id": 102
+          },
+          "priority": 1,
+          "enabled": true,
+          "value": {
+            "type": "string",
+            "value": "v1"
+          },
+          "variants": [
+            {
+              "id": 201,
+              "weight": 30
+            },
+            {
+              "id": 202,
+              "weight": 70
+            }
+          ]
+        },
+        {
+          "segment": {
+            "id": 105
+          },
+          "priority": 2,
+          "enabled": true,
+          "value": {
+            "type": "string",
+            "value": "v1"
+          },
+          "variants": [
+            {
+              "id": 201,
+              "weight": 0
+            },
+            {
+              "id": 202,
+              "weight": 50
+            }
+          ]
+        }
+      ]
+    }
+  }
+]
