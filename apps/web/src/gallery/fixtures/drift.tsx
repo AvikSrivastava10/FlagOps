@@ -1,4 +1,6 @@
+import { DiffView } from '../../components/DiffView';
 import type { TimetableEnvironment, TimetableRow } from '../../components/timetable-data';
+import styles from '../gallery.module.css';
 
 export const driftEnvironments: readonly TimetableEnvironment[] = [
   { id: 'development', name: 'Development' },
@@ -35,10 +37,43 @@ export const driftRows: readonly TimetableRow[] = [
       },
       { category: 'aligned', href: promote('admin_reports', 'staging', 'production') },
     ],
-    detail: detail([
-      'Segment staff: overridden in Staging and Production, not in Development (one-sided)',
-      'serves more later since 2026-11-26 09:14',
-    ]),
+    // The expanded row as the drift screen composes it: the rule-by-rule comparison of the
+    // drifting pair, then the observation history (ui-design.md 6.5).
+    detail: (
+      <div className={styles.stack}>
+        <DiffView
+          mode="config"
+          caption="admin_reports, Development to Staging, rule by rule"
+          sourceName="Development"
+          targetName="Staging"
+          fields={[
+            {
+              id: 'enabled',
+              label: 'Enabled',
+              source: { text: 'OFF' },
+              target: { text: 'OFF' },
+              changed: false,
+            },
+            {
+              id: 'segment-staff',
+              label: 'Segment override: staff',
+              source: null,
+              target: { text: 'priority 0 · ON · role = "staff"', mono: true },
+              changed: true,
+              note: 'one-sided: only in Staging and Production',
+            },
+            {
+              id: 'identities',
+              label: 'Identity overrides',
+              source: { text: '0' },
+              target: { text: '0' },
+              changed: false,
+            },
+          ]}
+        />
+        {detail(['serves more later since 2026-11-26 09:14', 'aligned before 2026-11-26 09:14'])}
+      </div>
+    ),
   },
   {
     id: 'dark_mode',

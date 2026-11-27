@@ -62,6 +62,21 @@ async function saveShots(page: Page, element: Locator, name: string) {
   }
 }
 
+/** Sets the viewport width, then lets the media queries report and React render the new layout. */
+async function resize(page: Page, width: number) {
+  await page.setViewportSize({ width, height: 900 });
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            resolve();
+          });
+        });
+      }),
+  );
+}
+
 test.describe('gallery', () => {
   test.beforeEach(async ({ page }) => {
     await openGallery(page);
@@ -234,6 +249,83 @@ test.describe('gallery', () => {
     await page.keyboard.press('Home');
     await expect(plate('new')).toBeFocused();
     await page.screenshot(shot('board-keyboard'));
+  });
+
+  test('a timetable row expands to its comparison and history', async ({ page }) => {
+    // The table on wide screens and the stacked blocks on narrow ones name the flag alike.
+    const state = page.locator('[data-gallery-state="Every drift category"]');
+    const show = state.getByRole('button', { name: 'Show the comparison for admin_reports' });
+    const detailId = (await show.getAttribute('aria-controls')) ?? '';
+    const toggle = state.locator(`[aria-controls="${detailId}"]`);
+    await toggle.click();
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    await expect(toggle).toHaveAccessibleName('Hide the comparison for admin_reports');
+    const detail = page.locator(`[id="${detailId}"]`);
+    await expect(detail).toBeVisible();
+    await expect(detail).toContainText('Segment override: staff');
+    await expect(detail).toContainText('serves more later since 2026-11-26 09:14');
+    await page.mouse.move(0, 0);
+    await saveShots(page, state, 'timetable-expanded');
+  });
+
+  test('the timetable moves focus with the arrow keys', async ({ page }) => {
+    test.skip(test.info().project.name === 'narrow', 'Narrow screens get blocks in tab order.');
+    const table = page.locator('[data-gallery-state="Every drift category"] [data-timetable]');
+    // Each row: the toggle, the flag, then the cells with a gutter between each pair (0 to 6).
+    const item = (row: number, position: number) =>
+      table.locator(`[data-roving="${row}:${position}"]`);
+    await expect(table.locator('[tabindex="0"]')).toHaveCount(1);
+    await item(0, 0).focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(item(0, 1)).toBeFocused();
+    await page.keyboard.press('ArrowRight');
+    await expect(item(0, 2)).toBeFocused();
+    await page.keyboard.press('ArrowDown');
+    await expect(item(1, 2)).toBeFocused();
+    // dark_mode is aligned from Development to Staging: the focused gutter shows its word.
+    const aligned = item(1, 3).locator('[data-focus-label]');
+    await expect(aligned).toBeHidden();
+    await page.keyboard.press('ArrowRight');
+    await expect(item(1, 3)).toBeFocused();
+    await expect(aligned).toBeVisible();
+    await expect(aligned).toHaveText('aligned');
+    await page.screenshot(shot('timetable-aligned-focus'));
+    await page.keyboard.press('End');
+    await expect(item(1, 6)).toBeFocused();
+    await page.keyboard.press('Home');
+    await expect(item(1, 0)).toBeFocused();
+    await page.keyboard.press('Control+End');
+    await expect(item(4, 6)).toBeFocused();
+    await page.keyboard.press('Control+Home');
+    await expect(item(0, 0)).toBeFocused();
+    await page.keyboard.press('ArrowUp');
+    await expect(item(0, 0)).toBeFocused();
+    await expect(table.locator('[tabindex="0"]')).toHaveCount(1);
+  });
+
+  test('the page does not scroll sideways at 320px or at 200% zoom', async ({ page }) => {
+    test.skip(test.info().project.name === 'narrow', 'The test sets its own widths.');
+    // 320px is the narrowest width of ui-design.md 8; 720px is the 1440px window at 200% zoom.
+    for (const width of [320, 720]) {
+      await resize(page, width);
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      );
+      expect(overflow, `${width}px`).toBeLessThanOrEqual(0);
+      const clipped = await page
+        .locator('[data-flag-entry] [data-flag-name]')
+        .evaluateAll((names) =>
+          names
+            .filter((name) => name.scrollWidth > name.clientWidth)
+            .map((name) => name.textContent),
+        );
+      expect(clipped, `${width}px`).toEqual([]);
+    }
+    await resize(page, 320);
+    for (const section of await page.locator('[data-gallery-section]').all()) {
+      const id = await section.getAttribute('data-gallery-section');
+      await saveShots(page, section, `w320-section-${id ?? 'unknown'}`);
+    }
   });
 
   test('the confirm gate enables Apply only for the exact typed name', async ({ page }) => {
