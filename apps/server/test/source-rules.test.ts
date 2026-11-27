@@ -11,7 +11,9 @@ import { describe, expect, it } from 'vitest';
  *   metadata an update leaves out (architecture.md 6.5);
  * - only `flagsmith/flag-api.ts` calls the experimental `/api/__future__/` routes;
  * - only `impact/engine/` names an `@flagsmith/` module, because ESLint's
- *   `no-restricted-imports` sees static imports only (S2 review #1).
+ *   `no-restricted-imports` sees static imports only (S2 review #1). The matcher's
+ *   `sdk-modules.ts` names the packages too, as data it matches import specifiers against, and
+ *   loads no module at all.
  * Tests under `apps/server/test/` are outside the rule: a live test sends a raw PATCH on purpose.
  */
 const sourceRoot = fileURLToPath(new URL('../src/', import.meta.url));
@@ -59,6 +61,8 @@ function offenders(test: (value: string) => boolean, allowed: (name: string) => 
 const featureDetail = /\/projects\/(\{project_pk\}|\$\{\})\/features\/(\{id\}|\$\{\})\/?$/;
 const futureApi = (value: string) => value.includes('/api/__future__/');
 const flagsmithModule = (value: string) => value.startsWith('@flagsmith/');
+/** The matcher's SDK knowledge names the packages as data (codemod REPORT 7.1, rule 2). */
+const sdkData = 'matcher/sdk-modules.ts';
 
 describe('source rules of structure.md section 2', () => {
   it('finds the server sources', () => {
@@ -79,7 +83,33 @@ describe('source rules of structure.md section 2', () => {
   });
 
   it('lets only impact/engine/ name an @flagsmith/ module, statically or dynamically', () => {
-    expect(offenders(flagsmithModule, (name) => name.startsWith('impact/engine/'))).toEqual([]);
+    expect(
+      offenders(flagsmithModule, (name) => name.startsWith('impact/engine/') || name === sdkData),
+    ).toEqual([]);
+  });
+
+  it('keeps the matcher SDK package names as data: matcher/sdk-modules.ts loads no module', () => {
+    const code = readFileSync(path.join(sourceRoot, sdkData), 'utf8');
+    const source = ts.createSourceFile(sdkData, code, ts.ScriptTarget.Latest, true);
+    const loads: string[] = [];
+    const visit = (node: ts.Node): void => {
+      if (ts.isImportDeclaration(node) || ts.isImportEqualsDeclaration(node)) {
+        loads.push(node.getText(source));
+      }
+      if (ts.isCallExpression(node)) {
+        const callee = node.expression;
+        const isLoader =
+          callee.kind === ts.SyntaxKind.ImportKeyword ||
+          (ts.isIdentifier(callee) && ['require', 'createRequire'].includes(callee.text));
+        if (isLoader) {
+          loads.push(node.getText(source));
+        }
+      }
+      ts.forEachChild(node, visit);
+    };
+    visit(source);
+
+    expect(loads).toEqual([]);
   });
 
   it('catches dynamic imports, require calls and template literals, and ignores comments', () => {

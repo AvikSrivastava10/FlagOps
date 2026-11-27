@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "accessors": [
+    { "kind": "function", "module": "src/flags/missing.ts", "export": "isOn", "reads": "enabled" },
+    { "kind": "function", "module": "src/flags/real.ts", "export": "isOff", "reads": "enabled" },
+    { "kind": "function", "module": "src/flags/real.ts", "export": "isOn", "reads": "enabled" },
+    {
+      "kind": "component",
+      "module": "src/flags/Feature.tsx",
+      "export": "Feature",
+      "nameProp": "name",
+      "renders": "children"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "accessors": [
+    { "kind": "function", "module": "src/flags/isOn.ts", "export": "isOn", "reads": "enabled", "nameArg": 0 },
+    {
+      "kind": "method",
+      "module": "src/flags/feature.service.ts",
+      "export": "FeatureService",
+      "method": "isOn",
+      "reads": "enabled",
+      "nameArg": 0,
+      "await": true
+    },
+    { "kind": "hook", "module": "src/flags/useFeature.ts", "export": "useFeature", "reads": "enabled", "nameArg": 0 },
+    {
+      "kind": "hook-result",
+      "module": "src/flags/useFlagChecks.ts",
+      "export": "useFlagChecks",
+      "member": "isEnabled",
+      "reads": "enabled",
+      "nameArg": 0
+    }
+  ],
+  "clients": [{ "expression": "$flags", "sdk": "client" }]
+}

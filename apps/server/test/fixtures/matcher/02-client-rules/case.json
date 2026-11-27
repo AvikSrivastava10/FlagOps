@@ -1,0 +1,20 @@
+{
+  "description": "C1-C3 and R1-R3; scoped, legacy, React Native and ESM module names, a .js subpath, a deep type-only import, and mixed-case and spaced client keys",
+  "flags": ["new_checkout", "dark_mode", "seat_limit", "search_ranking"],
+  "expect": {
+    "records": [
+      { "kind": "reference", "flag": "dark_mode", "file": "src/esm.tsx", "line": 5, "rule": "R1" },
+      { "kind": "reference", "flag": "new_checkout", "file": "src/esm.tsx", "line": 6, "rule": "C1" },
+      { "kind": "reference", "flag": "dark_mode", "file": "src/legacy.ts", "line": 4, "rule": "C1" },
+      { "kind": "reference", "flag": "seat_limit", "file": "src/native.ts", "line": 4, "rule": "C2" },
+      { "kind": "reference", "flag": "dark_mode", "file": "src/native.ts", "line": 5, "rule": "C1" },
+      { "kind": "reference", "flag": "new_checkout", "file": "src/register.jsx", "line": 5, "rule": "C1" },
+      { "kind": "reference", "flag": "new_checkout", "file": "src/scoped.tsx", "line": 5, "rule": "R1" },
+      { "kind": "reference", "flag": "dark_mode", "file": "src/scoped.tsx", "line": 6, "rule": "R2" },
+      { "kind": "reference", "flag": "search_ranking", "file": "src/scoped.tsx", "line": 7, "rule": "R3" },
+      { "kind": "reference", "flag": "new_checkout", "file": "src/scoped.tsx", "line": 8, "rule": "C1" },
+      { "kind": "reference", "flag": "seat_limit", "file": "src/scoped.tsx", "line": 9, "rule": "C2" },
+      { "kind": "reference", "flag": "search_ranking", "file": "src/scoped.tsx", "line": 10, "rule": "C3" }
+    ]
+  }
+}

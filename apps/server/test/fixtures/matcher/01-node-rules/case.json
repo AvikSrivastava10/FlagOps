@@ -1,0 +1,14 @@
+{
+  "description": "N1-N4 on a traced Node client and Flags object, Node's exact names, and a package context taken from an ancestor package.json",
+  "flags": ["new_checkout", "seat_limit", "promo_banner", "search_ranking"],
+  "expect": {
+    "records": [
+      { "kind": "reference", "flag": "new_checkout", "file": "services/api/src/routes.ts", "line": 5, "rule": "N1" },
+      { "kind": "reference", "flag": "seat_limit", "file": "services/api/src/routes.ts", "line": 6, "rule": "N2" },
+      { "kind": "reference", "flag": "promo_banner", "file": "services/api/src/routes.ts", "line": 7, "rule": "N3" },
+      { "kind": "reference", "flag": "search_ranking", "file": "services/api/src/routes.ts", "line": 8, "rule": "N4" },
+      { "kind": "unresolved_name", "flag": "New_Checkout", "file": "services/api/src/routes.ts", "line": 9, "rule": "N1", "traced": false, "suggestion": "new_checkout" },
+      { "kind": "reference", "flag": "new_checkout", "file": "services/api/src/routes.ts", "line": 10, "rule": "N1", "traced": false }
+    ]
+  }
+}

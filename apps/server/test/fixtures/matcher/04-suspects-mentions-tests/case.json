@@ -1,0 +1,19 @@
+{
+  "description": "Unattributed calls on an untraced receiver, a dynamic name, mentions in code and defaultFlags (D1), and test-like files: __tests__, __mocks__, cypress and a *.__test__.* file that stands for *.test.*",
+  "flags": ["new_checkout", "dark_mode"],
+  "expect": {
+    "records": [
+      { "kind": "test_mention", "flag": "new_checkout", "file": "cypress/e2e/checkout.cy.ts", "line": 2, "rule": "mention" },
+      { "kind": "test_mention", "flag": "dark_mode", "file": "src/__mocks__/flagsmith.ts", "line": 1, "rule": "mention" },
+      { "kind": "test_reference", "flag": "new_checkout", "file": "src/__tests__/app.ts", "line": 3, "rule": "C1" },
+      { "kind": "test_reference", "flag": "new_checkout", "file": "src/Checkout.test.tsx", "line": 3, "rule": "R2" },
+      { "kind": "mention", "flag": "new_checkout", "file": "src/defaults.ts", "line": 5, "rule": "D1", "traced": true },
+      { "kind": "dynamic", "flag": null, "file": "src/dynamic.ts", "line": 4, "rule": "C1" },
+      { "kind": "mention", "flag": "dark_mode", "file": "src/labels.ts", "line": 1, "rule": "mention" },
+      { "kind": "mention", "flag": "dark_mode", "file": "src/labels.ts", "line": 1, "rule": "mention" },
+      { "kind": "mention", "flag": "new_checkout", "file": "src/untraced.ts", "line": 3, "rule": "mention" },
+      { "kind": "unattributed", "flag": "new_checkout", "file": "src/untraced.ts", "line": 3, "rule": "unattributed" },
+      { "kind": "unattributed", "flag": null, "file": "src/untraced.ts", "line": 4, "rule": "unattributed" }
+    ]
+  }
+}

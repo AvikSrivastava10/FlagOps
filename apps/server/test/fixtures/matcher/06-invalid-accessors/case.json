@@ -1,0 +1,28 @@
+{
+  "description": "flagops.json entries that are rejected with their reason: a missing module, a missing export, a body that never passes the name to a Flagsmith read, and the component kind, which is not matched yet. Calls to rejected accessors stay unmatched, so their names count as mentions",
+  "flags": ["new_checkout"],
+  "accessorRules": [],
+  "accessorProblems": [
+    {
+      "entry": "accessors[0] (function isOn in src/flags/missing.ts)",
+      "reason": "The module src/flags/missing.ts is not among the scanned files."
+    },
+    {
+      "entry": "accessors[1] (function isOff in src/flags/real.ts)",
+      "reason": "src/flags/real.ts has no export named isOff."
+    },
+    {
+      "entry": "accessors[2] (function isOn in src/flags/real.ts)",
+      "reason": "isOn in src/flags/real.ts does not pass parameter 1 to a Flagsmith read or to another configured accessor."
+    },
+    {
+      "entry": "accessors[3] (component Feature in src/flags/Feature.tsx)",
+      "reason": "Component accessors are not matched yet, so the flag names passed to them count as mentions."
+    }
+  ],
+  "expect": {
+    "records": [
+      { "kind": "mention", "flag": "new_checkout", "file": "src/App.tsx", "line": 3, "rule": "mention" }
+    ]
+  }
+}

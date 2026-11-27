@@ -1,0 +1,14 @@
+{
+  "name": "storefront",
+  "private": true,
+  "dependencies": {
+    "@flagsmith/flagsmith": "12.6.0",
+    "@flagsmith/react-native": "12.6.0",
+    "flagsmith": "10.0.0",
+    "flagsmith-es": "8.0.3",
+    "react-native-flagsmith": "10.0.0"
+  },
+  "devDependencies": {
+    "flagsmith-nodejs": "8.1.2"
+  }
+}

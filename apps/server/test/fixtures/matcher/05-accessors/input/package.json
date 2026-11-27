@@ -1,0 +1,8 @@
+{
+  "name": "store",
+  "private": true,
+  "dependencies": {
+    "@flagsmith/flagsmith": "12.6.0",
+    "@flagsmith/nodejs": "9.5.0"
+  }
+}

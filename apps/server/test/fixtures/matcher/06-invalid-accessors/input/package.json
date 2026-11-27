@@ -1,0 +1,7 @@
+{
+  "name": "admin",
+  "private": true,
+  "dependencies": {
+    "@flagsmith/flagsmith": "12.6.0"
+  }
+}

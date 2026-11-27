@@ -1,0 +1,23 @@
+{
+  "description": "The priority-1 accessor kinds of flagops.json (function, awaited method on a typed field and on a local instance, hook, hook-result destructured and as a member), matched through an import and a re-export; a configured clients receiver; a look-alike isOn that is not bound to the accessor; and no dynamic record for the accessors' own reads",
+  "flags": ["new_checkout", "dark_mode", "export_csv", "fraud_check_v2", "promo_banner", "similar_items"],
+  "accessorRules": [
+    "via-accessor:function:src/flags/isOn.ts#isOn",
+    "via-accessor:hook-result:src/flags/useFlagChecks.ts#useFlagChecks",
+    "via-accessor:hook:src/flags/useFeature.ts#useFeature",
+    "via-accessor:method:src/flags/feature.service.ts#FeatureService"
+  ],
+  "expect": {
+    "records": [
+      { "kind": "reference", "flag": "new_checkout", "file": "src/App.tsx", "line": 6, "rule": "via-accessor:function:src/flags/isOn.ts#isOn" },
+      { "kind": "reference", "flag": "dark_mode", "file": "src/App.tsx", "line": 7, "rule": "via-accessor:hook:src/flags/useFeature.ts#useFeature" },
+      { "kind": "reference", "flag": "dark_mode", "file": "src/App.tsx", "line": 8, "rule": "via-accessor:hook:src/flags/useFeature.ts#useFeature" },
+      { "kind": "reference", "flag": "export_csv", "file": "src/App.tsx", "line": 10, "rule": "via-accessor:hook-result:src/flags/useFlagChecks.ts#useFlagChecks" },
+      { "kind": "reference", "flag": "export_csv", "file": "src/App.tsx", "line": 12, "rule": "via-accessor:hook-result:src/flags/useFlagChecks.ts#useFlagChecks" },
+      { "kind": "mention", "flag": "new_checkout", "file": "src/lookalike.ts", "line": 5, "rule": "mention" },
+      { "kind": "reference", "flag": "similar_items", "file": "src/nuxt.ts", "line": 5, "rule": "C1" },
+      { "kind": "reference", "flag": "fraud_check_v2", "file": "src/orders/orders.service.ts", "line": 7, "rule": "via-accessor:method:src/flags/feature.service.ts#FeatureService" },
+      { "kind": "reference", "flag": "promo_banner", "file": "src/orders/orders.service.ts", "line": 11, "rule": "via-accessor:method:src/flags/feature.service.ts#FeatureService" }
+    ]
+  }
+}
