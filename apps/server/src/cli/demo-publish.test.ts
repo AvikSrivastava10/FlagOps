@@ -169,6 +169,34 @@ describe('publishDemoShop', () => {
     expect(github.requests).toEqual([]);
   });
 
+  it('reports the 403 that DEMO_REPO sent on its first write, and writes nothing', async () => {
+    const header = 'contents=write; contents=write,workflows=write';
+    github.addRepository(repository);
+    github.failNext(
+      { method: 'PUT', path: /\/contents\/README\.md$/ },
+      {
+        status: 403,
+        headers: { 'x-accepted-github-permissions': header },
+        body: { message: 'Resource not accessible by personal access token' },
+      },
+    );
+
+    const error: unknown = await publish().catch((caught: unknown) => caught);
+
+    expect(error).toMatchObject({
+      code: 'github_missing_permission',
+      details: { status: 403, permissions: header },
+    });
+    expect(String(error)).toContain(
+      'GITHUB_TOKEN needs contents=write, or contents=write and workflows=write.',
+    );
+    expect(github.head(repository)).toBeUndefined();
+    const writes = github.requests.filter((request) => request.method !== 'GET');
+    expect(writes.map((request) => `${request.method} ${request.path}`)).toEqual([
+      `PUT /repos/${repository}/contents/README.md`,
+    ]);
+  });
+
   it('stops at a missing token permission and leaves the branch and pull requests as they were', async () => {
     github.addRepository(repository, { files: { 'README.md': '# Demo shop\n' } });
     const before = github.head(repository);
