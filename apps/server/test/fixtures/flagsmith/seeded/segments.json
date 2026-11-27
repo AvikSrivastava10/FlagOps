@@ -1,0 +1,83 @@
+{
+  "count": 2,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "id": 1,
+      "uuid": "f3b2e436-1ba0-4127-b1d4-c203751ac76b",
+      "created_at": "2026-11-27T12:52:21.725481Z",
+      "updated_at": "2026-11-27T12:52:21.745675Z",
+      "name": "beta_testers",
+      "description": "Customers in the beta programme",
+      "project": 1,
+      "feature": null,
+      "version_of": 1,
+      "rules": [
+        {
+          "id": 1,
+          "type": "ALL",
+          "rules": [
+            {
+              "id": 2,
+              "type": "ANY",
+              "conditions": [
+                {
+                  "id": 1,
+                  "operator": "EQUAL",
+                  "property": "beta",
+                  "value": "true",
+                  "description": null
+                }
+              ]
+            }
+          ],
+          "conditions": []
+        }
+      ],
+      "metadata": [],
+      "membership_counts": [],
+      "managed_by": "",
+      "cohort": null,
+      "has_overrides": true
+    },
+    {
+      "id": 2,
+      "uuid": "04580fe2-07df-4b32-ad13-2c439895a074",
+      "created_at": "2026-11-27T12:52:22.099305Z",
+      "updated_at": "2026-11-27T12:52:22.108089Z",
+      "name": "staff",
+      "description": "Shop staff",
+      "project": 1,
+      "feature": null,
+      "version_of": 2,
+      "rules": [
+        {
+          "id": 3,
+          "type": "ALL",
+          "rules": [
+            {
+              "id": 4,
+              "type": "ANY",
+              "conditions": [
+                {
+                  "id": 2,
+                  "operator": "EQUAL",
+                  "property": "role",
+                  "value": "staff",
+                  "description": null
+                }
+              ]
+            }
+          ],
+          "conditions": []
+        }
+      ],
+      "metadata": [],
+      "membership_counts": [],
+      "managed_by": "",
+      "cohort": null,
+      "has_overrides": true
+    }
+  ]
+}

@@ -1,0 +1,510 @@
+{
+  "count": 10,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "id": 1,
+      "name": "new_checkout",
+      "type": "STANDARD",
+      "default_enabled": false,
+      "initial_value": null,
+      "created_date": "2026-11-27T12:52:22.694739Z",
+      "description": "Single-page checkout that replaces the multi-step legacy checkout.\nFlagOps: release · remove by 2026-11-21",
+      "tags": [
+        1
+      ],
+      "multivariate_options": [],
+      "is_archived": false,
+      "owners": [],
+      "group_owners": [],
+      "uuid": "4627837d-c223-463d-bb44-627dc0e40671",
+      "project": 1,
+      "environment_feature_state": {
+        "id": 44,
+        "feature_state_value": null,
+        "environment": 3,
+        "identity": null,
+        "feature_segment": null,
+        "enabled": true
+      },
+      "segment_feature_state": null,
+      "num_segment_overrides": 0,
+      "num_identity_overrides": null,
+      "is_num_identity_overrides_complete": true,
+      "is_server_key_only": false,
+      "last_modified_in_any_environment": "2026-11-27T12:55:00.293197+00:00",
+      "last_modified_in_current_environment": "2026-11-27T12:55:00.293197+00:00",
+      "metadata": [
+        {
+          "id": 1,
+          "model_field": 1,
+          "field_value": "release"
+        },
+        {
+          "id": 2,
+          "model_field": 2,
+          "field_value": "2026-11-21"
+        },
+        {
+          "id": 3,
+          "model_field": 3,
+          "field_value": "Keep the new checkout as the only path, delete LegacyCheckout and legacyTotals, then archive the flag."
+        }
+      ],
+      "code_references_counts": [],
+      "lifecycle_stage": "new"
+    },
+    {
+      "id": 2,
+      "name": "dark_mode",
+      "type": "STANDARD",
+      "default_enabled": false,
+      "initial_value": null,
+      "created_date": "2026-11-27T12:52:23.271170Z",
+      "description": "Dark colour theme for the shop.\nFlagOps: release · remove by 2026-11-02",
+      "tags": [
+        1
+      ],
+      "multivariate_options": [],
+      "is_archived": false,
+      "owners": [],
+      "group_owners": [],
+      "uuid": "7ddcf20e-c4fb-4276-b117-515181db63d8",
+      "project": 1,
+      "environment_feature_state": {
+        "id": 45,
+        "feature_state_value": null,
+        "environment": 3,
+        "identity": null,
+        "feature_segment": null,
+        "enabled": false
+      },
+      "segment_feature_state": null,
+      "num_segment_overrides": 1,
+      "num_identity_overrides": 3,
+      "is_num_identity_overrides_complete": true,
+      "is_server_key_only": false,
+      "last_modified_in_any_environment": "2026-11-27T12:55:01.184328+00:00",
+      "last_modified_in_current_environment": "2026-11-27T12:55:01.184328+00:00",
+      "metadata": [
+        {
+          "id": 4,
+          "model_field": 1,
+          "field_value": "release"
+        },
+        {
+          "id": 5,
+          "model_field": 2,
+          "field_value": "2026-11-02"
+        },
+        {
+          "id": 6,
+          "model_field": 3,
+          "field_value": "Roll dark mode out to everyone in Production, then remove the flag checks."
+        }
+      ],
+      "code_references_counts": [],
+      "lifecycle_stage": "new"
+    },
+    {
+      "id": 3,
+      "name": "holiday_banner",
+      "type": "STANDARD",
+      "default_enabled": false,
+      "initial_value": null,
+      "created_date": "2026-11-27T12:52:23.641276Z",
+      "description": "Seasonal banner on the home page.\nFlagOps: release · remove by 2026-01-11",
+      "tags": [
+        1
+      ],
+      "multivariate_options": [],
+      "is_archived": false,
+      "owners": [],
+      "group_owners": [],
+      "uuid": "30598939-8624-4071-86cd-8bca8be8b4bc",
+      "project": 1,
+      "environment_feature_state": {
+        "id": 9,
+        "feature_state_value": null,
+        "environment": 3,
+        "identity": null,
+        "feature_segment": null,
+        "enabled": false
+      },
+      "segment_feature_state": null,
+      "num_segment_overrides": 0,
+      "num_identity_overrides": null,
+      "is_num_identity_overrides_complete": true,
+      "is_server_key_only": false,
+      "last_modified_in_any_environment": "2026-11-27T12:52:23.724975+00:00",
+      "last_modified_in_current_environment": "2026-11-27T12:52:23.724975+00:00",
+      "metadata": [
+        {
+          "id": 7,
+          "model_field": 1,
+          "field_value": "release"
+        },
+        {
+          "id": 8,
+          "model_field": 2,
+          "field_value": "2026-01-11"
+        },
+        {
+          "id": 9,
+          "model_field": 3,
+          "field_value": "The campaign is over: delete HolidayBanner and its check, then archive the flag."
+        }
+      ],
+      "code_references_counts": [],
+      "lifecycle_stage": "new"
+    },
+    {
+      "id": 4,
+      "name": "payments_kill_switch",
+      "type": "STANDARD",
+      "default_enabled": false,
+      "initial_value": null,
+      "created_date": "2026-11-27T12:52:24.037647Z",
+      "description": "Turns card payments off during a payment-provider incident.\nFlagOps: ops · permanent",
+      "tags": [
+        3
+      ],
+      "multivariate_options": [],
+      "is_archived": false,
+      "owners": [],
+      "group_owners": [],
+      "uuid": "f950317e-8843-49e0-9832-58f9ae741da8",
+      "project": 1,
+      "environment_feature_state": {
+        "id": 12,
+        "feature_state_value": null,
+        "environment": 3,
+        "identity": null,
+        "feature_segment": null,
+        "enabled": false
+      },
+      "segment_feature_state": null,
+      "num_segment_overrides": 0,
+      "num_identity_overrides": null,
+      "is_num_identity_overrides_complete": true,
+      "is_server_key_only": false,
+      "last_modified_in_any_environment": "2026-11-27T12:52:24.100196+00:00",
+      "last_modified_in_current_environment": "2026-11-27T12:52:24.100196+00:00",
+      "metadata": [
+        {
+          "id": 10,
+          "model_field": 1,
+          "field_value": "ops"
+        },
+        {
+          "id": 11,
+          "model_field": 3,
+          "field_value": "Permanent: keep this switch for incidents."
+        }
+      ],
+      "code_references_counts": [],
+      "lifecycle_stage": "permanent"
+    },
+    {
+      "id": 5,
+      "name": "admin_reports",
+      "type": "STANDARD",
+      "default_enabled": false,
+      "initial_value": null,
+      "created_date": "2026-11-27T12:52:24.332829Z",
+      "description": "Sales reports in the admin area, for staff only.\nFlagOps: permission · permanent",
+      "tags": [
+        4
+      ],
+      "multivariate_options": [],
+      "is_archived": false,
+      "owners": [],
+      "group_owners": [],
+      "uuid": "b10cb522-cd62-4b63-83d7-8ed05349d88b",
+      "project": 1,
+      "environment_feature_state": {
+        "id": 47,
+        "feature_state_value": null,
+        "environment": 3,
+        "identity": null,
+        "feature_segment": null,
+        "enabled": false
+      },
+      "segment_feature_state": null,
+      "num_segment_overrides": 1,
+      "num_identity_overrides": null,
+      "is_num_identity_overrides_complete": true,
+      "is_server_key_only": false,
+      "last_modified_in_any_environment": "2026-11-27T12:55:02.698499+00:00",
+      "last_modified_in_current_environment": "2026-11-27T12:55:02.698499+00:00",
+      "metadata": [
+        {
+          "id": 12,
+          "model_field": 1,
+          "field_value": "permission"
+        },
+        {
+          "id": 13,
+          "model_field": 3,
+          "field_value": "Permanent: staff-only access to reports."
+        }
+      ],
+      "code_references_counts": [],
+      "lifecycle_stage": "permanent"
+    },
+    {
+      "id": 6,
+      "name": "recommendations_v2",
+      "type": "MULTIVARIATE",
+      "default_enabled": false,
+      "initial_value": "control",
+      "created_date": "2026-11-27T12:52:24.666214Z",
+      "description": "Experiment: second-generation product recommendations.\nFlagOps: experiment · remove by 2027-01-16",
+      "tags": [
+        2
+      ],
+      "multivariate_options": [
+        {
+          "id": 1,
+          "uuid": "f024b1b3-dab2-41c2-94ca-6b0343b73ddf",
+          "type": "unicode",
+          "integer_value": null,
+          "string_value": "v2",
+          "boolean_value": null,
+          "default_percentage_allocation": 0,
+          "key": null
+        }
+      ],
+      "is_archived": false,
+      "owners": [],
+      "group_owners": [],
+      "uuid": "966f231d-575e-4167-a827-9e493ec08bb8",
+      "project": 1,
+      "environment_feature_state": {
+        "id": 18,
+        "feature_state_value": "control",
+        "environment": 3,
+        "identity": null,
+        "feature_segment": null,
+        "enabled": false
+      },
+      "segment_feature_state": null,
+      "num_segment_overrides": 0,
+      "num_identity_overrides": null,
+      "is_num_identity_overrides_complete": true,
+      "is_server_key_only": false,
+      "last_modified_in_any_environment": "2026-11-27T12:54:56.545895+00:00",
+      "last_modified_in_current_environment": "2026-11-27T12:52:24.743711+00:00",
+      "metadata": [
+        {
+          "id": 14,
+          "model_field": 1,
+          "field_value": "experiment"
+        },
+        {
+          "id": 15,
+          "model_field": 2,
+          "field_value": "2027-01-16"
+        },
+        {
+          "id": 16,
+          "model_field": 3,
+          "field_value": "Decide between control and v2, keep the winner, then remove the flag."
+        }
+      ],
+      "code_references_counts": [],
+      "lifecycle_stage": "new"
+    },
+    {
+      "id": 7,
+      "name": "legacy_search",
+      "type": "STANDARD",
+      "default_enabled": false,
+      "initial_value": null,
+      "created_date": "2026-11-27T12:52:25.184528Z",
+      "description": "Old search backend, kept for rollback.\nFlagOps: release · remove by 2026-06-30",
+      "tags": [
+        1
+      ],
+      "multivariate_options": [],
+      "is_archived": false,
+      "owners": [],
+      "group_owners": [],
+      "uuid": "a66291e9-71fa-41a7-a9c7-32934923a214",
+      "project": 1,
+      "environment_feature_state": {
+        "id": 49,
+        "feature_state_value": null,
+        "environment": 3,
+        "identity": null,
+        "feature_segment": null,
+        "enabled": true
+      },
+      "segment_feature_state": null,
+      "num_segment_overrides": 0,
+      "num_identity_overrides": null,
+      "is_num_identity_overrides_complete": true,
+      "is_server_key_only": false,
+      "last_modified_in_any_environment": "2026-11-27T12:55:04.015507+00:00",
+      "last_modified_in_current_environment": "2026-11-27T12:55:04.015507+00:00",
+      "metadata": [
+        {
+          "id": 17,
+          "model_field": 1,
+          "field_value": "release"
+        },
+        {
+          "id": 18,
+          "model_field": 2,
+          "field_value": "2026-06-30"
+        },
+        {
+          "id": 19,
+          "model_field": 3,
+          "field_value": "No code reads this flag any more: archive it."
+        }
+      ],
+      "code_references_counts": [],
+      "lifecycle_stage": "new"
+    },
+    {
+      "id": 8,
+      "name": "free_shipping_threshold",
+      "type": "STANDARD",
+      "default_enabled": false,
+      "initial_value": "50",
+      "created_date": "2026-11-27T12:52:25.501853Z",
+      "description": "Order total, in dollars, above which shipping is free.\nFlagOps: release · remove by 2027-02-02",
+      "tags": [
+        1
+      ],
+      "multivariate_options": [],
+      "is_archived": false,
+      "owners": [],
+      "group_owners": [],
+      "uuid": "25434d8a-abe4-4cf4-8bf2-21092290bbfd",
+      "project": 1,
+      "environment_feature_state": {
+        "id": 50,
+        "feature_state_value": 50,
+        "environment": 3,
+        "identity": null,
+        "feature_segment": null,
+        "enabled": true
+      },
+      "segment_feature_state": null,
+      "num_segment_overrides": 0,
+      "num_identity_overrides": null,
+      "is_num_identity_overrides_complete": true,
+      "is_server_key_only": false,
+      "last_modified_in_any_environment": "2026-11-27T12:55:05.237236+00:00",
+      "last_modified_in_current_environment": "2026-11-27T12:55:05.237236+00:00",
+      "metadata": [
+        {
+          "id": 20,
+          "model_field": 1,
+          "field_value": "release"
+        },
+        {
+          "id": 21,
+          "model_field": 2,
+          "field_value": "2027-02-02"
+        },
+        {
+          "id": 22,
+          "model_field": 3,
+          "field_value": "Move the threshold into configuration, then remove the flag."
+        }
+      ],
+      "code_references_counts": [],
+      "lifecycle_stage": "new"
+    },
+    {
+      "id": 9,
+      "name": "gift_wrap",
+      "type": "STANDARD",
+      "default_enabled": false,
+      "initial_value": null,
+      "created_date": "2026-11-27T12:52:25.799536Z",
+      "description": "Gift wrapping at checkout. Not built yet.\nFlagOps: release · remove by 2027-03-02",
+      "tags": [
+        1
+      ],
+      "multivariate_options": [],
+      "is_archived": false,
+      "owners": [],
+      "group_owners": [],
+      "uuid": "ad2baf7b-12e2-493f-99f6-211d1d2b9ddd",
+      "project": 1,
+      "environment_feature_state": {
+        "id": 27,
+        "feature_state_value": null,
+        "environment": 3,
+        "identity": null,
+        "feature_segment": null,
+        "enabled": false
+      },
+      "segment_feature_state": null,
+      "num_segment_overrides": 0,
+      "num_identity_overrides": null,
+      "is_num_identity_overrides_complete": true,
+      "is_server_key_only": false,
+      "last_modified_in_any_environment": "2026-11-27T12:52:25.842991+00:00",
+      "last_modified_in_current_environment": "2026-11-27T12:52:25.842991+00:00",
+      "metadata": [
+        {
+          "id": 23,
+          "model_field": 1,
+          "field_value": "release"
+        },
+        {
+          "id": 24,
+          "model_field": 2,
+          "field_value": "2027-03-02"
+        },
+        {
+          "id": 25,
+          "model_field": 3,
+          "field_value": "Build gift wrapping behind the flag, release it, then remove the flag."
+        }
+      ],
+      "code_references_counts": [],
+      "lifecycle_stage": "new"
+    },
+    {
+      "id": 10,
+      "name": "order_tracking_v2",
+      "type": "STANDARD",
+      "default_enabled": false,
+      "initial_value": null,
+      "created_date": "2026-11-27T12:52:26.114958Z",
+      "description": "New order tracking page.",
+      "tags": [],
+      "multivariate_options": [],
+      "is_archived": false,
+      "owners": [],
+      "group_owners": [],
+      "uuid": "d52933b2-c3eb-4bea-93e0-70c6628fe379",
+      "project": 1,
+      "environment_feature_state": {
+        "id": 30,
+        "feature_state_value": null,
+        "environment": 3,
+        "identity": null,
+        "feature_segment": null,
+        "enabled": false
+      },
+      "segment_feature_state": null,
+      "num_segment_overrides": 0,
+      "num_identity_overrides": null,
+      "is_num_identity_overrides_complete": true,
+      "is_server_key_only": false,
+      "last_modified_in_any_environment": "2026-11-27T12:54:51.358311+00:00",
+      "last_modified_in_current_environment": "2026-11-27T12:52:26.197557+00:00",
+      "metadata": [],
+      "code_references_counts": [],
+      "lifecycle_stage": "new"
+    }
+  ]
+}

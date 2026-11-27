@@ -20,6 +20,10 @@ export default defineConfig({
         test: {
           name: 'server',
           environment: 'node',
+          // The first Fastify app a worker builds loads Fastify, its plugins and the route
+          // schemas; on a busy Windows machine that alone took 3 to 15 seconds.
+          testTimeout: 30_000,
+          hookTimeout: 30_000,
           include: [
             'apps/server/src/**/*.test.ts',
             'apps/server/test/*.test.ts',

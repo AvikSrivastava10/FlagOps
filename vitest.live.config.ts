@@ -32,6 +32,13 @@ export default defineConfig({
       {
         test: { name: 'live-github', include: ['apps/server/test/live/**/*.live-github.test.ts'] },
       },
+      // Real sign-ins, kept out of `live`: each refused one counts towards Flagsmith's lockout.
+      {
+        test: {
+          name: 'live-session',
+          include: ['apps/server/test/live/**/*.live-session.test.ts'],
+        },
+      },
       {
         test: {
           name: 'acceptance',

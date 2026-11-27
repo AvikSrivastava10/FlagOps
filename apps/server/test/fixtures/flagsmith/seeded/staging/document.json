@@ -1,0 +1,235 @@
+{
+  "id": 2,
+  "api_key": "env-key-staging",
+  "project": {
+    "id": 1,
+    "name": "FlagOps Demo Shop",
+    "organisation": {
+      "id": 1,
+      "name": "FlagOps Demo",
+      "feature_analytics": false,
+      "stop_serving_flags": false,
+      "persist_trait_data": true
+    },
+    "hide_disabled_flags": false,
+    "segments": [
+      {
+        "id": 1,
+        "name": "beta_testers",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "EQUAL",
+                    "value": "true",
+                    "property_": "beta"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": []
+      },
+      {
+        "id": 2,
+        "name": "staff",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "EQUAL",
+                    "value": "staff",
+                    "property_": "role"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "feature": {
+              "id": 5,
+              "name": "admin_reports",
+              "type": "STANDARD"
+            },
+            "enabled": true,
+            "django_id": 40,
+            "feature_segment": {
+              "priority": 0
+            },
+            "featurestate_uuid": "abdc6fd0-39b9-4193-8c72-fcfec16f3fe8",
+            "feature_state_value": null,
+            "multivariate_feature_state_values": []
+          }
+        ]
+      }
+    ],
+    "enable_realtime_updates": false,
+    "server_key_only_feature_ids": []
+  },
+  "feature_states": [
+    {
+      "feature": {
+        "id": 1,
+        "name": "new_checkout",
+        "type": "STANDARD"
+      },
+      "enabled": true,
+      "django_id": 2,
+      "feature_segment": null,
+      "featurestate_uuid": "6b11ab2e-81c9-4e28-a201-2b6d843de2ed",
+      "feature_state_value": null,
+      "multivariate_feature_state_values": []
+    },
+    {
+      "feature": {
+        "id": 2,
+        "name": "dark_mode",
+        "type": "STANDARD"
+      },
+      "enabled": true,
+      "django_id": 5,
+      "feature_segment": null,
+      "featurestate_uuid": "4fae399e-34eb-457c-84c2-fd09ffeea23a",
+      "feature_state_value": null,
+      "multivariate_feature_state_values": []
+    },
+    {
+      "feature": {
+        "id": 3,
+        "name": "holiday_banner",
+        "type": "STANDARD"
+      },
+      "enabled": false,
+      "django_id": 8,
+      "feature_segment": null,
+      "featurestate_uuid": "0128b491-43c7-4150-a0e2-97d677bbe373",
+      "feature_state_value": null,
+      "multivariate_feature_state_values": []
+    },
+    {
+      "feature": {
+        "id": 4,
+        "name": "payments_kill_switch",
+        "type": "STANDARD"
+      },
+      "enabled": false,
+      "django_id": 11,
+      "feature_segment": null,
+      "featurestate_uuid": "c61acdf4-853c-4096-a14d-3161742d4f0e",
+      "feature_state_value": null,
+      "multivariate_feature_state_values": []
+    },
+    {
+      "feature": {
+        "id": 5,
+        "name": "admin_reports",
+        "type": "STANDARD"
+      },
+      "enabled": false,
+      "django_id": 14,
+      "feature_segment": null,
+      "featurestate_uuid": "e5cbe502-cd7b-4b15-876b-c7dfb3c452e3",
+      "feature_state_value": null,
+      "multivariate_feature_state_values": []
+    },
+    {
+      "feature": {
+        "id": 6,
+        "name": "recommendations_v2",
+        "type": "MULTIVARIATE"
+      },
+      "enabled": true,
+      "django_id": 17,
+      "feature_segment": null,
+      "featurestate_uuid": "834b956c-e0ed-4a8e-abfb-23ccd8e032c8",
+      "feature_state_value": "control",
+      "multivariate_feature_state_values": [
+        {
+          "multivariate_feature_option": {
+            "value": "v2",
+            "id": 1,
+            "key": null
+          },
+          "percentage_allocation": 50,
+          "id": 5,
+          "mv_fs_value_uuid": "2da6cd79-a128-495f-8e88-59d0bec1f23d"
+        }
+      ]
+    },
+    {
+      "feature": {
+        "id": 7,
+        "name": "legacy_search",
+        "type": "STANDARD"
+      },
+      "enabled": true,
+      "django_id": 20,
+      "feature_segment": null,
+      "featurestate_uuid": "e64fed8f-b38e-4af3-8e64-964fcd0e1660",
+      "feature_state_value": null,
+      "multivariate_feature_state_values": []
+    },
+    {
+      "feature": {
+        "id": 8,
+        "name": "free_shipping_threshold",
+        "type": "STANDARD"
+      },
+      "enabled": true,
+      "django_id": 23,
+      "feature_segment": null,
+      "featurestate_uuid": "8ded874d-d453-4e51-b178-567da616428f",
+      "feature_state_value": 50,
+      "multivariate_feature_state_values": []
+    },
+    {
+      "feature": {
+        "id": 9,
+        "name": "gift_wrap",
+        "type": "STANDARD"
+      },
+      "enabled": false,
+      "django_id": 26,
+      "feature_segment": null,
+      "featurestate_uuid": "36faad71-ee52-46c6-b300-11db187c5daf",
+      "feature_state_value": null,
+      "multivariate_feature_state_values": []
+    },
+    {
+      "feature": {
+        "id": 10,
+        "name": "order_tracking_v2",
+        "type": "STANDARD"
+      },
+      "enabled": false,
+      "django_id": 29,
+      "feature_segment": null,
+      "featurestate_uuid": "1d25d42d-7de1-49b1-8032-7d06ab349841",
+      "feature_state_value": null,
+      "multivariate_feature_state_values": []
+    }
+  ],
+  "identity_overrides": [],
+  "name": "Staging",
+  "allow_client_traits": true,
+  "updated_at": "2026-11-27T12:55:47.211685+00:00",
+  "hide_sensitive_data": false,
+  "hide_disabled_flags": null,
+  "use_identity_composite_key_for_hashing": true,
+  "use_identity_overrides_in_local_eval": true
+}

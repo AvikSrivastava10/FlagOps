@@ -4,11 +4,11 @@ import path from 'node:path';
 import { FlagOpsError } from '@flagops/shared';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { z } from 'zod';
-import { buildApp, type App } from '../../src/http/app.js';
+import type { App } from '../../src/http/app.js';
 import { createLogger } from '../../src/logger.js';
+import { buildTestApp, writeHeaders } from '../helpers/app.js';
 import { captureLogs } from '../helpers/log-capture.js';
 
-const allowedHosts = ['localhost', '127.0.0.1', '[::1]'];
 const expectedSecurityHeaders = {
   'content-security-policy':
     "default-src 'self'; img-src 'self' data:; style-src 'self'; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
@@ -38,12 +38,7 @@ let logs = captureLogs();
 
 async function makeApp(options: { webRoot?: string } = {}): Promise<App> {
   logs = captureLogs();
-  app = await buildApp({
-    logger: createLogger('info', logs.destination),
-    allowedHosts,
-    trustProxy: false,
-    webRoot: options.webRoot,
-  });
+  app = await buildTestApp(createLogger('info', logs.destination), { webRoot: options.webRoot });
   return app;
 }
 
@@ -163,17 +158,18 @@ describe('web app', () => {
 describe('error mapping', () => {
   async function appWithTestRoutes(): Promise<App> {
     const testApp = await makeApp();
-    testApp.get('/api/test/expected', () => {
+    const config = { public: true };
+    testApp.get('/api/test/expected', { config }, () => {
       throw new FlagOpsError('retire_not_eligible', 'new_checkout is still rolling out', {
         details: { stage: 'rolling_out' },
       });
     });
-    testApp.get('/api/test/unexpected', () => {
+    testApp.get('/api/test/unexpected', { config }, () => {
       throw new Error('database exploded');
     });
     testApp.post(
       '/api/test/validated',
-      { schema: { body: z.object({ name: z.string() }) } },
+      { config, schema: { body: z.object({ name: z.string() }) } },
       (request) => ({ name: request.body.name }),
     );
     return testApp;
@@ -213,7 +209,12 @@ describe('error mapping', () => {
   it('answers an invalid body with validation_failed and the zod issues', async () => {
     const response = await (
       await appWithTestRoutes()
-    ).inject({ method: 'POST', url: '/api/test/validated', payload: { name: 42 } });
+    ).inject({
+      method: 'POST',
+      url: '/api/test/validated',
+      headers: writeHeaders,
+      payload: { name: 42 },
+    });
 
     expect(response.statusCode).toBe(400);
     expect(response.json()).toMatchObject({
@@ -236,7 +237,7 @@ describe('error mapping', () => {
     ).inject({
       method: 'POST',
       url: '/api/test/validated',
-      headers: { 'content-type': contentType },
+      headers: { ...writeHeaders, 'content-type': contentType },
       payload,
     });
 

@@ -20,7 +20,11 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
-    "openapi:generate": "pnpm --filter @flagops/server run openapi:generate"
+    "test:live": "vitest run --config vitest.live.config.ts --project live",
+    "test:live-session": "vitest run --config vitest.live.config.ts --project live-session",
+    "seed": "tsx --conditions=development --env-file-if-exists=.env apps/server/src/cli/seed.ts",
+    "openapi:generate": "pnpm --filter @flagops/server run openapi:generate",
+    "openapi:check": "tsx --env-file-if-exists=.env apps/server/scripts/openapi-check.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

@@ -31,6 +31,8 @@ describe('loadConfig', () => {
     expect(config.dataDir).toBe(path.resolve('data'));
     expect(config.logLevel).toBe('info');
     expect(config.flagsmith.orgApiKey.reveal()).toBe(orgApiKey);
+    expect(config.flagsmith.projectId).toBeUndefined();
+    expect(config.jobs).toEqual({ syncIntervalSeconds: 60 });
   });
 
   it('uses the image defaults when FLAGOPS_IN_DOCKER is 1', () => {
@@ -48,6 +50,8 @@ describe('loadConfig', () => {
       FLAGOPS_ALLOWED_HOSTS: ' FlagOps.Example.com , [::1] ',
       FLAGOPS_TRUST_PROXY: 'true',
       FLAGOPS_DATA_DIR: 'state',
+      FLAGSMITH_PROJECT_ID: '12',
+      FLAGOPS_SYNC_INTERVAL_SECONDS: '15',
       LOG_LEVEL: 'debug',
     });
 
@@ -59,6 +63,19 @@ describe('loadConfig', () => {
     });
     expect(config.dataDir).toBe(path.resolve('state'));
     expect(config.logLevel).toBe('debug');
+    expect(config.flagsmith.projectId).toBe(12);
+    expect(config.jobs.syncIntervalSeconds).toBe(15);
+  });
+
+  it.each([
+    ['FLAGOPS_SYNC_INTERVAL_SECONDS', '14', 'must be a whole number from 15 to 3600'],
+    ['FLAGOPS_SYNC_INTERVAL_SECONDS', '3601', 'must be a whole number from 15 to 3600'],
+    ['FLAGSMITH_PROJECT_ID', '0', 'must be a whole number from 1 to 2147483647'],
+    ['FLAGSMITH_PROJECT_ID', 'one', 'must be a whole number from 1 to 2147483647'],
+  ])('rejects %s=%s', (name, value, problem) => {
+    expect(problemsOf({ ...minimal, [name]: value })[0]).toMatch(
+      new RegExp(`^${name} ${problem} \\(`),
+    );
   });
 
   it('freezes the config', () => {
@@ -91,6 +108,8 @@ describe('loadConfig', () => {
       FLAGOPS_BIND: 'localhost',
       FLAGOPS_ALLOWED_HOSTS: 'localhost:3000',
       FLAGOPS_TRUST_PROXY: 'yes',
+      FLAGSMITH_PROJECT_ID: '-1',
+      FLAGOPS_SYNC_INTERVAL_SECONDS: '5',
       LOG_LEVEL: 'verbose',
     });
 
@@ -98,11 +117,13 @@ describe('loadConfig', () => {
       'FLAGSMITH_URL',
       'FLAGSMITH_INTERNAL_URL',
       'FLAGSMITH_ORG_API_KEY',
+      'FLAGSMITH_PROJECT_ID',
       'FLAGOPS_IN_DOCKER',
       'FLAGOPS_PORT',
       'FLAGOPS_BIND',
       'FLAGOPS_ALLOWED_HOSTS',
       'FLAGOPS_TRUST_PROXY',
+      'FLAGOPS_SYNC_INTERVAL_SECONDS',
       'LOG_LEVEL',
     ]);
     expect(problems).toContain(

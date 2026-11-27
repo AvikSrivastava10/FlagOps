@@ -1,7 +1,10 @@
 import { randomUUID } from 'node:crypto';
 import type { IncomingMessage, ServerResponse } from 'node:http';
+import fastifyCookie from '@fastify/cookie';
+import { FlagOpsError } from '@flagops/shared';
 import Fastify, {
   LogController,
+  type FastifyError,
   type FastifyInstance,
   type FastifyReply,
   type FastifyRequest,
@@ -13,11 +16,17 @@ import {
   type ZodTypeProvider,
 } from 'fastify-type-provider-zod';
 import type { Logger } from 'pino';
+import type { AuthService } from '../auth/login.js';
+import type { SessionStore } from '../auth/sessions.js';
 import { handleError } from './errors.js';
+import { createCsrfCheck } from './hooks/csrf.js';
 import { createHostCheck } from './hooks/host.js';
 import { addSecurityHeaders } from './hooks/security-headers.js';
+import { clearSessionCookie, createSessionHook } from './hooks/session.js';
 import { pathOf } from './request-path.js';
 import { healthRoutes } from './routes/health.js';
+import { sessionRoutes } from './routes/session.js';
+import { syncRoutes } from './routes/sync.js';
 import { registerWebApp } from './static.js';
 
 /** The Fastify instance FlagOps runs: pino logger, zod schemas for every route. */
@@ -35,6 +44,11 @@ export type AppOptions = {
   trustProxy: boolean;
   /** Directory of the built web app. Without it, the server answers only the API. */
   webRoot: string | undefined;
+  /** The in-memory store in the product; tests pass one with prepared sessions. */
+  sessions: SessionStore;
+  auth: AuthService;
+  /** Starts a sync now, or queues one behind the running sync. */
+  triggerSync: () => 'started' | 'queued';
 };
 
 async function logRequest(request: FastifyRequest, reply: FastifyReply): Promise<void> {
@@ -63,12 +77,30 @@ export async function buildApp(options: AppOptions): Promise<App> {
 
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
-  app.setErrorHandler(handleError);
+  // When Flagsmith rejects the operator's credential, the FlagOps session ends with it
+  // (architecture.md 14.2).
+  app.setErrorHandler((error: FastifyError, request, reply) => {
+    if (
+      error instanceof FlagOpsError &&
+      error.code === 'flagsmith_session_expired' &&
+      request.session !== null
+    ) {
+      options.sessions.destroy(request.session.id);
+      clearSessionCookie(reply);
+    }
+    return handleError(error, request, reply);
+  });
+  await app.register(fastifyCookie);
+  app.decorateRequest('session', null);
   app.addHook('onRequest', createHostCheck(options.allowedHosts));
+  app.addHook('onRequest', createCsrfCheck(options.allowedHosts));
+  app.addHook('onRequest', createSessionHook(options.sessions));
   app.addHook('onSend', addSecurityHeaders);
   app.addHook('onResponse', logRequest);
 
   await app.register(healthRoutes);
+  await app.register(sessionRoutes(options.auth));
+  await app.register(syncRoutes(options.triggerSync));
   await registerWebApp(app, options.webRoot);
   return app;
 }

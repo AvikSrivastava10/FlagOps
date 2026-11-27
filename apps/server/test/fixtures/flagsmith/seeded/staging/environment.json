@@ -1,0 +1,21 @@
+{
+  "id": 2,
+  "uuid": "70cc0e57-069a-46f7-8826-e8ab1b796d6b",
+  "name": "Staging",
+  "api_key": "env-key-staging",
+  "description": null,
+  "project": 1,
+  "minimum_change_request_approvals": null,
+  "allow_client_traits": true,
+  "banner_text": null,
+  "banner_colour": null,
+  "hide_disabled_flags": null,
+  "use_mv_v2_evaluation": true,
+  "use_identity_composite_key_for_hashing": true,
+  "hide_sensitive_data": false,
+  "use_v2_feature_versioning": true,
+  "use_identity_overrides_in_local_eval": true,
+  "is_creating": false,
+  "metadata": [],
+  "total_segment_overrides": 1
+}

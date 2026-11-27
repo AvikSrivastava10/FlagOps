@@ -7,14 +7,16 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json && node scripts/copy-migrations.mjs",
     "typecheck": "tsc -p tsconfig.json",
-    "openapi:generate": "openapi-typescript src/flagsmith/openapi/flagsmith-2.295.2.json --output src/flagsmith/openapi/schema.d.ts"
+    "openapi:generate": "openapi-typescript src/flagsmith/openapi/flagsmith-2.295.2.json --read-write-markers --output src/flagsmith/openapi/schema.d.ts"
   },
   "dependencies": {
+    "@fastify/cookie": "11.1.5",
     "@fastify/static": "11.0.0",
     "@flagops/shared": "workspace:*",
     "better-sqlite3": "13.2.0",
     "fastify": "5.12.8",
     "fastify-type-provider-zod": "7.0.0",
+    "openapi-fetch": "0.17.0",
     "pino": "10.4.0",
     "zod": "4.6.7"
   },

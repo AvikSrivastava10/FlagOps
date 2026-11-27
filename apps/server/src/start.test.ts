@@ -10,6 +10,10 @@ import { start, type RunningServer } from './start.js';
 let dataDir: string;
 let server: RunningServer | undefined;
 
+/** Flagsmith refusing the test's organisation key, so the first sync fails at once and offline. */
+const refusingFlagsmith = async (): Promise<Response> =>
+  Response.json({ detail: 'Invalid API key.' }, { status: 401 });
+
 beforeEach(() => {
   dataDir = mkdtempSync(path.join(tmpdir(), 'flagops-start-'));
 });
@@ -37,6 +41,7 @@ describe('start', () => {
     server = await start(
       testConfig({ FLAGSMITH_URL: 'http://localhost:8000', FLAGOPS_IN_DOCKER: '1' }),
       createLogger('info', logs.destination),
+      { fetch: refusingFlagsmith },
     );
     await server.app.inject('/api/health');
     await server.app.inject('/api/health');
@@ -56,6 +61,7 @@ describe('start', () => {
     server = await start(
       testConfig({ FLAGSMITH_URL: 'http://localhost:8000' }),
       createLogger('info', logs.destination),
+      { fetch: refusingFlagsmith },
     );
 
     expect(logs.entries().filter((entry) => 'requestUrl' in entry)).toEqual([]);
@@ -66,6 +72,7 @@ describe('start', () => {
     server = await start(
       testConfig({ FLAGSMITH_URL: 'http://localhost:8000' }),
       createLogger('info', logs.destination),
+      { fetch: refusingFlagsmith },
     );
     const response = await fetch(`http://127.0.0.1:${portOf(server)}/api/health`);
 

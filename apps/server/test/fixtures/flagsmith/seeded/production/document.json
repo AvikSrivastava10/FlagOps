@@ -1,0 +1,327 @@
+{
+  "id": 3,
+  "api_key": "env-key-production",
+  "project": {
+    "id": 1,
+    "name": "FlagOps Demo Shop",
+    "organisation": {
+      "id": 1,
+      "name": "FlagOps Demo",
+      "feature_analytics": false,
+      "stop_serving_flags": false,
+      "persist_trait_data": true
+    },
+    "hide_disabled_flags": false,
+    "segments": [
+      {
+        "id": 1,
+        "name": "beta_testers",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "EQUAL",
+                    "value": "true",
+                    "property_": "beta"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "feature": {
+              "id": 2,
+              "name": "dark_mode",
+              "type": "STANDARD"
+            },
+            "enabled": true,
+            "django_id": 46,
+            "feature_segment": {
+              "priority": 0
+            },
+            "featurestate_uuid": "28845410-6d73-4bab-97b0-ba90460aeac8",
+            "feature_state_value": null,
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "name": "staff",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "EQUAL",
+                    "value": "staff",
+                    "property_": "role"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "feature": {
+              "id": 5,
+              "name": "admin_reports",
+              "type": "STANDARD"
+            },
+            "enabled": true,
+            "django_id": 48,
+            "feature_segment": {
+              "priority": 0
+            },
+            "featurestate_uuid": "877c85c9-0fd7-4e43-babd-4380a0f45520",
+            "feature_state_value": null,
+            "multivariate_feature_state_values": []
+          }
+        ]
+      }
+    ],
+    "enable_realtime_updates": false,
+    "server_key_only_feature_ids": []
+  },
+  "feature_states": [
+    {
+      "feature": {
+        "id": 1,
+        "name": "new_checkout",
+        "type": "STANDARD"
+      },
+      "enabled": true,
+      "django_id": 3,
+      "feature_segment": null,
+      "featurestate_uuid": "a82e5058-93fb-44d4-b62d-190b938b2461",
+      "feature_state_value": null,
+      "multivariate_feature_state_values": []
+    },
+    {
+      "feature": {
+        "id": 2,
+        "name": "dark_mode",
+        "type": "STANDARD"
+      },
+      "enabled": false,
+      "django_id": 6,
+      "feature_segment": null,
+      "featurestate_uuid": "46e271c4-eab1-419d-a363-c4bd4c108972",
+      "feature_state_value": null,
+      "multivariate_feature_state_values": []
+    },
+    {
+      "feature": {
+        "id": 3,
+        "name": "holiday_banner",
+        "type": "STANDARD"
+      },
+      "enabled": false,
+      "django_id": 9,
+      "feature_segment": null,
+      "featurestate_uuid": "d805f518-68ca-4003-94d6-d7dfad9737b1",
+      "feature_state_value": null,
+      "multivariate_feature_state_values": []
+    },
+    {
+      "feature": {
+        "id": 4,
+        "name": "payments_kill_switch",
+        "type": "STANDARD"
+      },
+      "enabled": false,
+      "django_id": 12,
+      "feature_segment": null,
+      "featurestate_uuid": "c5951b9a-5402-4160-ab69-1e71ca5a37c1",
+      "feature_state_value": null,
+      "multivariate_feature_state_values": []
+    },
+    {
+      "feature": {
+        "id": 5,
+        "name": "admin_reports",
+        "type": "STANDARD"
+      },
+      "enabled": false,
+      "django_id": 15,
+      "feature_segment": null,
+      "featurestate_uuid": "1deef4ce-f298-4ea8-a38b-a85fabeb41d9",
+      "feature_state_value": null,
+      "multivariate_feature_state_values": []
+    },
+    {
+      "feature": {
+        "id": 6,
+        "name": "recommendations_v2",
+        "type": "MULTIVARIATE"
+      },
+      "enabled": false,
+      "django_id": 18,
+      "feature_segment": null,
+      "featurestate_uuid": "57f01e5f-96e6-4536-981f-6fd64a8298f6",
+      "feature_state_value": "control",
+      "multivariate_feature_state_values": [
+        {
+          "multivariate_feature_option": {
+            "value": "v2",
+            "id": 1,
+            "key": null
+          },
+          "percentage_allocation": 0,
+          "id": 3,
+          "mv_fs_value_uuid": "16710269-4194-4edb-b608-0333299dc77f"
+        }
+      ]
+    },
+    {
+      "feature": {
+        "id": 7,
+        "name": "legacy_search",
+        "type": "STANDARD"
+      },
+      "enabled": true,
+      "django_id": 21,
+      "feature_segment": null,
+      "featurestate_uuid": "bdd7bd4a-b683-4a39-ad11-751ac521ff66",
+      "feature_state_value": null,
+      "multivariate_feature_state_values": []
+    },
+    {
+      "feature": {
+        "id": 8,
+        "name": "free_shipping_threshold",
+        "type": "STANDARD"
+      },
+      "enabled": true,
+      "django_id": 24,
+      "feature_segment": null,
+      "featurestate_uuid": "31f187f2-4450-40f7-a145-e3f47dcc35be",
+      "feature_state_value": 50,
+      "multivariate_feature_state_values": []
+    },
+    {
+      "feature": {
+        "id": 9,
+        "name": "gift_wrap",
+        "type": "STANDARD"
+      },
+      "enabled": false,
+      "django_id": 27,
+      "feature_segment": null,
+      "featurestate_uuid": "1386b02c-994a-4843-85d3-b334e5090410",
+      "feature_state_value": null,
+      "multivariate_feature_state_values": []
+    },
+    {
+      "feature": {
+        "id": 10,
+        "name": "order_tracking_v2",
+        "type": "STANDARD"
+      },
+      "enabled": false,
+      "django_id": 30,
+      "feature_segment": null,
+      "featurestate_uuid": "5bd312bb-964e-43e3-9c23-b26d901476ac",
+      "feature_state_value": null,
+      "multivariate_feature_state_values": []
+    }
+  ],
+  "identity_overrides": [
+    {
+      "identifier": "user-0010",
+      "environment_api_key": "env-key-production",
+      "created_date": "2026-11-27T12:55:17.471925+00:00",
+      "identity_features": [
+        {
+          "feature": {
+            "id": 2,
+            "name": "dark_mode",
+            "type": "STANDARD"
+          },
+          "enabled": true,
+          "django_id": 51,
+          "feature_segment": null,
+          "featurestate_uuid": "09fbadee-fe55-417d-bd74-ad7183ef483a",
+          "feature_state_value": null,
+          "multivariate_feature_state_values": []
+        }
+      ],
+      "identity_traits": [],
+      "identity_uuid": "92648b49-4e58-4f13-ae90-0ef1054b167d",
+      "django_id": 260,
+      "dashboard_alias": null,
+      "composite_key": "env-key-production_user-0010"
+    },
+    {
+      "identifier": "user-0020",
+      "environment_api_key": "env-key-production",
+      "created_date": "2026-11-27T12:55:17.561361+00:00",
+      "identity_features": [
+        {
+          "feature": {
+            "id": 2,
+            "name": "dark_mode",
+            "type": "STANDARD"
+          },
+          "enabled": true,
+          "django_id": 52,
+          "feature_segment": null,
+          "featurestate_uuid": "2e77e1fe-4abe-4aa7-ae61-1af66c50e1fc",
+          "feature_state_value": null,
+          "multivariate_feature_state_values": []
+        }
+      ],
+      "identity_traits": [],
+      "identity_uuid": "c03f5592-f5a3-456e-aa56-62d896f9c0c0",
+      "django_id": 270,
+      "dashboard_alias": null,
+      "composite_key": "env-key-production_user-0020"
+    },
+    {
+      "identifier": "user-0030",
+      "environment_api_key": "env-key-production",
+      "created_date": "2026-11-27T12:55:17.651857+00:00",
+      "identity_features": [
+        {
+          "feature": {
+            "id": 2,
+            "name": "dark_mode",
+            "type": "STANDARD"
+          },
+          "enabled": true,
+          "django_id": 53,
+          "feature_segment": null,
+          "featurestate_uuid": "9097c67d-6416-451e-bf0e-521ff66ee529",
+          "feature_state_value": null,
+          "multivariate_feature_state_values": []
+        }
+      ],
+      "identity_traits": [],
+      "identity_uuid": "c90ef706-235a-4712-98d2-4c0e03693c17",
+      "django_id": 280,
+      "dashboard_alias": null,
+      "composite_key": "env-key-production_user-0030"
+    }
+  ],
+  "name": "Production",
+  "allow_client_traits": true,
+  "updated_at": "2026-11-27T12:55:47.211685+00:00",
+  "hide_sensitive_data": false,
+  "hide_disabled_flags": null,
+  "use_identity_composite_key_for_hashing": true,
+  "use_identity_overrides_in_local_eval": true
+}

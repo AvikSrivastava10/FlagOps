@@ -1,0 +1,21 @@
+{
+  "id": 3,
+  "uuid": "1c3dd6fd-23a5-4e2b-b42c-761e97bcf953",
+  "name": "Production",
+  "api_key": "env-key-production",
+  "description": null,
+  "project": 1,
+  "minimum_change_request_approvals": null,
+  "allow_client_traits": true,
+  "banner_text": null,
+  "banner_colour": null,
+  "hide_disabled_flags": null,
+  "use_mv_v2_evaluation": true,
+  "use_identity_composite_key_for_hashing": true,
+  "hide_sensitive_data": false,
+  "use_v2_feature_versioning": true,
+  "use_identity_overrides_in_local_eval": true,
+  "is_creating": false,
+  "metadata": [],
+  "total_segment_overrides": 2
+}

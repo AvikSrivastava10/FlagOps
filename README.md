@@ -6,13 +6,16 @@ FlagOps is one application: a server and a web dashboard in one process, configu
 
 ## Status
 
-FlagOps is built in stages, and this README describes what exists today. This version contains the foundation:
+FlagOps is built in stages, and this README describes what exists today:
 
 - the pnpm workspace with type checking, linting, formatting, tests and CI;
 - the server: configuration checks at startup, the `GET /api/health` endpoint, a host check against DNS rebinding, security headers, JSON error responses and SQLite migrations;
+- the Flagsmith connection: a typed client for the Flagsmith Admin API, checked against the OpenAPI schema of Flagsmith 2.295.2, and a background sync that reads every flag's configuration in every environment of the project;
+- sign-in with your Flagsmith account, through the API (`POST /api/session`), with two-factor authentication when your account uses it;
+- `pnpm seed`, which creates a demo project with flags in every lifecycle stage;
 - the web app shell, served by the server.
 
-The lifecycle features described above are added in the next stages, and this README grows with them.
+The lifecycle board, promotion and retirement are added in the next stages, and this README grows with them.
 
 ## Requirements
 
@@ -45,18 +48,36 @@ The lifecycle features described above are added in the next stages, and this RE
 
 FlagOps keeps its own state in a SQLite database in `./data`. Set `FLAGOPS_DATA_DIR` to use another directory.
 
+FlagOps manages one Flagsmith project: the only project of the organisation the API key belongs to, or the one `FLAGSMITH_PROJECT_ID` names. It syncs from Flagsmith at startup and every `FLAGOPS_SYNC_INTERVAL_SECONDS` (60 by default, 15 at the least).
+
+Only admins of that organisation can sign in. FlagOps sends your email and password to Flagsmith once and keeps only the session Flagsmith returns, in memory. Signing out of FlagOps does not sign you out of the Flagsmith dashboard.
+
+## Demo data
+
+To try FlagOps on a Flagsmith instance of your own, create an organisation for the demo in Flagsmith, create an API key in it, and put that key in `FLAGSMITH_ORG_API_KEY`. Then run:
+
+```sh
+pnpm seed
+```
+
+The seed creates the project "FlagOps Demo Shop" with three environments (Development, Staging, Production) on feature versioning v2, two segments, ten flags with their exit plans, and 1,250 identities with traits. It refuses to run in an organisation that already holds another project, because open-source Flagsmith allows one project per organisation. Running it again changes nothing, and it repairs anything a demo changed in the seeded objects. A run takes about a minute and a half, most of it reading the identities' traits.
+
 If a required variable is missing or invalid, FlagOps exits with code 1 and logs one line per problem, naming the variable, for example `FLAGSMITH_URL is required (URL of your Flagsmith API)`.
 
 ## Development
 
-| Command                          | What it does                                                                                                   |
-| -------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `pnpm dev`                       | Runs the server on port 3000, restarting on changes, and the web app on http://localhost:5173 with hot reload. |
-| `pnpm typecheck`                 | Type-checks every package with strict TypeScript.                                                              |
-| `pnpm lint`, `pnpm format:check` | ESLint, including the module boundaries, and Prettier.                                                         |
-| `pnpm test`                      | Unit and HTTP tests. They need no network.                                                                     |
-| `pnpm build`                     | Builds the shared package, the web app and the server into `apps/server/dist`.                                 |
-| `pnpm openapi:generate`          | Regenerates the Flagsmith API types from the pinned OpenAPI schema of Flagsmith 2.295.2.                       |
+| Command                          | What it does                                                                                                                                              |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm dev`                       | Runs the server on port 3000, restarting on changes, and the web app on http://localhost:5173 with hot reload.                                            |
+| `pnpm typecheck`                 | Type-checks every package with strict TypeScript.                                                                                                         |
+| `pnpm lint`, `pnpm format:check` | ESLint, including the module boundaries, and Prettier.                                                                                                    |
+| `pnpm test`                      | Unit and HTTP tests. They need no network.                                                                                                                |
+| `pnpm test:live`                 | Tests against the seeded demo organisation, with the values in `.env`. They write only to the demo project, and repair what they change.                  |
+| `pnpm test:live-session`         | One real sign-in with `E2E_FLAGSMITH_EMAIL` and `E2E_FLAGSMITH_PASSWORD`. It is kept apart, because Flagsmith locks an account after 10 refused sign-ins. |
+| `pnpm build`                     | Builds the shared package, the web app and the server into `apps/server/dist`.                                                                            |
+| `pnpm seed`                      | Seeds the demo project; see "Demo data".                                                                                                                  |
+| `pnpm openapi:generate`          | Regenerates the Flagsmith API types from the pinned OpenAPI schema of Flagsmith 2.295.2.                                                                  |
+| `pnpm openapi:check`             | Compares the running Flagsmith's OpenAPI schema with the pinned one, for every path FlagOps calls.                                                        |
 
 ## License
 

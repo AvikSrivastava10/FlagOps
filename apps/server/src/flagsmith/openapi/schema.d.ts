@@ -3,6 +3,20 @@
  * Do not make direct changes to the file.
  */
 
+export type $Read<T> = {
+    readonly $read: T;
+};
+export type $Write<T> = {
+    readonly $write: T;
+};
+export type Readable<T> = T extends $Write<any> ? never : T extends $Read<infer U> ? Readable<U> : T extends (infer E)[] ? Readable<E>[] : T extends object ? {
+    [K in keyof T as NonNullable<T[K]> extends $Write<any> ? never : K]: Readable<T[K]>;
+} : T;
+export type Writable<T> = T extends $Read<any> ? never : T extends $Write<infer U> ? Writable<U> : T extends (infer E)[] ? Writable<E>[] : T extends object ? {
+    [K in keyof T as NonNullable<T[K]> extends $Read<any> ? never : K]: Writable<T[K]>;
+} & {
+    [K in keyof T as NonNullable<T[K]> extends $Read<any> ? K : never]?: never;
+} : T;
 export interface paths {
     "/api/__future__/environments/{environment_key}/features/{feature_id}/": {
         parameters: {
@@ -5063,7 +5077,7 @@ export interface components {
          */
         AggregationEnum: "count" | "sum" | "mean" | "occurrence";
         AmplitudeConfiguration: {
-            readonly id?: number;
+            id?: $Read<number>;
             api_key: string;
             /** Format: uri */
             base_url?: string;
@@ -5081,7 +5095,7 @@ export interface components {
             list_id: string;
         };
         AuditLogList: {
-            readonly id?: number;
+            id?: $Read<number>;
             /**
              * DateCreated
              * Format: date-time
@@ -5098,7 +5112,7 @@ export interface components {
             is_system_event?: boolean;
         };
         AuditLogRetrieve: {
-            readonly id?: number;
+            id?: $Read<number>;
             /**
              * DateCreated
              * Format: date-time
@@ -5113,12 +5127,12 @@ export interface components {
             related_object_uuid?: string | null;
             related_object_type?: string | null;
             is_system_event?: boolean;
-            readonly change_details?: {
+            change_details?: $Read<{
                 field?: string;
                 old?: string | number | boolean | null;
                 new?: string | number | boolean | null;
-            }[];
-            readonly change_type?: components["schemas"]["ChangeTypeEnum"];
+            }[]>;
+            change_type?: $Read<components["schemas"]["ChangeTypeEnum"]>;
         };
         BaseEdgeIdentityFeatureState: {
             /** @description Feature state value (string, integer, or boolean) */
@@ -5128,7 +5142,7 @@ export interface components {
             multivariate_feature_state_values?: components["schemas"]["EdgeMultivariateFeatureStateValue"][];
             /** @default false */
             enabled: boolean;
-            readonly featurestate_uuid?: string;
+            featurestate_uuid?: $Read<string>;
         };
         /**
          * @description * `https://api.segment.io/` - https://api.segment.io/
@@ -5151,35 +5165,35 @@ export interface components {
             values: string[];
         };
         CloneEnvironment: {
-            readonly id?: number;
+            id?: $Read<number>;
             name: string;
-            readonly api_key?: string;
+            api_key?: $Read<string>;
             /** @description Changing the project selected will remove all previous Feature States for the previously associated projects Features that are related to this Environment. New default Feature States will be created for the new selected projects Features for this Environment. */
-            readonly project?: number;
+            project?: $Read<number>;
             /**
              * @description If True, the environment will be created immediately, but the feature states will be created asynchronously. Environment will have `is_creating: true` until this process is completed.
              * @default false
              */
-            clone_feature_states_async: boolean;
+            clone_feature_states_async: $Write<boolean>;
         };
         CloneSegment: {
             name: string;
         };
         Cohort: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             name: string;
             description?: string | null;
-            metadata?: components["schemas"]["Metadata"][];
-            readonly segment?: number;
-            readonly source_type?: components["schemas"]["SourceTypeEnum"];
-            readonly version?: number;
+            metadata?: $Write<components["schemas"]["Metadata"][]>;
+            segment?: $Read<number>;
+            source_type?: $Read<components["schemas"]["SourceTypeEnum"]>;
+            version?: $Read<number>;
             /** Format: date-time */
-            readonly created_at?: string;
+            created_at?: $Read<string>;
             /** Format: date-time */
-            readonly last_synced_at?: string | null;
-            readonly membership_counts?: components["schemas"]["CohortMembershipCounts"];
+            last_synced_at?: $Read<string | null>;
+            membership_counts?: $Read<components["schemas"]["CohortMembershipCounts"]>;
         };
         CohortCsvSync: {
             /** Format: uri */
@@ -5207,22 +5221,22 @@ export interface components {
             pending_remove: number;
         };
         CohortSyncKey: {
-            readonly prefix?: string;
+            prefix?: $Read<string>;
             name: string;
             /** Format: date-time */
-            readonly created?: string;
-            readonly key?: string | null;
+            created?: $Read<string>;
+            key?: $Read<string | null>;
         };
         CohortSyncMembers: {
             user_ids: string[];
         };
         Condition: {
-            readonly id?: number;
+            id?: $Read<number>;
             operator: components["schemas"]["ConditionOperatorEnum"];
             property?: string | null;
             value?: string | null;
             description?: string | null;
-            delete?: boolean;
+            delete?: $Write<boolean>;
         };
         /**
          * @description * `EQUAL` - Exactly Matches
@@ -5243,7 +5257,7 @@ export interface components {
          */
         ConditionOperatorEnum: "EQUAL" | "GREATER_THAN" | "LESS_THAN" | "CONTAINS" | "GREATER_THAN_INCLUSIVE" | "LESS_THAN_INCLUSIVE" | "NOT_CONTAINS" | "NOT_EQUAL" | "REGEX" | "PERCENTAGE_SPLIT" | "MODULO" | "IS_SET" | "IS_NOT_SET" | "IN";
         ContentType: {
-            readonly id?: number;
+            id?: $Read<number>;
             app_label: string;
             /** Python model class name */
             model: string;
@@ -5266,15 +5280,15 @@ export interface components {
          *                 return subscription
          */
         CreateEnvironment: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             name: string;
             api_key?: string;
             description?: string | null;
             /** @description Changing the project selected will remove all previous Feature States for the previously associated projects Features that are related to this Environment. New default Feature States will be created for the new selected projects Features for this Environment. */
             project: number;
-            readonly minimum_change_request_approvals?: number | null;
+            minimum_change_request_approvals?: $Read<number | null>;
             /** @description Allows clients using the client API key to set traits. */
             allow_client_traits?: boolean;
             banner_text?: string | null;
@@ -5289,21 +5303,21 @@ export interface components {
              *     (e.g. in a PUT request) will not behave as expected but, since this is a minor
              *     issue, I think we can ignore.
              */
-            readonly use_mv_v2_evaluation?: boolean;
+            use_mv_v2_evaluation?: $Read<boolean>;
             /** @description Enable this to have consistent multivariate and percentage split evaluations across all SDKs (in local and server side mode) */
             use_identity_composite_key_for_hashing?: boolean;
             /** @description If true, will hide sensitive data(e.g: traits, description etc) from the SDK endpoints */
             hide_sensitive_data?: boolean;
-            readonly use_v2_feature_versioning?: boolean;
+            use_v2_feature_versioning?: $Read<boolean>;
             /** @description When enabled, identity overrides will be included in the environment document */
             use_identity_overrides_in_local_eval?: boolean;
             /** @description Attribute used to indicate when an environment is still being created (via clone for example) */
-            readonly is_creating?: boolean;
+            is_creating?: $Read<boolean>;
             metadata?: components["schemas"]["Metadata"][];
         };
         /** @description Adds nested create feature */
         CreateFeature: {
-            readonly id?: number;
+            id?: $Read<number>;
             name: string;
             type?: components["schemas"]["TypeD77Enum"] | components["schemas"]["BlankEnum"];
             default_enabled?: boolean;
@@ -5312,7 +5326,7 @@ export interface components {
              * DateCreated
              * Format: date-time
              */
-            readonly created_date?: string;
+            created_date?: $Read<string>;
             description?: string | null;
             tags?: number[];
             multivariate_options?: components["schemas"]["NestedMultivariateFeatureOption"][];
@@ -5320,28 +5334,28 @@ export interface components {
             owners?: number[];
             group_owners?: number[];
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             /** @description Changing the project selected will remove previous Feature States for the previously associated projects Environments that are related to this Feature. New default Feature States will be created for the new selected projects Environments for this Feature. Also this will remove any Tags associated with a feature as Tags are Project defined */
-            readonly project?: number;
-            readonly environment_feature_state?: components["schemas"]["FeatureStateSerializerSmall"] | null;
-            readonly segment_feature_state?: components["schemas"]["FeatureStateSerializerSmall"] | null;
+            project?: $Read<number>;
+            environment_feature_state?: $Read<components["schemas"]["FeatureStateSerializerSmall"] | null>;
+            segment_feature_state?: $Read<components["schemas"]["FeatureStateSerializerSmall"] | null>;
             /** @description Number of segment overrides that exist for the given feature in the environment provided by the `environment` query parameter. */
-            readonly num_segment_overrides?: number;
+            num_segment_overrides?: $Read<number>;
             /** @description Number of identity overrides that exist for the given feature in the environment provided by the `environment` query parameter. Note: will return null for Edge enabled projects. */
-            readonly num_identity_overrides?: number | null;
+            num_identity_overrides?: $Read<number | null>;
             /** @default true */
-            readonly is_num_identity_overrides_complete: boolean;
+            is_num_identity_overrides_complete: $Read<boolean>;
             is_server_key_only?: boolean;
             /**
              * Format: date-time
              * @description Datetime representing the last time that the feature was modified in any environment in the given project. Note: requires feature versioning v2 enabled on the environment.
              */
-            readonly last_modified_in_any_environment?: string | null;
+            last_modified_in_any_environment?: $Read<string | null>;
             /**
              * Format: date-time
              * @description Datetime representing the last time that the feature was modified in any environment in the current environment. Note: requires that the environment query parameter is passed and feature versioning v2 enabled on the environment.
              */
-            readonly last_modified_in_current_environment?: string | null;
+            last_modified_in_current_environment?: $Read<string | null>;
         };
         CreateFeatureExport: {
             environment_id: number;
@@ -5355,99 +5369,99 @@ export interface components {
             project_key: string;
         };
         CreateUpdateUserEnvironmentPermission: {
-            readonly id?: number;
+            id?: $Read<number>;
             permissions?: string[];
             admin?: boolean;
             user: number;
         };
         CreateUpdateUserPermissionGroupEnvironmentPermission: {
-            readonly id?: number;
+            id?: $Read<number>;
             permissions?: string[];
             admin?: boolean;
             group: number;
         };
         CreateUpdateUserPermissionGroupProjectPermission: {
-            readonly id?: number;
+            id?: $Read<number>;
             permissions?: string[];
             admin?: boolean;
             group: number;
         };
         CreateUpdateUserProjectPermission: {
-            readonly id?: number;
+            id?: $Read<number>;
             permissions?: string[];
             admin?: boolean;
             user: number;
         };
         CurrentBillingPeriod: {
             /** Format: date-time */
-            readonly starts_at?: string;
+            starts_at?: $Read<string>;
             /** Format: date-time */
-            readonly ends_at?: string;
+            ends_at?: $Read<string>;
         };
         CustomCreateSegmentOverrideFeatureSegment: {
-            readonly id?: number;
+            id?: $Read<number>;
             segment: number;
             priority?: number;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
         };
         /** @description Adds nested create feature */
         CustomCreateSegmentOverrideFeatureState: {
-            readonly id?: number;
-            readonly feature?: number;
+            id?: $Read<number>;
+            feature?: $Read<number>;
             enabled?: boolean;
             feature_state_value: components["schemas"]["FeatureStateValue"];
             feature_segment?: components["schemas"]["CustomCreateSegmentOverrideFeatureSegment"] | null;
             /** Format: date-time */
-            readonly deleted_at?: string | null;
+            deleted_at?: $Read<string | null>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             /** Format: date-time */
-            readonly created_at?: string;
+            created_at?: $Read<string>;
             /** Format: date-time */
-            readonly updated_at?: string;
+            updated_at?: $Read<string>;
             /** Format: date-time */
-            readonly live_from?: string | null;
-            readonly environment?: number | null;
-            readonly identity?: number | null;
-            readonly change_request?: number | null;
+            live_from?: $Read<string | null>;
+            environment?: $Read<number | null>;
+            identity?: $Read<number | null>;
+            change_request?: $Read<number | null>;
             multivariate_feature_state_values?: components["schemas"]["MultivariateFeatureStateValue"][];
         };
         CustomCurrentUser: {
             first_name: string;
             last_name: string;
             sign_up_type?: components["schemas"]["SignUpTypeEnum"] | components["schemas"]["BlankEnum"] | components["schemas"]["NullEnum"];
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: email */
-            readonly email?: string;
-            readonly auth_type?: string;
-            readonly is_superuser?: boolean;
+            email?: $Read<string>;
+            auth_type?: $Read<string>;
+            is_superuser?: $Read<boolean>;
             /** Format: date-time */
             date_joined?: string;
             /** Format: uuid */
-            readonly uuid?: string;
-            readonly pylon_email_signature?: string;
+            uuid?: $Read<string>;
+            pylon_email_signature?: $Read<string>;
         };
         /** @description Adds nested create feature */
         CustomEnvironmentFeatureVersionFeatureState: {
-            readonly id?: number;
-            readonly feature?: number;
+            id?: $Read<number>;
+            feature?: $Read<number>;
             enabled?: boolean;
             feature_state_value: components["schemas"]["FeatureStateValue"];
             feature_segment?: components["schemas"]["CustomCreateSegmentOverrideFeatureSegment"] | null;
             /** Format: date-time */
-            readonly deleted_at?: string | null;
+            deleted_at?: $Read<string | null>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             /** Format: date-time */
-            readonly created_at?: string;
+            created_at?: $Read<string>;
             /** Format: date-time */
-            readonly updated_at?: string;
+            updated_at?: $Read<string>;
             /** Format: date-time */
-            readonly live_from?: string | null;
-            readonly environment?: number | null;
-            readonly identity?: number | null;
-            readonly change_request?: number | null;
+            live_from?: $Read<string | null>;
+            environment?: $Read<number | null>;
+            identity?: $Read<number | null>;
+            change_request?: $Read<number | null>;
             multivariate_feature_state_values?: components["schemas"]["MultivariateFeatureStateValue"][];
         };
         CustomTokenCreate: {
@@ -5460,23 +5474,23 @@ export interface components {
             sign_up_type?: components["schemas"]["SignUpTypeEnum"] | components["schemas"]["BlankEnum"] | components["schemas"]["NullEnum"];
             /** Format: email */
             email: string;
-            readonly id?: number;
-            password: string;
+            id?: $Read<number>;
+            password: $Write<string>;
             /**
              * Active
              * @description Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
              */
-            readonly is_active?: boolean;
+            is_active?: $Read<boolean>;
             /** @description Determines whether the user has agreed to receive marketing mails */
-            readonly marketing_consent_given?: boolean;
+            marketing_consent_given?: $Read<boolean>;
             /** Format: uuid */
-            readonly uuid?: string;
-            signup_anonymous_id?: string;
-            readonly key?: string | null;
-            superuser?: boolean;
+            uuid?: $Read<string>;
+            signup_anonymous_id?: $Write<string>;
+            key?: $Read<string | null>;
+            superuser?: $Write<boolean>;
         };
         DataDogConfiguration: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uri */
             base_url: string;
             api_key: string;
@@ -5699,14 +5713,14 @@ export interface components {
          */
         DirectionEnum: "up" | "down" | "informational";
         DynatraceConfiguration: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uri */
             base_url?: string | null;
             api_key: string;
             entity_selector: string;
         };
         EdgeIdentity: {
-            readonly identity_uuid?: string;
+            identity_uuid?: $Read<string>;
             identifier: string;
             dashboard_alias?: string;
         };
@@ -5718,9 +5732,9 @@ export interface components {
             multivariate_feature_state_values?: components["schemas"]["EdgeMultivariateFeatureStateValue"][];
             /** @default false */
             enabled: boolean;
-            readonly featurestate_uuid?: string;
+            featurestate_uuid?: $Read<string>;
             /** Format: uuid */
-            readonly identity_uuid?: string;
+            identity_uuid?: $Read<string>;
         };
         EdgeIdentitySourceIdentityRequest: {
             /** @description UUID of the source identity to clone feature states from. */
@@ -5731,8 +5745,8 @@ export interface components {
             trait_value: string | null;
         };
         EdgeIdentityUpdate: {
-            readonly identity_uuid?: string;
-            readonly identifier: string;
+            identity_uuid?: $Read<string>;
+            identifier: $Read<string>;
             dashboard_alias?: string;
         };
         EdgeIdentityWithIdentifierFeatureStateRequestBody: {
@@ -5743,9 +5757,9 @@ export interface components {
             multivariate_feature_state_values?: components["schemas"]["EdgeMultivariateFeatureStateValue"][];
             /** @default false */
             enabled: boolean;
-            readonly featurestate_uuid?: string;
+            featurestate_uuid?: $Read<string>;
             /** Format: uuid */
-            readonly identity_uuid?: string;
+            identity_uuid?: $Read<string>;
             identifier: string;
         };
         EdgeMultivariateFeatureStateValue: {
@@ -5762,55 +5776,55 @@ export interface components {
          */
         EdgeV2MigrationStatusEnum: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETE" | "INCOMPLETE";
         EnvironmentAPIKey: {
-            readonly id?: number;
-            readonly key?: string;
+            id?: $Read<number>;
+            key?: $Read<string>;
             active?: boolean;
             /** Format: date-time */
-            readonly created_at?: string;
+            created_at?: $Read<string>;
             name: string;
             /** Format: date-time */
             expires_at?: string | null;
         };
         EnvironmentFeatureVersion: {
             /** Format: date-time */
-            readonly created_at?: string;
+            created_at?: $Read<string>;
             /** Format: date-time */
-            readonly updated_at?: string;
-            readonly published?: boolean;
+            updated_at?: $Read<string>;
+            published?: $Read<boolean>;
             /** Format: date-time */
             live_from?: string | null;
             /** Format: uuid */
-            readonly uuid?: string;
-            readonly is_live?: boolean;
-            readonly published_by?: number | null;
-            readonly created_by?: number | null;
+            uuid?: $Read<string>;
+            is_live?: $Read<boolean>;
+            published_by?: $Read<number | null>;
+            created_by?: $Read<number | null>;
             description?: string | null;
         };
         EnvironmentFeatureVersionCreate: {
             /** Format: date-time */
-            readonly created_at?: string;
+            created_at?: $Read<string>;
             /** Format: date-time */
-            readonly updated_at?: string;
-            readonly published?: boolean;
+            updated_at?: $Read<string>;
+            published?: $Read<boolean>;
             /** Format: date-time */
             live_from?: string | null;
             /** Format: uuid */
-            readonly uuid?: string;
-            readonly is_live?: boolean;
-            readonly published_by?: number | null;
-            readonly created_by?: number | null;
+            uuid?: $Read<string>;
+            is_live?: $Read<boolean>;
+            published_by?: $Read<number | null>;
+            created_by?: $Read<number | null>;
             description?: string | null;
             /** @description Array of feature states that will be created in the new version. Note: these can only include segment overrides. */
-            feature_states_to_create?: components["schemas"]["CustomEnvironmentFeatureVersionFeatureState"][] | null;
+            feature_states_to_create?: $Write<components["schemas"]["CustomEnvironmentFeatureVersionFeatureState"][] | null>;
             /** @description Array of feature states to update in the new version. */
-            feature_states_to_update?: components["schemas"]["CustomEnvironmentFeatureVersionFeatureState"][] | null;
+            feature_states_to_update?: $Write<components["schemas"]["CustomEnvironmentFeatureVersionFeatureState"][] | null>;
             /** @description List of segment ids for which the segment overrides will be removed in the new version. */
-            segment_ids_to_delete_overrides?: number[] | null;
+            segment_ids_to_delete_overrides?: $Write<number[] | null>;
             /**
              * @description Boolean to confirm whether the new version should be publish immediately or not.
              * @default false
              */
-            publish_immediately: boolean;
+            publish_immediately: $Write<boolean>;
         };
         EnvironmentFeatureVersionPublish: {
             /** Format: date-time */
@@ -5818,24 +5832,24 @@ export interface components {
         };
         EnvironmentFeatureVersionRetrieve: {
             /** Format: date-time */
-            readonly created_at?: string;
+            created_at?: $Read<string>;
             /** Format: date-time */
-            readonly updated_at?: string;
-            readonly published?: boolean;
+            updated_at?: $Read<string>;
+            published?: $Read<boolean>;
             /** Format: date-time */
             live_from?: string | null;
             /** Format: uuid */
-            readonly uuid?: string;
-            readonly is_live?: boolean;
-            readonly published_by?: number | null;
-            readonly created_by?: number | null;
+            uuid?: $Read<string>;
+            is_live?: $Read<boolean>;
+            published_by?: $Read<number | null>;
+            created_by?: $Read<number | null>;
             description?: string | null;
-            readonly previous_version_uuid?: string | null;
-            readonly feature?: number;
-            readonly environment?: number;
+            previous_version_uuid?: $Read<string | null>;
+            feature?: $Read<number>;
+            environment?: $Read<number>;
         };
         EnvironmentMetrics: {
-            readonly metrics?: components["schemas"]["MetricItem"][];
+            metrics?: $Read<components["schemas"]["MetricItem"][]>;
         };
         EnvironmentOnboardingStatus: {
             /**
@@ -5848,9 +5862,9 @@ export interface components {
         };
         /** @description Functionality for serializers that need to handle metadata */
         EnvironmentRetrieveSerializerWithMetadata: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             name: string;
             api_key?: string;
             description?: string | null;
@@ -5871,23 +5885,23 @@ export interface components {
              *     (e.g. in a PUT request) will not behave as expected but, since this is a minor
              *     issue, I think we can ignore.
              */
-            readonly use_mv_v2_evaluation?: boolean;
+            use_mv_v2_evaluation?: $Read<boolean>;
             /** @description Enable this to have consistent multivariate and percentage split evaluations across all SDKs (in local and server side mode) */
             use_identity_composite_key_for_hashing?: boolean;
             /** @description If true, will hide sensitive data(e.g: traits, description etc) from the SDK endpoints */
             hide_sensitive_data?: boolean;
-            readonly use_v2_feature_versioning?: boolean;
+            use_v2_feature_versioning?: $Read<boolean>;
             /** @description When enabled, identity overrides will be included in the environment document */
             use_identity_overrides_in_local_eval?: boolean;
             /** @description Attribute used to indicate when an environment is still being created (via clone for example) */
-            readonly is_creating?: boolean;
+            is_creating?: $Read<boolean>;
             metadata?: components["schemas"]["Metadata"][];
             total_segment_overrides: number;
         };
         EnvironmentSerializerLight: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             name: string;
             api_key?: string;
             description?: string | null;
@@ -5908,22 +5922,22 @@ export interface components {
              *     (e.g. in a PUT request) will not behave as expected but, since this is a minor
              *     issue, I think we can ignore.
              */
-            readonly use_mv_v2_evaluation?: boolean;
+            use_mv_v2_evaluation?: $Read<boolean>;
             /** @description Enable this to have consistent multivariate and percentage split evaluations across all SDKs (in local and server side mode) */
             use_identity_composite_key_for_hashing?: boolean;
             /** @description If true, will hide sensitive data(e.g: traits, description etc) from the SDK endpoints */
             hide_sensitive_data?: boolean;
-            readonly use_v2_feature_versioning?: boolean;
+            use_v2_feature_versioning?: $Read<boolean>;
             /** @description When enabled, identity overrides will be included in the environment document */
             use_identity_overrides_in_local_eval?: boolean;
             /** @description Attribute used to indicate when an environment is still being created (via clone for example) */
-            readonly is_creating?: boolean;
+            is_creating?: $Read<boolean>;
         };
         /** @description Functionality for serializers that need to handle metadata */
         EnvironmentSerializerWithMetadata: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             name: string;
             api_key?: string;
             description?: string | null;
@@ -5944,16 +5958,16 @@ export interface components {
              *     (e.g. in a PUT request) will not behave as expected but, since this is a minor
              *     issue, I think we can ignore.
              */
-            readonly use_mv_v2_evaluation?: boolean;
+            use_mv_v2_evaluation?: $Read<boolean>;
             /** @description Enable this to have consistent multivariate and percentage split evaluations across all SDKs (in local and server side mode) */
             use_identity_composite_key_for_hashing?: boolean;
             /** @description If true, will hide sensitive data(e.g: traits, description etc) from the SDK endpoints */
             hide_sensitive_data?: boolean;
-            readonly use_v2_feature_versioning?: boolean;
+            use_v2_feature_versioning?: $Read<boolean>;
             /** @description When enabled, identity overrides will be included in the environment document */
             use_identity_overrides_in_local_eval?: boolean;
             /** @description Attribute used to indicate when an environment is still being created (via clone for example) */
-            readonly is_creating?: boolean;
+            is_creating?: $Read<boolean>;
             metadata?: components["schemas"]["Metadata"][];
         };
         Error: {
@@ -5968,23 +5982,23 @@ export interface components {
          */
         ExpectedDirectionEnum: "increase" | "decrease" | "not_increase" | "not_decrease";
         Experiment: {
-            readonly id?: number;
+            id?: $Read<number>;
             feature: number;
             name: string;
             hypothesis: string;
-            readonly status?: components["schemas"]["Status7a8Enum"];
-            metrics?: components["schemas"]["ExperimentMetricInline"][];
-            experiment_rollout?: components["schemas"]["ExperimentRollout"];
+            status?: $Read<components["schemas"]["Status7a8Enum"]>;
+            metrics?: $Write<components["schemas"]["ExperimentMetricInline"][]>;
+            experiment_rollout?: $Write<components["schemas"]["ExperimentRollout"]>;
             /** Format: date-time */
-            readonly created_at?: string;
+            created_at?: $Read<string>;
             /** Format: date-time */
-            readonly updated_at?: string;
+            updated_at?: $Read<string>;
             /** Format: date-time */
-            readonly started_at?: string | null;
+            started_at?: $Read<string | null>;
             /** Format: date-time */
-            readonly ended_at?: string | null;
-            readonly rollout_decision?: components["schemas"]["RolloutDecisionEnum"] | components["schemas"]["NullEnum"];
-            readonly rollout_variant?: number | null;
+            ended_at?: $Read<string | null>;
+            rollout_decision?: $Read<components["schemas"]["RolloutDecisionEnum"] | components["schemas"]["NullEnum"]>;
+            rollout_variant?: $Read<number | null>;
         };
         ExperimentAudience: {
             /** @default any */
@@ -5992,63 +6006,63 @@ export interface components {
             segment_ids: number[];
         };
         ExperimentDetail: {
-            readonly id?: number;
-            readonly feature?: components["schemas"]["ExperimentFeature"];
+            id?: $Read<number>;
+            feature?: $Read<components["schemas"]["ExperimentFeature"]>;
             name: string;
             hypothesis: string;
-            readonly status?: components["schemas"]["Status7a8Enum"];
-            readonly metrics?: components["schemas"]["ExperimentMetric"][];
-            readonly experiment_rollout?: {
+            status?: $Read<components["schemas"]["Status7a8Enum"]>;
+            metrics?: $Read<components["schemas"]["ExperimentMetric"][]>;
+            experiment_rollout?: $Read<{
                 [key: string]: unknown;
-            } | null;
+            } | null>;
             /** Format: date-time */
-            readonly created_at?: string;
+            created_at?: $Read<string>;
             /** Format: date-time */
-            readonly updated_at?: string;
+            updated_at?: $Read<string>;
             /** Format: date-time */
-            readonly started_at?: string | null;
+            started_at?: $Read<string | null>;
             /** Format: date-time */
-            readonly ended_at?: string | null;
-            readonly rollout_decision?: components["schemas"]["RolloutDecisionEnum"] | components["schemas"]["NullEnum"];
-            readonly rollout_variant?: number | null;
+            ended_at?: $Read<string | null>;
+            rollout_decision?: $Read<components["schemas"]["RolloutDecisionEnum"] | components["schemas"]["NullEnum"]>;
+            rollout_variant?: $Read<number | null>;
         };
         ExperimentFeature: {
-            readonly id?: number;
-            readonly name?: string;
-            readonly type?: components["schemas"]["TypeD77Enum"];
-            readonly initial_value?: string | null;
-            readonly multivariate_options?: {
+            id?: $Read<number>;
+            name?: $Read<string>;
+            type?: $Read<components["schemas"]["TypeD77Enum"]>;
+            initial_value?: $Read<string | null>;
+            multivariate_options?: $Read<{
                 [key: string]: unknown;
-            }[];
+            }[]>;
         };
         ExperimentList: {
-            readonly id?: number;
-            readonly feature?: components["schemas"]["ExperimentFeature"];
+            id?: $Read<number>;
+            feature?: $Read<components["schemas"]["ExperimentFeature"]>;
             name: string;
             hypothesis: string;
-            readonly status?: components["schemas"]["Status7a8Enum"];
-            readonly metrics?: components["schemas"]["ExperimentMetric"][];
-            experiment_rollout?: components["schemas"]["ExperimentRollout"];
+            status?: $Read<components["schemas"]["Status7a8Enum"]>;
+            metrics?: $Read<components["schemas"]["ExperimentMetric"][]>;
+            experiment_rollout?: $Write<components["schemas"]["ExperimentRollout"]>;
             /** Format: date-time */
-            readonly created_at?: string;
+            created_at?: $Read<string>;
             /** Format: date-time */
-            readonly updated_at?: string;
+            updated_at?: $Read<string>;
             /** Format: date-time */
-            readonly started_at?: string | null;
+            started_at?: $Read<string | null>;
             /** Format: date-time */
-            readonly ended_at?: string | null;
-            readonly rollout_decision?: components["schemas"]["RolloutDecisionEnum"] | components["schemas"]["NullEnum"];
-            readonly rollout_variant?: number | null;
+            ended_at?: $Read<string | null>;
+            rollout_decision?: $Read<components["schemas"]["RolloutDecisionEnum"] | components["schemas"]["NullEnum"]>;
+            rollout_variant?: $Read<number | null>;
         };
         ExperimentMetric: {
-            readonly id?: number;
+            id?: $Read<number>;
             metric: number;
-            readonly metric_name?: string;
-            readonly aggregation?: string;
-            readonly direction?: components["schemas"]["DirectionEnum"];
+            metric_name?: $Read<string>;
+            aggregation?: $Read<string>;
+            direction?: $Read<components["schemas"]["DirectionEnum"]>;
             expected_direction: components["schemas"]["ExpectedDirectionEnum"];
             /** Format: date-time */
-            readonly created_at?: string;
+            created_at?: $Read<string>;
         };
         ExperimentMetricInline: {
             metric: string;
@@ -6100,15 +6114,15 @@ export interface components {
             labels: components["schemas"]["Labels"] | null;
         };
         FeatureExport: {
-            readonly id?: number;
-            readonly name?: string;
-            readonly environment_id?: number;
+            id?: $Read<number>;
+            name?: $Read<string>;
+            environment_id?: $Read<number>;
             status?: components["schemas"]["Status6d4Enum"];
             /** Format: date-time */
-            readonly created_at?: string;
+            created_at?: $Read<string>;
         };
         FeatureExternalResource: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uri */
             url: string;
             type: components["schemas"]["FeatureExternalResourceTypeEnum"];
@@ -6145,8 +6159,8 @@ export interface components {
         };
         FeatureFlagCodeReferencesScan: {
             /** Format: date-time */
-            readonly created_at?: string;
-            readonly project?: number;
+            created_at?: $Read<string>;
+            project?: $Read<number>;
             /** Format: uri */
             repository_url: string;
             /** @default github */
@@ -6158,14 +6172,14 @@ export interface components {
             group_ids: number[];
         };
         FeatureHealthEvent: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: date-time */
-            readonly created_at?: string;
-            readonly environment?: number | null;
-            readonly feature?: number;
-            readonly provider_name?: string | null;
+            created_at?: $Read<string>;
+            environment?: $Read<number | null>;
+            feature?: $Read<number>;
+            provider_name?: $Read<string | null>;
             reason: components["schemas"]["FeatureHealthEventReason"] | null;
-            readonly type?: components["schemas"]["FeatureHealthEventTypeEnum"];
+            type?: $Read<components["schemas"]["FeatureHealthEventTypeEnum"]>;
         };
         FeatureHealthEventReason: {
             text_blocks: components["schemas"]["FeatureHealthEventReasonTextBlock"][];
@@ -6187,18 +6201,18 @@ export interface components {
         FeatureHealthEventTypeEnum: "UNHEALTHY" | "HEALTHY";
         FeatureHealthProvider: {
             /** Format: email */
-            readonly created_by?: string;
+            created_by?: $Read<string>;
             name: components["schemas"]["NameEnum"];
             project: number;
-            readonly webhook_url?: string;
+            webhook_url?: $Read<string>;
         };
         FeatureImport: {
-            readonly id?: number;
-            readonly environment_id?: number;
+            id?: $Read<number>;
+            environment_id?: $Read<number>;
             strategy: components["schemas"]["FeatureImportStrategyEnum"];
             status?: components["schemas"]["Status6d4Enum"];
             /** Format: date-time */
-            readonly created_at?: string;
+            created_at?: $Read<string>;
         };
         /**
          * @description * `SKIP` - Skip
@@ -6280,7 +6294,7 @@ export interface components {
             to_remove: number;
         };
         FeatureMVOptionsValuesResponse: {
-            readonly control_value?: string | number | boolean | null;
+            control_value?: $Read<string | number | boolean | null>;
             options: components["schemas"]["MultivariateOptionValues"][];
         };
         FeatureOwnerInput: {
@@ -6292,25 +6306,25 @@ export interface components {
             priority: number;
         };
         FeatureSegmentCreate: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             feature: number;
             segment: number;
             environment: number;
-            readonly priority?: number;
+            priority?: $Read<number>;
         };
         FeatureSegmentList: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uuid */
-            readonly uuid?: string;
-            readonly segment?: number;
-            readonly priority?: number;
-            readonly environment?: number;
-            readonly segment_name?: string;
-            readonly is_feature_specific?: boolean;
+            uuid?: $Read<string>;
+            segment?: $Read<number>;
+            priority?: $Read<number>;
+            environment?: $Read<number>;
+            segment_name?: $Read<string>;
+            is_feature_specific?: $Read<boolean>;
             /** @description System segment overrides can't be changed directly. */
-            readonly is_system_segment?: boolean;
+            is_system_segment?: $Read<boolean>;
             /**
              * @description The feature managing the segment, if any.
              *
@@ -6320,27 +6334,27 @@ export interface components {
              *     * `experiment` - Experiment
              *     * `release_pipeline` - Gradual rollout
              */
-            readonly segment_managed_by?: components["schemas"]["SegmentManagedByEnum"] | components["schemas"]["BlankEnum"];
+            segment_managed_by?: $Read<components["schemas"]["SegmentManagedByEnum"] | components["schemas"]["BlankEnum"]>;
         };
         /** @description Adds nested create feature */
         FeatureStateSerializerBasic: {
-            readonly id?: number;
-            readonly feature_state_value?: string | number | boolean | null;
+            id?: $Read<number>;
+            feature_state_value?: $Read<string | number | boolean | null>;
             multivariate_feature_state_values?: components["schemas"]["MultivariateFeatureStateValue"][];
             /** @description Can be passed as an alternative to `identity` */
             identifier?: string;
             /** Format: date-time */
-            readonly deleted_at?: string | null;
+            deleted_at?: $Read<string | null>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             enabled?: boolean;
             /** Format: date-time */
-            readonly created_at?: string;
+            created_at?: $Read<string>;
             /** Format: date-time */
-            readonly updated_at?: string;
+            updated_at?: $Read<string>;
             /** Format: date-time */
             live_from?: string | null;
-            readonly version?: number | null;
+            version?: $Read<number | null>;
             feature: number;
             environment?: number | null;
             identity?: number | null;
@@ -6354,8 +6368,8 @@ export interface components {
             enabled?: boolean;
         };
         FeatureStateSerializerSmall: {
-            readonly id?: number;
-            readonly feature_state_value?: string | number | boolean | null;
+            id?: $Read<number>;
+            feature_state_value?: $Read<string | number | boolean | null>;
             environment?: number | null;
             identity?: number | null;
             feature_segment?: number | null;
@@ -6363,24 +6377,24 @@ export interface components {
         };
         /** @description Adds nested create feature */
         FeatureStateSerializerWithIdentity: {
-            readonly id?: number;
-            readonly feature_state_value?: string | number | boolean | null;
+            id?: $Read<number>;
+            feature_state_value?: $Read<string | number | boolean | null>;
             multivariate_feature_state_values?: components["schemas"]["MultivariateFeatureStateValue"][];
             /** @description Can be passed as an alternative to `identity` */
             identifier?: string;
             identity: components["schemas"]["_Identity"];
             /** Format: date-time */
-            readonly deleted_at?: string | null;
+            deleted_at?: $Read<string | null>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             enabled?: boolean;
             /** Format: date-time */
-            readonly created_at?: string;
+            created_at?: $Read<string>;
             /** Format: date-time */
-            readonly updated_at?: string;
+            updated_at?: $Read<string>;
             /** Format: date-time */
             live_from?: string | null;
-            readonly version?: number | null;
+            version?: $Read<number | null>;
             feature: number;
             environment?: number | null;
             feature_segment?: number | null;
@@ -6414,22 +6428,22 @@ export interface components {
             feature_state: components["schemas"]["BaseEdgeIdentityFeatureState"];
         };
         GetHostedPageForSubscriptionUpgrade: {
-            plan_id: string;
-            subscription_id: string;
+            plan_id: $Write<string>;
+            subscription_id: $Write<string>;
             /** Format: uri */
-            readonly url?: string;
+            url?: $Read<string>;
         };
         GitLabConfiguration: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uri */
             gitlab_instance_url: string;
             access_token: string;
             labeling_enabled?: boolean;
         };
         GithubConfiguration: {
-            readonly id?: number;
+            id?: $Read<number>;
             installation_id: string;
-            readonly organisation?: number;
+            organisation?: $Read<number>;
         };
         GithubLogin: {
             /** @description Code or access token returned from the FE interaction with the third party login provider. */
@@ -6441,14 +6455,14 @@ export interface components {
              *     * `INVITE_EMAIL` - Invite Email
              *     * `INVITE_LINK` - Invite Link
              */
-            sign_up_type?: components["schemas"]["SignUpTypeEnum"] | components["schemas"]["BlankEnum"] | components["schemas"]["NullEnum"];
+            sign_up_type?: $Write<components["schemas"]["SignUpTypeEnum"] | components["schemas"]["BlankEnum"] | components["schemas"]["NullEnum"]>;
             hubspot_cookie?: string | null;
             marketing_consent_given?: boolean | null;
             utm_data?: components["schemas"]["UTMData"] | null;
         };
         GithubRepository: {
-            readonly id?: number;
-            readonly github_configuration?: number;
+            id?: $Read<number>;
+            github_configuration?: $Read<number>;
             project: number;
             repository_owner: string;
             repository_name: string;
@@ -6464,19 +6478,19 @@ export interface components {
              *     * `INVITE_EMAIL` - Invite Email
              *     * `INVITE_LINK` - Invite Link
              */
-            sign_up_type?: components["schemas"]["SignUpTypeEnum"] | components["schemas"]["BlankEnum"] | components["schemas"]["NullEnum"];
+            sign_up_type?: $Write<components["schemas"]["SignUpTypeEnum"] | components["schemas"]["BlankEnum"] | components["schemas"]["NullEnum"]>;
             hubspot_cookie?: string | null;
             marketing_consent_given?: boolean | null;
             utm_data?: components["schemas"]["UTMData"] | null;
         };
         GrafanaOrganisationConfiguration: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uri */
             base_url?: string | null;
             api_key: string;
         };
         GrafanaProjectConfiguration: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uri */
             base_url?: string | null;
             api_key: string;
@@ -6486,7 +6500,7 @@ export interface components {
             name: string;
         };
         HeapConfiguration: {
-            readonly id?: number;
+            id?: $Read<number>;
             api_key: string;
             /** Format: uri */
             base_url?: string | null;
@@ -6500,18 +6514,18 @@ export interface components {
             identifier: string;
         };
         Identity: {
-            readonly id?: number;
+            id?: $Read<number>;
             identifier: string;
-            readonly environment?: number;
+            environment?: $Read<number>;
         };
         IdentityAllFeatureStates: {
             feature: components["schemas"]["IdentityAllFeatureStatesFeature"];
             enabled: boolean;
             /** @description Can be any of the following types: integer, boolean, string. */
-            readonly feature_state_value?: string | number | boolean;
+            feature_state_value?: $Read<string | number | boolean>;
             /** @description One of: null, 'SEGMENT', 'IDENTITY'. */
-            readonly overridden_by?: string | null;
-            readonly segment?: components["schemas"]["IdentityAllFeatureStatesSegment"];
+            overridden_by?: $Read<string | null>;
+            segment?: $Read<components["schemas"]["IdentityAllFeatureStatesSegment"]>;
             multivariate_feature_state_values: components["schemas"]["IdentityAllFeatureStatesMVFeatureStateValue"][];
         };
         IdentityAllFeatureStatesFeature: {
@@ -6521,7 +6535,7 @@ export interface components {
         };
         IdentityAllFeatureStatesMVFeatureOption: {
             /** @description Can be any of the following types: integer, boolean, string. */
-            readonly value?: string | number | boolean;
+            value?: $Read<string | number | boolean>;
         };
         IdentityAllFeatureStatesMVFeatureStateValue: {
             multivariate_feature_option: components["schemas"]["IdentityAllFeatureStatesMVFeatureOption"];
@@ -6538,9 +6552,9 @@ export interface components {
         };
         IncrementTraitValue: {
             trait_key: string;
-            increment_by: number;
+            increment_by: $Write<number>;
             identifier: string;
-            readonly trait_value?: number;
+            trait_value?: $Read<number>;
         };
         InfluxData: {
             events_list: {
@@ -6548,7 +6562,7 @@ export interface components {
             }[];
         };
         Invite: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: email */
             email: string;
             role?: components["schemas"]["RoleEnum"];
@@ -6556,17 +6570,17 @@ export interface components {
              * DateCreated
              * Format: date-time
              */
-            readonly date_created?: string;
+            date_created?: $Read<string>;
             permission_groups?: (number | null)[];
         };
         InviteLink: {
-            readonly id?: number;
-            readonly hash?: string;
+            id?: $Read<number>;
+            hash?: $Read<string>;
             /**
              * DateCreated
              * Format: date-time
              */
-            readonly date_created?: string;
+            date_created?: $Read<string>;
             role?: components["schemas"]["RoleEnum"];
             /**
              * Format: date-time
@@ -6575,14 +6589,14 @@ export interface components {
             expires_at?: string | null;
         };
         InviteList: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: email */
             email: string;
             /**
              * DateCreated
              * Format: date-time
              */
-            readonly date_created?: string;
+            date_created?: $Read<string>;
             invited_by: components["schemas"]["UserList"];
             permission_groups?: number[];
         };
@@ -6592,24 +6606,24 @@ export interface components {
             user_agent?: string | null;
         };
         LaunchDarklyImportRequest: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: email */
-            readonly created_by?: string;
+            created_by?: $Read<string>;
             /** Format: date-time */
-            readonly created_at?: string;
+            created_at?: $Read<string>;
             /** Format: date-time */
-            readonly updated_at?: string;
+            updated_at?: $Read<string>;
             /** Format: date-time */
-            readonly completed_at?: string | null;
+            completed_at?: $Read<string | null>;
             status: components["schemas"]["LaunchDarklyImportRequestStatus"];
-            readonly project?: number;
+            project?: $Read<number>;
         };
         LaunchDarklyImportRequestStatus: {
-            readonly requested_environment_count?: number;
-            readonly requested_flag_count?: number;
+            requested_environment_count?: $Read<number>;
+            requested_flag_count?: $Read<number>;
             /** @default 0 */
-            readonly deprecated_flag_count: number;
-            readonly result?: components["schemas"]["ResultEnum"] | components["schemas"]["NullEnum"];
+            deprecated_flag_count: $Read<number>;
+            result?: $Read<components["schemas"]["ResultEnum"] | components["schemas"]["NullEnum"]>;
             error_messages: string[];
         };
         /**
@@ -6624,7 +6638,7 @@ export interface components {
         LifecycleStageEnum: "new" | "live" | "stale" | "permanent" | "needs_monitoring" | "to_remove";
         /** @description Functionality for serializers that need to handle metadata */
         ListFeature: {
-            readonly id?: number;
+            id?: $Read<number>;
             name: string;
             type?: components["schemas"]["TypeD77Enum"] | components["schemas"]["BlankEnum"];
             default_enabled?: boolean;
@@ -6633,7 +6647,7 @@ export interface components {
              * DateCreated
              * Format: date-time
              */
-            readonly created_date?: string;
+            created_date?: $Read<string>;
             description?: string | null;
             tags?: number[];
             multivariate_options?: components["schemas"]["NestedMultivariateFeatureOption"][];
@@ -6641,49 +6655,49 @@ export interface components {
             owners?: number[];
             group_owners?: number[];
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             /** @description Changing the project selected will remove previous Feature States for the previously associated projects Environments that are related to this Feature. New default Feature States will be created for the new selected projects Environments for this Feature. Also this will remove any Tags associated with a feature as Tags are Project defined */
-            readonly project?: number;
-            readonly environment_feature_state?: components["schemas"]["FeatureStateSerializerSmall"] | null;
-            readonly segment_feature_state?: components["schemas"]["FeatureStateSerializerSmall"] | null;
+            project?: $Read<number>;
+            environment_feature_state?: $Read<components["schemas"]["FeatureStateSerializerSmall"] | null>;
+            segment_feature_state?: $Read<components["schemas"]["FeatureStateSerializerSmall"] | null>;
             /** @description Number of segment overrides that exist for the given feature in the environment provided by the `environment` query parameter. */
-            readonly num_segment_overrides?: number;
+            num_segment_overrides?: $Read<number>;
             /** @description Number of identity overrides that exist for the given feature in the environment provided by the `environment` query parameter. Note: will return null for Edge enabled projects. */
-            readonly num_identity_overrides?: number | null;
+            num_identity_overrides?: $Read<number | null>;
             /** @default true */
-            readonly is_num_identity_overrides_complete: boolean;
+            is_num_identity_overrides_complete: $Read<boolean>;
             is_server_key_only?: boolean;
             /**
              * Format: date-time
              * @description Datetime representing the last time that the feature was modified in any environment in the given project. Note: requires feature versioning v2 enabled on the environment.
              */
-            readonly last_modified_in_any_environment?: string | null;
+            last_modified_in_any_environment?: $Read<string | null>;
             /**
              * Format: date-time
              * @description Datetime representing the last time that the feature was modified in any environment in the current environment. Note: requires that the environment query parameter is passed and feature versioning v2 enabled on the environment.
              */
-            readonly last_modified_in_current_environment?: string | null;
+            last_modified_in_current_environment?: $Read<string | null>;
             metadata?: components["schemas"]["Metadata"][];
-            readonly code_references_counts?: components["schemas"]["FeatureFlagCodeReferencesRepositoryCount"][];
-            readonly lifecycle_stage?: components["schemas"]["LifecycleStageEnum"];
+            code_references_counts?: $Read<components["schemas"]["FeatureFlagCodeReferencesRepositoryCount"][]>;
+            lifecycle_stage?: $Read<components["schemas"]["LifecycleStageEnum"]>;
         };
         ListUserEnvironmentPermission: {
-            readonly id?: number;
+            id?: $Read<number>;
             permissions?: string[];
             admin?: boolean;
             user: components["schemas"]["UserList"];
         };
         ListUserPermissionGroup: {
-            readonly id?: number;
+            id?: $Read<number>;
             name: string;
-            readonly users?: components["schemas"]["ListUserPermissionGroupMembership"][];
+            users?: $Read<components["schemas"]["ListUserPermissionGroupMembership"][]>;
             /** @description If set to true, all new users will be added to this group */
             is_default?: boolean;
             /** @description Unique ID of the group in an external system */
             external_id?: string | null;
         };
         ListUserPermissionGroupEnvironmentPermission: {
-            readonly id?: number;
+            id?: $Read<number>;
             permissions?: string[];
             admin?: boolean;
             group: components["schemas"]["UserPermissionGroupSerializerDetail"];
@@ -6698,22 +6712,22 @@ export interface components {
             group_admin?: boolean;
         };
         ListUserPermissionGroupProjectPermission: {
-            readonly id?: number;
+            id?: $Read<number>;
             permissions?: string[];
             admin?: boolean;
             group: components["schemas"]["UserPermissionGroup"];
         };
         ListUserProjectPermission: {
-            readonly id?: number;
+            id?: $Read<number>;
             permissions?: string[];
             admin?: boolean;
             user: components["schemas"]["UserList"];
         };
         MasterAPIKey: {
-            readonly id?: string;
-            readonly prefix?: string;
+            id?: $Read<string>;
+            prefix?: $Read<string>;
             /** Format: date-time */
-            readonly created?: string;
+            created?: $Read<string>;
             /** @description A free-form name for the API key. Need not be unique. 50 characters max. */
             name?: string;
             /** @description If the API key is revoked, clients cannot use it anymore. (This cannot be undone.) */
@@ -6725,11 +6739,11 @@ export interface components {
              */
             expiry_date?: string | null;
             /** @description Since we don't store the api key itself(i.e: we only store the hash) this key will be none for every endpoint apart from create */
-            readonly key?: string;
+            key?: $Read<string>;
             /** @default true */
             is_admin: boolean;
-            readonly has_expired?: boolean;
-            readonly created_by?: number | null;
+            has_expired?: $Read<boolean>;
+            created_by?: $Read<number | null>;
         };
         /**
          * @description * `any` - Any
@@ -6739,24 +6753,24 @@ export interface components {
         MatchEnum: "any" | "all";
         /** @description Adds nested create feature */
         MetaDataModelField: {
-            readonly id?: number;
+            id?: $Read<number>;
             field: number;
             content_type: number;
             is_required_for?: components["schemas"]["MetadataModelFieldRequirement"][];
         };
         Metadata: {
-            readonly id?: number;
+            id?: $Read<number>;
             model_field: number;
             field_value: string;
         };
         MetadataField: {
-            readonly id?: number;
+            id?: $Read<number>;
             name: string;
             type?: components["schemas"]["MetadataFieldTypeEnum"];
             description?: string | null;
             organisation: number;
             project?: number | null;
-            readonly model_fields?: components["schemas"]["MetadataModelFieldNested"][];
+            model_fields?: $Read<components["schemas"]["MetadataModelFieldNested"][]>;
         };
         /**
          * @description * `int` - Integer
@@ -6768,30 +6782,30 @@ export interface components {
          */
         MetadataFieldTypeEnum: "int" | "str" | "bool" | "url" | "multiline_str";
         MetadataModelFieldNested: {
-            readonly id?: number;
+            id?: $Read<number>;
             content_type: number;
-            readonly is_required_for?: components["schemas"]["MetadataModelFieldRequirement"][];
+            is_required_for?: $Read<components["schemas"]["MetadataModelFieldRequirement"][]>;
         };
         MetadataModelFieldRequirement: {
             content_type: number;
             object_id: number;
         };
         Metric: {
-            readonly id?: number;
+            id?: $Read<number>;
             name: string;
             description?: string;
             aggregation?: components["schemas"]["AggregationEnum"];
             direction?: components["schemas"]["DirectionEnum"];
             definition: unknown;
-            readonly experiments?: {
+            experiments?: $Read<{
                 id: number;
                 name: string;
                 status: string;
-            }[];
+            }[]>;
             /** Format: date-time */
-            readonly created_at?: string;
+            created_at?: $Read<string>;
             /** Format: date-time */
-            readonly updated_at?: string;
+            updated_at?: $Read<string>;
         };
         MetricItem: {
             value: number;
@@ -6801,7 +6815,7 @@ export interface components {
             rank?: number;
         };
         MixpanelConfiguration: {
-            readonly id?: number;
+            id?: $Read<number>;
             api_key: string;
             /** Format: uri */
             base_url?: string | null;
@@ -6832,16 +6846,16 @@ export interface components {
             status: string;
         };
         Monitoring: {
-            readonly waiting?: number;
+            waiting?: $Read<number>;
         };
         MultiInvites: {
             invites?: components["schemas"]["Invite"][];
             emails?: string[];
         };
         MultivariateFeatureOption: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             type?: components["schemas"]["Type975Enum"] | components["schemas"]["BlankEnum"] | components["schemas"]["NullEnum"];
             integer_value?: number | null;
             string_value?: string | null;
@@ -6853,7 +6867,7 @@ export interface components {
             feature: number;
         };
         MultivariateFeatureStateValue: {
-            readonly id?: number;
+            id?: $Read<number>;
             multivariate_feature_option: number;
             /** Format: double */
             percentage_allocation: number;
@@ -6863,7 +6877,7 @@ export interface components {
              * @description Given the *incoming* primitive data, return the value for this field
              *     that should be validated and transformed to a native value.
              */
-            readonly value?: string | number | boolean | null;
+            value?: $Read<string | number | boolean | null>;
         };
         MultivariateValue: {
             multivariate_feature_option: number;
@@ -6877,9 +6891,9 @@ export interface components {
          */
         NameEnum: "Webhook" | "Grafana";
         NestedMultivariateFeatureOption: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             type?: components["schemas"]["Type975Enum"] | components["schemas"]["BlankEnum"] | components["schemas"]["NullEnum"];
             integer_value?: number | null;
             string_value?: string | null;
@@ -6887,10 +6901,10 @@ export interface components {
             /** Format: double */
             default_percentage_allocation?: number;
             /** @description A stable, human-readable identifier for the variant. */
-            readonly key?: string | null;
+            key?: $Read<string | null>;
         };
         NewRelicConfiguration: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uri */
             base_url?: string | null;
             api_key: string;
@@ -6898,8 +6912,8 @@ export interface components {
         };
         NullEnum: null;
         OAuthToken: {
-            readonly key?: string;
-            readonly is_new_user?: boolean;
+            key?: $Read<string>;
+            is_new_user?: $Read<boolean>;
         };
         /** @enum {string} */
         Operator2a7Enum: "EQUAL" | "GREATER_THAN" | "LESS_THAN" | "LESS_THAN_INCLUSIVE" | "CONTAINS" | "GREATER_THAN_INCLUSIVE" | "NOT_CONTAINS" | "NOT_EQUAL" | "REGEX" | "PERCENTAGE_SPLIT" | "MODULO" | "IS_SET" | "IS_NOT_SET" | "IN";
@@ -6910,48 +6924,48 @@ export interface components {
             notified_at: string;
         };
         OrganisationSerializerBasic: {
-            readonly id?: number;
+            id?: $Read<number>;
             name: string;
         };
         OrganisationSerializerFull: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             name: string;
             /**
              * DateCreated
              * Format: date-time
              */
-            readonly created_date?: string;
+            created_date?: $Read<string>;
             /** Format: email */
             webhook_notification_email?: string | null;
-            readonly num_seats?: number;
+            num_seats?: $Read<number>;
             subscription?: components["schemas"]["Subscription"];
-            readonly role?: string | null;
+            role?: $Read<string | null>;
             /** @description Disable this if you don't want Flagsmith to store trait data for this org's identities. */
-            readonly persist_trait_data?: boolean;
+            persist_trait_data?: $Read<boolean>;
             /** @description Enable this to block all the access to admin interface for the organisation */
-            readonly block_access_to_admin?: boolean;
+            block_access_to_admin?: $Read<boolean>;
             /** @description Enable this to cease serving flags for this organisation. */
-            readonly stop_serving_flags?: boolean;
-            readonly api_limit_restriction_enabled?: boolean;
-            readonly api_limit_grace_period_used?: boolean;
-            readonly overage_billing_eligible?: boolean;
+            stop_serving_flags?: $Read<boolean>;
+            api_limit_restriction_enabled?: $Read<boolean>;
+            api_limit_grace_period_used?: $Read<boolean>;
+            overage_billing_eligible?: $Read<boolean>;
             restrict_project_create_to_admin?: boolean;
             force_2fa?: boolean;
             /** @description Flagsmith-on-Flagsmith targeting key. Immutable; org.<id> is used when unset. */
-            targeting_key?: string | null;
+            targeting_key?: $Write<string | null>;
         };
         OrganisationWebhook: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uri */
             url: string;
             enabled?: boolean;
             secret?: string;
             /** Format: date-time */
-            readonly created_at?: string | null;
+            created_at?: $Read<string | null>;
             /** Format: date-time */
-            readonly updated_at?: string | null;
+            updated_at?: $Read<string | null>;
         };
         PaginatedAuditLogListList: {
             /** @example 123 */
@@ -7499,47 +7513,47 @@ export interface components {
             re_new_password: string;
         };
         PatchedAmplitudeConfiguration: {
-            readonly id?: number;
+            id?: $Read<number>;
             api_key?: string;
             /** Format: uri */
             base_url?: string;
         };
         PatchedCohort: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             name?: string;
             description?: string | null;
-            metadata?: components["schemas"]["Metadata"][];
-            readonly segment?: number;
-            readonly source_type?: components["schemas"]["SourceTypeEnum"];
-            readonly version?: number;
+            metadata?: $Write<components["schemas"]["Metadata"][]>;
+            segment?: $Read<number>;
+            source_type?: $Read<components["schemas"]["SourceTypeEnum"]>;
+            version?: $Read<number>;
             /** Format: date-time */
-            readonly created_at?: string;
+            created_at?: $Read<string>;
             /** Format: date-time */
-            readonly last_synced_at?: string | null;
-            readonly membership_counts?: components["schemas"]["CohortMembershipCounts"];
+            last_synced_at?: $Read<string | null>;
+            membership_counts?: $Read<components["schemas"]["CohortMembershipCounts"]>;
         };
         PatchedCreateUpdateUserEnvironmentPermission: {
-            readonly id?: number;
+            id?: $Read<number>;
             permissions?: string[];
             admin?: boolean;
             user?: number;
         };
         PatchedCreateUpdateUserPermissionGroupEnvironmentPermission: {
-            readonly id?: number;
+            id?: $Read<number>;
             permissions?: string[];
             admin?: boolean;
             group?: number;
         };
         PatchedCreateUpdateUserPermissionGroupProjectPermission: {
-            readonly id?: number;
+            id?: $Read<number>;
             permissions?: string[];
             admin?: boolean;
             group?: number;
         };
         PatchedCreateUpdateUserProjectPermission: {
-            readonly id?: number;
+            id?: $Read<number>;
             permissions?: string[];
             admin?: boolean;
             user?: number;
@@ -7548,96 +7562,96 @@ export interface components {
             first_name?: string;
             last_name?: string;
             sign_up_type?: components["schemas"]["SignUpTypeEnum"] | components["schemas"]["BlankEnum"] | components["schemas"]["NullEnum"];
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: email */
-            readonly email?: string;
-            readonly auth_type?: string;
-            readonly is_superuser?: boolean;
+            email?: $Read<string>;
+            auth_type?: $Read<string>;
+            is_superuser?: $Read<boolean>;
             /** Format: date-time */
             date_joined?: string;
             /** Format: uuid */
-            readonly uuid?: string;
-            readonly pylon_email_signature?: string;
+            uuid?: $Read<string>;
+            pylon_email_signature?: $Read<string>;
         };
         /** @description Adds nested create feature */
         PatchedCustomEnvironmentFeatureVersionFeatureState: {
-            readonly id?: number;
-            readonly feature?: number;
+            id?: $Read<number>;
+            feature?: $Read<number>;
             enabled?: boolean;
             feature_state_value?: components["schemas"]["FeatureStateValue"];
             feature_segment?: components["schemas"]["CustomCreateSegmentOverrideFeatureSegment"] | null;
             /** Format: date-time */
-            readonly deleted_at?: string | null;
+            deleted_at?: $Read<string | null>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             /** Format: date-time */
-            readonly created_at?: string;
+            created_at?: $Read<string>;
             /** Format: date-time */
-            readonly updated_at?: string;
+            updated_at?: $Read<string>;
             /** Format: date-time */
-            readonly live_from?: string | null;
-            readonly environment?: number | null;
-            readonly identity?: number | null;
-            readonly change_request?: number | null;
+            live_from?: $Read<string | null>;
+            environment?: $Read<number | null>;
+            identity?: $Read<number | null>;
+            change_request?: $Read<number | null>;
             multivariate_feature_state_values?: components["schemas"]["MultivariateFeatureStateValue"][];
         };
         PatchedDataDogConfiguration: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uri */
             base_url?: string;
             api_key?: string;
             use_custom_source?: boolean;
         };
         PatchedDynatraceConfiguration: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uri */
             base_url?: string | null;
             api_key?: string;
             entity_selector?: string;
         };
         PatchedEdgeIdentityUpdate: {
-            readonly identity_uuid?: string;
-            readonly identifier?: string;
+            identity_uuid?: $Read<string>;
+            identifier?: $Read<string>;
             dashboard_alias?: string;
         };
         PatchedEnvironmentAPIKey: {
-            readonly id?: number;
-            readonly key?: string;
+            id?: $Read<number>;
+            key?: $Read<string>;
             active?: boolean;
             /** Format: date-time */
-            readonly created_at?: string;
+            created_at?: $Read<string>;
             name?: string;
             /** Format: date-time */
             expires_at?: string | null;
         };
         PatchedExperiment: {
-            readonly id?: number;
+            id?: $Read<number>;
             feature?: number;
             name?: string;
             hypothesis?: string;
-            readonly status?: components["schemas"]["Status7a8Enum"];
-            metrics?: components["schemas"]["ExperimentMetricInline"][];
-            experiment_rollout?: components["schemas"]["ExperimentRollout"];
+            status?: $Read<components["schemas"]["Status7a8Enum"]>;
+            metrics?: $Write<components["schemas"]["ExperimentMetricInline"][]>;
+            experiment_rollout?: $Write<components["schemas"]["ExperimentRollout"]>;
             /** Format: date-time */
-            readonly created_at?: string;
+            created_at?: $Read<string>;
             /** Format: date-time */
-            readonly updated_at?: string;
+            updated_at?: $Read<string>;
             /** Format: date-time */
-            readonly started_at?: string | null;
+            started_at?: $Read<string | null>;
             /** Format: date-time */
-            readonly ended_at?: string | null;
-            readonly rollout_decision?: components["schemas"]["RolloutDecisionEnum"] | components["schemas"]["NullEnum"];
-            readonly rollout_variant?: number | null;
+            ended_at?: $Read<string | null>;
+            rollout_decision?: $Read<components["schemas"]["RolloutDecisionEnum"] | components["schemas"]["NullEnum"]>;
+            rollout_variant?: $Read<number | null>;
         };
         PatchedExperimentMetric: {
-            readonly id?: number;
+            id?: $Read<number>;
             metric?: number;
-            readonly metric_name?: string;
-            readonly aggregation?: string;
-            readonly direction?: components["schemas"]["DirectionEnum"];
+            metric_name?: $Read<string>;
+            aggregation?: $Read<string>;
+            direction?: $Read<components["schemas"]["DirectionEnum"]>;
             expected_direction?: components["schemas"]["ExpectedDirectionEnum"];
             /** Format: date-time */
-            readonly created_at?: string;
+            created_at?: $Read<string>;
         };
         PatchedExperimentRollout: {
             enabled?: boolean;
@@ -7648,7 +7662,7 @@ export interface components {
             audience?: components["schemas"]["ExperimentAudience"];
         };
         PatchedFeatureExternalResource: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uri */
             url?: string;
             type?: components["schemas"]["FeatureExternalResourceTypeEnum"];
@@ -7660,62 +7674,62 @@ export interface components {
             enabled?: boolean;
         };
         PatchedGitLabConfiguration: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uri */
             gitlab_instance_url?: string;
             access_token?: string;
             labeling_enabled?: boolean;
         };
         PatchedGithubConfiguration: {
-            readonly id?: number;
+            id?: $Read<number>;
             installation_id?: string;
-            readonly organisation?: number;
+            organisation?: $Read<number>;
         };
         PatchedGithubRepository: {
-            readonly id?: number;
-            readonly github_configuration?: number;
+            id?: $Read<number>;
+            github_configuration?: $Read<number>;
             project?: number;
             repository_owner?: string;
             repository_name?: string;
             tagging_enabled?: boolean;
         };
         PatchedGrafanaOrganisationConfiguration: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uri */
             base_url?: string | null;
             api_key?: string;
         };
         PatchedGrafanaProjectConfiguration: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uri */
             base_url?: string | null;
             api_key?: string;
         };
         PatchedHeapConfiguration: {
-            readonly id?: number;
+            id?: $Read<number>;
             api_key?: string;
             /** Format: uri */
             base_url?: string | null;
         };
         PatchedIdentity: {
-            readonly id?: number;
+            id?: $Read<number>;
             identifier?: string;
-            readonly environment?: number;
+            environment?: $Read<number>;
         };
         PatchedListUserPermissionGroup: {
-            readonly id?: number;
+            id?: $Read<number>;
             name?: string;
-            readonly users?: components["schemas"]["ListUserPermissionGroupMembership"][];
+            users?: $Read<components["schemas"]["ListUserPermissionGroupMembership"][]>;
             /** @description If set to true, all new users will be added to this group */
             is_default?: boolean;
             /** @description Unique ID of the group in an external system */
             external_id?: string | null;
         };
         PatchedMasterAPIKey: {
-            readonly id?: string;
-            readonly prefix?: string;
+            id?: $Read<string>;
+            prefix?: $Read<string>;
             /** Format: date-time */
-            readonly created?: string;
+            created?: $Read<string>;
             /** @description A free-form name for the API key. Need not be unique. 50 characters max. */
             name?: string;
             /** @description If the API key is revoked, clients cannot use it anymore. (This cannot be undone.) */
@@ -7727,55 +7741,55 @@ export interface components {
              */
             expiry_date?: string | null;
             /** @description Since we don't store the api key itself(i.e: we only store the hash) this key will be none for every endpoint apart from create */
-            readonly key?: string;
+            key?: $Read<string>;
             /** @default true */
             is_admin: boolean;
-            readonly has_expired?: boolean;
-            readonly created_by?: number | null;
+            has_expired?: $Read<boolean>;
+            created_by?: $Read<number | null>;
         };
         /** @description Adds nested create feature */
         PatchedMetaDataModelField: {
-            readonly id?: number;
+            id?: $Read<number>;
             field?: number;
             content_type?: number;
             is_required_for?: components["schemas"]["MetadataModelFieldRequirement"][];
         };
         PatchedMetadataField: {
-            readonly id?: number;
+            id?: $Read<number>;
             name?: string;
             type?: components["schemas"]["MetadataFieldTypeEnum"];
             description?: string | null;
             organisation?: number;
             project?: number | null;
-            readonly model_fields?: components["schemas"]["MetadataModelFieldNested"][];
+            model_fields?: $Read<components["schemas"]["MetadataModelFieldNested"][]>;
         };
         PatchedMetric: {
-            readonly id?: number;
+            id?: $Read<number>;
             name?: string;
             description?: string;
             aggregation?: components["schemas"]["AggregationEnum"];
             direction?: components["schemas"]["DirectionEnum"];
             definition?: unknown;
-            readonly experiments?: {
+            experiments?: $Read<{
                 id: number;
                 name: string;
                 status: string;
-            }[];
+            }[]>;
             /** Format: date-time */
-            readonly created_at?: string;
+            created_at?: $Read<string>;
             /** Format: date-time */
-            readonly updated_at?: string;
+            updated_at?: $Read<string>;
         };
         PatchedMixpanelConfiguration: {
-            readonly id?: number;
+            id?: $Read<number>;
             api_key?: string;
             /** Format: uri */
             base_url?: string | null;
         };
         PatchedMultivariateFeatureOption: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             type?: components["schemas"]["Type975Enum"] | components["schemas"]["BlankEnum"] | components["schemas"]["NullEnum"];
             integer_value?: number | null;
             string_value?: string | null;
@@ -7787,51 +7801,51 @@ export interface components {
             feature?: number;
         };
         PatchedNewRelicConfiguration: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uri */
             base_url?: string | null;
             api_key?: string;
             app_id?: string;
         };
         PatchedOrganisationSerializerFull: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             name?: string;
             /**
              * DateCreated
              * Format: date-time
              */
-            readonly created_date?: string;
+            created_date?: $Read<string>;
             /** Format: email */
             webhook_notification_email?: string | null;
-            readonly num_seats?: number;
+            num_seats?: $Read<number>;
             subscription?: components["schemas"]["Subscription"];
-            readonly role?: string | null;
+            role?: $Read<string | null>;
             /** @description Disable this if you don't want Flagsmith to store trait data for this org's identities. */
-            readonly persist_trait_data?: boolean;
+            persist_trait_data?: $Read<boolean>;
             /** @description Enable this to block all the access to admin interface for the organisation */
-            readonly block_access_to_admin?: boolean;
+            block_access_to_admin?: $Read<boolean>;
             /** @description Enable this to cease serving flags for this organisation. */
-            readonly stop_serving_flags?: boolean;
-            readonly api_limit_restriction_enabled?: boolean;
-            readonly api_limit_grace_period_used?: boolean;
-            readonly overage_billing_eligible?: boolean;
+            stop_serving_flags?: $Read<boolean>;
+            api_limit_restriction_enabled?: $Read<boolean>;
+            api_limit_grace_period_used?: $Read<boolean>;
+            overage_billing_eligible?: $Read<boolean>;
             restrict_project_create_to_admin?: boolean;
             force_2fa?: boolean;
             /** @description Flagsmith-on-Flagsmith targeting key. Immutable; org.<id> is used when unset. */
-            targeting_key?: string | null;
+            targeting_key?: $Write<string | null>;
         };
         PatchedOrganisationWebhook: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uri */
             url?: string;
             enabled?: boolean;
             secret?: string;
             /** Format: date-time */
-            readonly created_at?: string | null;
+            created_at?: $Read<string | null>;
             /** Format: date-time */
-            readonly updated_at?: string | null;
+            updated_at?: $Read<string | null>;
         };
         /**
          * @description Mixin to add read only status to fields in a given serializer based on the existence
@@ -7851,29 +7865,29 @@ export interface components {
          *                 return subscription
          */
         PatchedProjectUpdate: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             name?: string;
-            readonly organisation?: number;
+            organisation?: $Read<number>;
             /** @description If true will exclude flags from SDK which are disabled */
             hide_disabled_flags?: boolean;
             /** @description If true will sync environment data with dynamodb and allow access to dynamodb identities */
-            readonly enable_dynamo_db?: boolean;
+            enable_dynamo_db?: $Read<boolean>;
             /** @description Edge migration status of the project; can be one of: MIGRATION_SCHEDULED, MIGRATION_COMPLETED, MIGRATION_IN_PROGRESS, MIGRATION_NOT_STARTED, NOT_APPLICABLE */
-            readonly migration_status?: string;
-            readonly use_edge_identities?: boolean;
+            migration_status?: $Read<string>;
+            use_edge_identities?: $Read<boolean>;
             /** @description Prevent defaults from being set in all environments when creating a feature. */
             prevent_flag_defaults?: boolean;
             /** @description Enable this to trigger a realtime(sse) event whenever the value of a flag changes */
-            readonly enable_realtime_updates?: boolean;
+            enable_realtime_updates?: $Read<boolean>;
             /** @description Used by UI to validate feature names */
             only_allow_lower_case_feature_names?: boolean;
             /** @description Used for validating feature names */
             feature_name_regex?: string | null;
-            readonly show_edge_identity_overrides_for_feature?: boolean;
+            show_edge_identity_overrides_for_feature?: $Read<boolean>;
             /** @description Number of days without modification in any environment before a flag is considered stale. */
-            readonly stale_flags_limit_days?: number;
+            stale_flags_limit_days?: $Read<number>;
             /**
              * @description [Edge V2 migration] Project migration status. Set to `IN_PROGRESS` to trigger migration start.
              *
@@ -7882,74 +7896,74 @@ export interface components {
              *     * `COMPLETE` - Complete
              *     * `INCOMPLETE` - Incomplete (identity overrides skipped)
              */
-            readonly edge_v2_migration_status?: components["schemas"]["EdgeV2MigrationStatusEnum"];
+            edge_v2_migration_status?: $Read<components["schemas"]["EdgeV2MigrationStatusEnum"]>;
             minimum_change_request_approvals?: number | null;
             /** @description Require at least one user or group owner when creating a feature. */
             enforce_feature_owners?: boolean;
         };
         PatchedRudderstackConfiguration: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uri */
             base_url?: string | null;
             api_key?: string;
         };
         /** @description Functionality for serializers that need to handle metadata */
         PatchedSegment: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             /** Format: date-time */
-            readonly created_at?: string | null;
+            created_at?: $Read<string | null>;
             /** Format: date-time */
-            readonly updated_at?: string | null;
+            updated_at?: $Read<string | null>;
             name?: string;
             description?: string | null;
-            readonly project?: number;
+            project?: $Read<number>;
             feature?: number | null;
             version_of?: number | null;
             rules?: components["schemas"]["SegmentRule"][];
             metadata?: components["schemas"]["Metadata"][];
-            readonly membership_counts?: components["schemas"]["SegmentMembershipCount"][];
-            readonly managed_by?: components["schemas"]["SegmentManagedByEnum"] | components["schemas"]["BlankEnum"];
-            readonly cohort?: components["schemas"]["_SegmentCohort"] | null;
+            membership_counts?: $Read<components["schemas"]["SegmentMembershipCount"][]>;
+            managed_by?: $Read<components["schemas"]["SegmentManagedByEnum"] | components["schemas"]["BlankEnum"]>;
+            cohort?: $Read<components["schemas"]["_SegmentCohort"] | null>;
             /** @description Whether any feature override points at this segment, counting overrides that are live now or scheduled to go live. */
-            readonly has_overrides?: boolean;
+            has_overrides?: $Read<boolean>;
         };
         PatchedSegmentConfiguration: {
-            readonly id?: number;
+            id?: $Read<number>;
             api_key?: string;
             /** @default https://api.segment.io/ */
             base_url: components["schemas"]["BaseUrlEnum"];
         };
         PatchedSentryChangeTrackingConfiguration: {
-            readonly id?: number;
-            readonly environment?: number;
+            id?: $Read<number>;
+            environment?: $Read<number>;
             /** Format: uri */
             webhook_url?: string;
             secret?: string;
         };
         PatchedSlackEnvironment: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** @description Id of the slack channel to post messages to */
             channel_id?: string;
             enabled?: boolean;
         };
         PatchedTag: {
-            readonly id?: number;
+            id?: $Read<number>;
             label?: string;
             /** @description Hexadecimal value of the tag color */
             color?: string;
             description?: string | null;
-            readonly project?: number;
+            project?: $Read<number>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             /** @description When applied to a feature, it means this feature should be excluded from stale flags logic. */
             is_permanent?: boolean;
             /**
              * @description Indicates that a tag was created by the system, not the user.
              * @default false
              */
-            readonly is_system_tag: boolean;
+            is_system_tag: $Read<boolean>;
             /**
              * @description Field used to provide a consistent identifier for the FE and API to use for business logic.
              *
@@ -7960,10 +7974,10 @@ export interface components {
              *     * `GITLAB` - Gitlab
              * @default NONE
              */
-            readonly type: components["schemas"]["TagTypeEnum"];
+            type: $Read<components["schemas"]["TagTypeEnum"]>;
         };
         PatchedTrait: {
-            readonly id?: number;
+            id?: $Read<number>;
             trait_key?: string;
             value_type?: components["schemas"]["ValueTypeEnum"] | components["schemas"]["BlankEnum"] | components["schemas"]["NullEnum"];
             integer_value?: number | null;
@@ -7975,10 +7989,10 @@ export interface components {
              * DateCreated
              * Format: date-time
              */
-            readonly created_date?: string;
+            created_date?: $Read<string>;
         };
         PatchedTrustRelationship: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** @description Display name for this trust relationship. */
             name?: string;
             /**
@@ -7990,11 +8004,11 @@ export interface components {
             audience?: string;
             claim_rules?: components["schemas"]["ClaimRule"][];
             is_admin?: boolean;
-            readonly master_api_key_id?: string;
-            readonly master_api_key_prefix?: string;
+            master_api_key_id?: $Read<string>;
+            master_api_key_prefix?: $Read<string>;
             /** Format: date-time */
-            readonly created_at?: string;
-            readonly created_by?: number | null;
+            created_at?: $Read<string>;
+            created_by?: $Read<number | null>;
         };
         /**
          * @description Mixin to add read only status to fields in a given serializer based on the existence
@@ -8014,15 +8028,15 @@ export interface components {
          *                 return subscription
          */
         PatchedUpdateEnvironment: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             name?: string;
             api_key?: string;
             description?: string | null;
             /** @description Changing the project selected will remove all previous Feature States for the previously associated projects Features that are related to this Environment. New default Feature States will be created for the new selected projects Features for this Environment. */
-            readonly project?: number;
-            readonly minimum_change_request_approvals?: number | null;
+            project?: $Read<number>;
+            minimum_change_request_approvals?: $Read<number | null>;
             /** @description Allows clients using the client API key to set traits. */
             allow_client_traits?: boolean;
             banner_text?: string | null;
@@ -8037,62 +8051,62 @@ export interface components {
              *     (e.g. in a PUT request) will not behave as expected but, since this is a minor
              *     issue, I think we can ignore.
              */
-            readonly use_mv_v2_evaluation?: boolean;
+            use_mv_v2_evaluation?: $Read<boolean>;
             /** @description Enable this to have consistent multivariate and percentage split evaluations across all SDKs (in local and server side mode) */
             use_identity_composite_key_for_hashing?: boolean;
             /** @description If true, will hide sensitive data(e.g: traits, description etc) from the SDK endpoints */
             hide_sensitive_data?: boolean;
-            readonly use_v2_feature_versioning?: boolean;
+            use_v2_feature_versioning?: $Read<boolean>;
             /** @description When enabled, identity overrides will be included in the environment document */
             use_identity_overrides_in_local_eval?: boolean;
             /** @description Attribute used to indicate when an environment is still being created (via clone for example) */
-            readonly is_creating?: boolean;
+            is_creating?: $Read<boolean>;
             metadata?: components["schemas"]["Metadata"][];
         };
         /** @description prevent users from changing certain values after creation */
         PatchedUpdateFeature: {
-            readonly id?: number;
-            readonly name?: string;
+            id?: $Read<number>;
+            name?: $Read<string>;
             type?: components["schemas"]["TypeD77Enum"] | components["schemas"]["BlankEnum"];
-            readonly default_enabled?: boolean;
-            readonly initial_value?: string | null;
+            default_enabled?: $Read<boolean>;
+            initial_value?: $Read<string | null>;
             /**
              * DateCreated
              * Format: date-time
              */
-            readonly created_date?: string;
+            created_date?: $Read<string>;
             description?: string | null;
             tags?: number[];
             multivariate_options?: components["schemas"]["NestedMultivariateFeatureOption"][];
             is_archived?: boolean;
-            readonly owners?: number[];
-            readonly group_owners?: number[];
+            owners?: $Read<number[]>;
+            group_owners?: $Read<number[]>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             /** @description Changing the project selected will remove previous Feature States for the previously associated projects Environments that are related to this Feature. New default Feature States will be created for the new selected projects Environments for this Feature. Also this will remove any Tags associated with a feature as Tags are Project defined */
-            readonly project?: number;
-            readonly environment_feature_state?: components["schemas"]["FeatureStateSerializerSmall"] | null;
-            readonly segment_feature_state?: components["schemas"]["FeatureStateSerializerSmall"] | null;
+            project?: $Read<number>;
+            environment_feature_state?: $Read<components["schemas"]["FeatureStateSerializerSmall"] | null>;
+            segment_feature_state?: $Read<components["schemas"]["FeatureStateSerializerSmall"] | null>;
             /** @description Number of segment overrides that exist for the given feature in the environment provided by the `environment` query parameter. */
-            readonly num_segment_overrides?: number;
+            num_segment_overrides?: $Read<number>;
             /** @description Number of identity overrides that exist for the given feature in the environment provided by the `environment` query parameter. Note: will return null for Edge enabled projects. */
-            readonly num_identity_overrides?: number | null;
+            num_identity_overrides?: $Read<number | null>;
             /** @default true */
-            readonly is_num_identity_overrides_complete: boolean;
+            is_num_identity_overrides_complete: $Read<boolean>;
             is_server_key_only?: boolean;
             /**
              * Format: date-time
              * @description Datetime representing the last time that the feature was modified in any environment in the given project. Note: requires feature versioning v2 enabled on the environment.
              */
-            readonly last_modified_in_any_environment?: string | null;
+            last_modified_in_any_environment?: $Read<string | null>;
             /**
              * Format: date-time
              * @description Datetime representing the last time that the feature was modified in any environment in the current environment. Note: requires that the environment query parameter is passed and feature versioning v2 enabled on the environment.
              */
-            readonly last_modified_in_current_environment?: string | null;
+            last_modified_in_current_environment?: $Read<string | null>;
             metadata?: components["schemas"]["Metadata"][];
-            readonly code_references_counts?: components["schemas"]["FeatureFlagCodeReferencesRepositoryCount"][];
-            readonly lifecycle_stage?: components["schemas"]["LifecycleStageEnum"];
+            code_references_counts?: $Read<components["schemas"]["FeatureFlagCodeReferencesRepositoryCount"][]>;
+            lifecycle_stage?: $Read<components["schemas"]["LifecycleStageEnum"]>;
         };
         /** UpdateFlagRequest */
         PatchedUpdateFlagRequest: {
@@ -8104,71 +8118,71 @@ export interface components {
             first_name?: string;
             last_name?: string;
             sign_up_type?: components["schemas"]["SignUpTypeEnum"] | components["schemas"]["BlankEnum"] | components["schemas"]["NullEnum"];
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: email */
-            readonly email?: string;
+            email?: $Read<string>;
         };
         PatchedUserOrganisationPermissionUpdateCreate: {
-            readonly id?: number;
+            id?: $Read<number>;
             user?: number;
             permissions?: string[];
         };
         PatchedUserPermissionGroupOrganisationPermissionUpdateCreate: {
-            readonly id?: number;
+            id?: $Read<number>;
             group?: number;
             permissions?: string[];
         };
         PatchedWarehouseConnection: {
-            readonly id?: number;
+            id?: $Read<number>;
             warehouse_type?: components["schemas"]["WarehouseTypeEnum"];
-            readonly status?: components["schemas"]["WarehouseConnectionStatusEnum"];
-            readonly status_detail?: string | null;
+            status?: $Read<components["schemas"]["WarehouseConnectionStatusEnum"]>;
+            status_detail?: $Read<string | null>;
             name?: string;
             config?: unknown | null;
-            credentials?: unknown | null;
+            credentials?: $Write<unknown | null>;
             /** Format: date-time */
-            readonly created_at?: string;
-            readonly total_events_received?: number | null;
-            readonly unique_events_count?: number | null;
+            created_at?: $Read<string>;
+            total_events_received?: $Read<number | null>;
+            unique_events_count?: $Read<number | null>;
             /** Format: date-time */
-            readonly last_event_received_at?: string | null;
+            last_event_received_at?: $Read<string | null>;
         };
         PatchedWebhook: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uri */
             url?: string;
             enabled?: boolean;
             /** Format: date-time */
-            readonly created_at?: string;
+            created_at?: $Read<string>;
             /** Format: date-time */
-            readonly updated_at?: string;
+            updated_at?: $Read<string>;
             secret?: string;
         };
         PatchedWebhookConfiguration: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uri */
             url?: string;
             secret?: string;
         };
         /** @description Adds nested create feature */
         PatchedWritableNestedFeatureState: {
-            readonly id?: number;
+            id?: $Read<number>;
             feature_state_value?: components["schemas"]["FeatureStateValue"];
             multivariate_feature_state_values?: components["schemas"]["MultivariateFeatureStateValue"][];
             /** @description Can be passed as an alternative to `identity` */
             identifier?: string;
             /** Format: date-time */
-            readonly deleted_at?: string | null;
+            deleted_at?: $Read<string | null>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             enabled?: boolean;
             /** Format: date-time */
-            readonly created_at?: string;
+            created_at?: $Read<string>;
             /** Format: date-time */
-            readonly updated_at?: string;
+            updated_at?: $Read<string>;
             /** Format: date-time */
             live_from?: string | null;
-            readonly version?: number | null;
+            version?: $Read<number | null>;
             feature?: number;
             environment?: number | null;
             identity?: number | null;
@@ -8192,7 +8206,7 @@ export interface components {
         PermissionModel: {
             key: string;
             description: string;
-            readonly supports_tag?: boolean;
+            supports_tag?: $Read<boolean>;
         };
         PermissionRole: {
             id: number;
@@ -8221,29 +8235,29 @@ export interface components {
          *                 return subscription
          */
         ProjectCreate: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             name: string;
             organisation: number;
             /** @description If true will exclude flags from SDK which are disabled */
             hide_disabled_flags?: boolean;
             /** @description If true will sync environment data with dynamodb and allow access to dynamodb identities */
-            readonly enable_dynamo_db?: boolean;
+            enable_dynamo_db?: $Read<boolean>;
             /** @description Edge migration status of the project; can be one of: MIGRATION_SCHEDULED, MIGRATION_COMPLETED, MIGRATION_IN_PROGRESS, MIGRATION_NOT_STARTED, NOT_APPLICABLE */
-            readonly migration_status?: string;
-            readonly use_edge_identities?: boolean;
+            migration_status?: $Read<string>;
+            use_edge_identities?: $Read<boolean>;
             /** @description Prevent defaults from being set in all environments when creating a feature. */
             prevent_flag_defaults?: boolean;
             /** @description Enable this to trigger a realtime(sse) event whenever the value of a flag changes */
-            readonly enable_realtime_updates?: boolean;
+            enable_realtime_updates?: $Read<boolean>;
             /** @description Used by UI to validate feature names */
             only_allow_lower_case_feature_names?: boolean;
             /** @description Used for validating feature names */
             feature_name_regex?: string | null;
-            readonly show_edge_identity_overrides_for_feature?: boolean;
+            show_edge_identity_overrides_for_feature?: $Read<boolean>;
             /** @description Number of days without modification in any environment before a flag is considered stale. */
-            readonly stale_flags_limit_days?: number;
+            stale_flags_limit_days?: $Read<number>;
             /**
              * @description [Edge V2 migration] Project migration status. Set to `IN_PROGRESS` to trigger migration start.
              *
@@ -8252,40 +8266,40 @@ export interface components {
              *     * `COMPLETE` - Complete
              *     * `INCOMPLETE` - Incomplete (identity overrides skipped)
              */
-            readonly edge_v2_migration_status?: components["schemas"]["EdgeV2MigrationStatusEnum"];
+            edge_v2_migration_status?: $Read<components["schemas"]["EdgeV2MigrationStatusEnum"]>;
             minimum_change_request_approvals?: number | null;
             /** @description Require at least one user or group owner when creating a feature. */
             enforce_feature_owners?: boolean;
         };
         ProjectFeature: {
-            readonly id?: number;
+            id?: $Read<number>;
             name: string;
             /**
              * DateCreated
              * Format: date-time
              */
-            readonly created_date?: string;
+            created_date?: $Read<string>;
             description?: string | null;
             initial_value?: string | null;
             default_enabled?: boolean;
             type?: components["schemas"]["TypeD77Enum"] | components["schemas"]["BlankEnum"];
-            readonly owners?: components["schemas"]["UserList"][];
-            readonly group_owners?: components["schemas"]["UserPermissionGroupSummary"][];
+            owners?: $Read<components["schemas"]["UserList"][]>;
+            group_owners?: $Read<components["schemas"]["UserPermissionGroupSummary"][]>;
             is_server_key_only?: boolean;
         };
         ProjectList: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             name: string;
             organisation: number;
             /** @description If true will exclude flags from SDK which are disabled */
             hide_disabled_flags?: boolean;
             /** @description If true will sync environment data with dynamodb and allow access to dynamodb identities */
-            readonly enable_dynamo_db?: boolean;
+            enable_dynamo_db?: $Read<boolean>;
             /** @description Edge migration status of the project; can be one of: MIGRATION_SCHEDULED, MIGRATION_COMPLETED, MIGRATION_IN_PROGRESS, MIGRATION_NOT_STARTED, NOT_APPLICABLE */
-            readonly migration_status?: string;
-            readonly use_edge_identities?: boolean;
+            migration_status?: $Read<string>;
+            use_edge_identities?: $Read<boolean>;
             /** @description Prevent defaults from being set in all environments when creating a feature. */
             prevent_flag_defaults?: boolean;
             /** @description Enable this to trigger a realtime(sse) event whenever the value of a flag changes */
@@ -8294,7 +8308,7 @@ export interface components {
             only_allow_lower_case_feature_names?: boolean;
             /** @description Used for validating feature names */
             feature_name_regex?: string | null;
-            readonly show_edge_identity_overrides_for_feature?: boolean;
+            show_edge_identity_overrides_for_feature?: $Read<boolean>;
             /** @description Number of days without modification in any environment before a flag is considered stale. */
             stale_flags_limit_days?: number;
             /**
@@ -8305,15 +8319,15 @@ export interface components {
              *     * `COMPLETE` - Complete
              *     * `INCOMPLETE` - Incomplete (identity overrides skipped)
              */
-            readonly edge_v2_migration_status?: components["schemas"]["EdgeV2MigrationStatusEnum"];
+            edge_v2_migration_status?: $Read<components["schemas"]["EdgeV2MigrationStatusEnum"]>;
             minimum_change_request_approvals?: number | null;
             /** @description Require at least one user or group owner when creating a feature. */
             enforce_feature_owners?: boolean;
         };
         ProjectRetrieve: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             name: string;
             organisation: number;
             /** @description If true will exclude flags from SDK which are disabled */
@@ -8321,8 +8335,8 @@ export interface components {
             /** @description If true will sync environment data with dynamodb and allow access to dynamodb identities */
             enable_dynamo_db?: boolean;
             /** @description Edge migration status of the project; can be one of: MIGRATION_SCHEDULED, MIGRATION_COMPLETED, MIGRATION_IN_PROGRESS, MIGRATION_NOT_STARTED, NOT_APPLICABLE */
-            readonly migration_status?: string;
-            readonly use_edge_identities?: boolean;
+            migration_status?: $Read<string>;
+            use_edge_identities?: $Read<boolean>;
             /** @description Prevent defaults from being set in all environments when creating a feature. */
             prevent_flag_defaults?: boolean;
             /** @description Enable this to trigger a realtime(sse) event whenever the value of a flag changes */
@@ -8331,7 +8345,7 @@ export interface components {
             only_allow_lower_case_feature_names?: boolean;
             /** @description Used for validating feature names */
             feature_name_regex?: string | null;
-            readonly show_edge_identity_overrides_for_feature?: boolean;
+            show_edge_identity_overrides_for_feature?: $Read<boolean>;
             /** @description Number of days without modification in any environment before a flag is considered stale. */
             stale_flags_limit_days?: number;
             /**
@@ -8347,13 +8361,13 @@ export interface components {
             /** @description Require at least one user or group owner when creating a feature. */
             enforce_feature_owners?: boolean;
             /** @description Max segments allowed for this project */
-            readonly max_segments_allowed?: number;
+            max_segments_allowed?: $Read<number>;
             /** @description Max features allowed for this project */
-            readonly max_features_allowed?: number;
+            max_features_allowed?: $Read<number>;
             /** @description Max segments overrides allowed for any (one) environment within this project */
-            readonly max_segment_overrides_allowed?: number;
-            readonly total_features?: number;
-            readonly total_segments?: number;
+            max_segment_overrides_allowed?: $Read<number>;
+            total_features?: $Read<number>;
+            total_segments?: $Read<number>;
         };
         /**
          * @description Mixin to add read only status to fields in a given serializer based on the existence
@@ -8373,29 +8387,29 @@ export interface components {
          *                 return subscription
          */
         ProjectUpdate: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             name: string;
-            readonly organisation?: number;
+            organisation?: $Read<number>;
             /** @description If true will exclude flags from SDK which are disabled */
             hide_disabled_flags?: boolean;
             /** @description If true will sync environment data with dynamodb and allow access to dynamodb identities */
-            readonly enable_dynamo_db?: boolean;
+            enable_dynamo_db?: $Read<boolean>;
             /** @description Edge migration status of the project; can be one of: MIGRATION_SCHEDULED, MIGRATION_COMPLETED, MIGRATION_IN_PROGRESS, MIGRATION_NOT_STARTED, NOT_APPLICABLE */
-            readonly migration_status?: string;
-            readonly use_edge_identities?: boolean;
+            migration_status?: $Read<string>;
+            use_edge_identities?: $Read<boolean>;
             /** @description Prevent defaults from being set in all environments when creating a feature. */
             prevent_flag_defaults?: boolean;
             /** @description Enable this to trigger a realtime(sse) event whenever the value of a flag changes */
-            readonly enable_realtime_updates?: boolean;
+            enable_realtime_updates?: $Read<boolean>;
             /** @description Used by UI to validate feature names */
             only_allow_lower_case_feature_names?: boolean;
             /** @description Used for validating feature names */
             feature_name_regex?: string | null;
-            readonly show_edge_identity_overrides_for_feature?: boolean;
+            show_edge_identity_overrides_for_feature?: $Read<boolean>;
             /** @description Number of days without modification in any environment before a flag is considered stale. */
-            readonly stale_flags_limit_days?: number;
+            stale_flags_limit_days?: $Read<number>;
             /**
              * @description [Edge V2 migration] Project migration status. Set to `IN_PROGRESS` to trigger migration start.
              *
@@ -8404,7 +8418,7 @@ export interface components {
              *     * `COMPLETE` - Complete
              *     * `INCOMPLETE` - Incomplete (identity overrides skipped)
              */
-            readonly edge_v2_migration_status?: components["schemas"]["EdgeV2MigrationStatusEnum"];
+            edge_v2_migration_status?: $Read<components["schemas"]["EdgeV2MigrationStatusEnum"]>;
             minimum_change_request_approvals?: number | null;
             /** @description Require at least one user or group owner when creating a feature. */
             enforce_feature_owners?: boolean;
@@ -8430,7 +8444,7 @@ export interface components {
          */
         RolloutDecisionEnum: "control" | "variant" | "disable";
         RudderstackConfiguration: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uri */
             base_url?: string | null;
             api_key: string;
@@ -8499,33 +8513,33 @@ export interface components {
         };
         /** @description Functionality for serializers that need to handle metadata */
         Segment: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             /** Format: date-time */
-            readonly created_at?: string | null;
+            created_at?: $Read<string | null>;
             /** Format: date-time */
-            readonly updated_at?: string | null;
+            updated_at?: $Read<string | null>;
             name: string;
             description?: string | null;
-            readonly project?: number;
+            project?: $Read<number>;
             feature?: number | null;
             version_of?: number | null;
             rules: components["schemas"]["SegmentRule"][];
             metadata?: components["schemas"]["Metadata"][];
-            readonly membership_counts?: components["schemas"]["SegmentMembershipCount"][];
-            readonly managed_by?: components["schemas"]["SegmentManagedByEnum"] | components["schemas"]["BlankEnum"];
-            readonly cohort?: components["schemas"]["_SegmentCohort"] | null;
+            membership_counts?: $Read<components["schemas"]["SegmentMembershipCount"][]>;
+            managed_by?: $Read<components["schemas"]["SegmentManagedByEnum"] | components["schemas"]["BlankEnum"]>;
+            cohort?: $Read<components["schemas"]["_SegmentCohort"] | null>;
             /** @description Whether any feature override points at this segment, counting overrides that are live now or scheduled to go live. */
-            readonly has_overrides?: boolean;
+            has_overrides?: $Read<boolean>;
         };
         SegmentAssociatedFeatureState: {
-            readonly id?: number;
+            id?: $Read<number>;
             feature: number;
             environment?: number | null;
         };
         SegmentConfiguration: {
-            readonly id?: number;
+            id?: $Read<number>;
             api_key: string;
             /** @default https://api.segment.io/ */
             base_url: components["schemas"]["BaseUrlEnum"];
@@ -8550,18 +8564,18 @@ export interface components {
             next_cursor: string | null;
         };
         SegmentMembershipCount: {
-            readonly environment?: number;
-            readonly count?: number;
+            environment?: $Read<number>;
+            count?: $Read<number>;
             /** Format: date-time */
-            readonly last_synced_at?: string;
+            last_synced_at?: $Read<string>;
         };
         /** @description Adds nested create feature */
         SegmentRule: {
-            readonly id?: number;
+            id?: $Read<number>;
             type: components["schemas"]["SegmentRuleTypeEnum"];
             rules?: components["schemas"]["_NestedSegmentRule"][];
             conditions?: components["schemas"]["Condition"][];
-            delete?: boolean;
+            delete?: $Write<boolean>;
         };
         /**
          * @description * `ALL` - all
@@ -8578,8 +8592,8 @@ export interface components {
             email: string;
         };
         SentryChangeTrackingConfiguration: {
-            readonly id?: number;
-            readonly environment?: number;
+            id?: $Read<number>;
+            environment?: $Read<number>;
             /** Format: uri */
             webhook_url: string;
             secret: string;
@@ -8613,7 +8627,7 @@ export interface components {
             channels: components["schemas"]["SlackChannel"][];
         };
         SlackEnvironment: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** @description Id of the slack channel to post messages to */
             channel_id: string;
             enabled?: boolean;
@@ -8641,13 +8655,13 @@ export interface components {
          */
         Status7a8Enum: "created" | "running" | "paused" | "completed";
         Subscription: {
-            readonly id?: number;
-            readonly has_active_billing_periods?: boolean;
-            readonly current_billing_period?: components["schemas"]["CurrentBillingPeriod"] | null;
+            id?: $Read<number>;
+            has_active_billing_periods?: $Read<boolean>;
+            current_billing_period?: $Read<components["schemas"]["CurrentBillingPeriod"] | null>;
             /** Format: date-time */
-            readonly deleted_at?: string | null;
+            deleted_at?: $Read<string | null>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             subscription_id?: string | null;
             /** Format: date-time */
             subscription_date?: string | null;
@@ -8673,21 +8687,21 @@ export interface components {
             audit_log_visibility_days: number | null;
         };
         Tag: {
-            readonly id?: number;
+            id?: $Read<number>;
             label: string;
             /** @description Hexadecimal value of the tag color */
             color?: string;
             description?: string | null;
-            readonly project?: number;
+            project?: $Read<number>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             /** @description When applied to a feature, it means this feature should be excluded from stale flags logic. */
             is_permanent?: boolean;
             /**
              * @description Indicates that a tag was created by the system, not the user.
              * @default false
              */
-            readonly is_system_tag: boolean;
+            is_system_tag: $Read<boolean>;
             /**
              * @description Field used to provide a consistent identifier for the FE and API to use for business logic.
              *
@@ -8698,7 +8712,7 @@ export interface components {
              *     * `GITLAB` - Gitlab
              * @default NONE
              */
-            readonly type: components["schemas"]["TagTypeEnum"];
+            type: $Read<components["schemas"]["TagTypeEnum"]>;
         };
         TagBasedPermission: {
             permissions: string[];
@@ -8752,7 +8766,7 @@ export interface components {
             expires_in: number;
         };
         Trait: {
-            readonly id?: number;
+            id?: $Read<number>;
             trait_key: string;
             value_type?: components["schemas"]["ValueTypeEnum"] | components["schemas"]["BlankEnum"] | components["schemas"]["NullEnum"];
             integer_value?: number | null;
@@ -8764,13 +8778,13 @@ export interface components {
              * DateCreated
              * Format: date-time
              */
-            readonly created_date?: string;
+            created_date?: $Read<string>;
         };
         TraitKeys: {
             keys: string[];
         };
         TrustRelationship: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** @description Display name for this trust relationship. */
             name: string;
             /**
@@ -8782,11 +8796,11 @@ export interface components {
             audience: string;
             claim_rules?: components["schemas"]["ClaimRule"][];
             is_admin: boolean;
-            readonly master_api_key_id?: string;
-            readonly master_api_key_prefix?: string;
+            master_api_key_id?: $Read<string>;
+            master_api_key_prefix?: $Read<string>;
             /** Format: date-time */
-            readonly created_at?: string;
-            readonly created_by?: number | null;
+            created_at?: $Read<string>;
+            created_by?: $Read<number | null>;
         };
         /** @enum {string} */
         Type68aEnum: "string" | "integer" | "boolean";
@@ -8830,15 +8844,15 @@ export interface components {
          *                 return subscription
          */
         UpdateEnvironment: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             name: string;
             api_key?: string;
             description?: string | null;
             /** @description Changing the project selected will remove all previous Feature States for the previously associated projects Features that are related to this Environment. New default Feature States will be created for the new selected projects Features for this Environment. */
-            readonly project?: number;
-            readonly minimum_change_request_approvals?: number | null;
+            project?: $Read<number>;
+            minimum_change_request_approvals?: $Read<number | null>;
             /** @description Allows clients using the client API key to set traits. */
             allow_client_traits?: boolean;
             banner_text?: string | null;
@@ -8853,62 +8867,62 @@ export interface components {
              *     (e.g. in a PUT request) will not behave as expected but, since this is a minor
              *     issue, I think we can ignore.
              */
-            readonly use_mv_v2_evaluation?: boolean;
+            use_mv_v2_evaluation?: $Read<boolean>;
             /** @description Enable this to have consistent multivariate and percentage split evaluations across all SDKs (in local and server side mode) */
             use_identity_composite_key_for_hashing?: boolean;
             /** @description If true, will hide sensitive data(e.g: traits, description etc) from the SDK endpoints */
             hide_sensitive_data?: boolean;
-            readonly use_v2_feature_versioning?: boolean;
+            use_v2_feature_versioning?: $Read<boolean>;
             /** @description When enabled, identity overrides will be included in the environment document */
             use_identity_overrides_in_local_eval?: boolean;
             /** @description Attribute used to indicate when an environment is still being created (via clone for example) */
-            readonly is_creating?: boolean;
+            is_creating?: $Read<boolean>;
             metadata?: components["schemas"]["Metadata"][];
         };
         /** @description prevent users from changing certain values after creation */
         UpdateFeature: {
-            readonly id?: number;
-            readonly name?: string;
+            id?: $Read<number>;
+            name?: $Read<string>;
             type?: components["schemas"]["TypeD77Enum"] | components["schemas"]["BlankEnum"];
-            readonly default_enabled?: boolean;
-            readonly initial_value?: string | null;
+            default_enabled?: $Read<boolean>;
+            initial_value?: $Read<string | null>;
             /**
              * DateCreated
              * Format: date-time
              */
-            readonly created_date?: string;
+            created_date?: $Read<string>;
             description?: string | null;
             tags?: number[];
             multivariate_options?: components["schemas"]["NestedMultivariateFeatureOption"][];
             is_archived?: boolean;
-            readonly owners?: number[];
-            readonly group_owners?: number[];
+            owners?: $Read<number[]>;
+            group_owners?: $Read<number[]>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             /** @description Changing the project selected will remove previous Feature States for the previously associated projects Environments that are related to this Feature. New default Feature States will be created for the new selected projects Environments for this Feature. Also this will remove any Tags associated with a feature as Tags are Project defined */
-            readonly project?: number;
-            readonly environment_feature_state?: components["schemas"]["FeatureStateSerializerSmall"] | null;
-            readonly segment_feature_state?: components["schemas"]["FeatureStateSerializerSmall"] | null;
+            project?: $Read<number>;
+            environment_feature_state?: $Read<components["schemas"]["FeatureStateSerializerSmall"] | null>;
+            segment_feature_state?: $Read<components["schemas"]["FeatureStateSerializerSmall"] | null>;
             /** @description Number of segment overrides that exist for the given feature in the environment provided by the `environment` query parameter. */
-            readonly num_segment_overrides?: number;
+            num_segment_overrides?: $Read<number>;
             /** @description Number of identity overrides that exist for the given feature in the environment provided by the `environment` query parameter. Note: will return null for Edge enabled projects. */
-            readonly num_identity_overrides?: number | null;
+            num_identity_overrides?: $Read<number | null>;
             /** @default true */
-            readonly is_num_identity_overrides_complete: boolean;
+            is_num_identity_overrides_complete: $Read<boolean>;
             is_server_key_only?: boolean;
             /**
              * Format: date-time
              * @description Datetime representing the last time that the feature was modified in any environment in the given project. Note: requires feature versioning v2 enabled on the environment.
              */
-            readonly last_modified_in_any_environment?: string | null;
+            last_modified_in_any_environment?: $Read<string | null>;
             /**
              * Format: date-time
              * @description Datetime representing the last time that the feature was modified in any environment in the current environment. Note: requires that the environment query parameter is passed and feature versioning v2 enabled on the environment.
              */
-            readonly last_modified_in_current_environment?: string | null;
+            last_modified_in_current_environment?: $Read<string | null>;
             metadata?: components["schemas"]["Metadata"][];
-            readonly code_references_counts?: components["schemas"]["FeatureFlagCodeReferencesRepositoryCount"][];
-            readonly lifecycle_stage?: components["schemas"]["LifecycleStageEnum"];
+            code_references_counts?: $Read<components["schemas"]["FeatureFlagCodeReferencesRepositoryCount"][]>;
+            lifecycle_stage?: $Read<components["schemas"]["LifecycleStageEnum"]>;
         };
         /** EnvironmentDefaultRequest */
         UpdateFlagRequestEnvironmentDefaultRequest: {
@@ -9012,9 +9026,9 @@ export interface components {
             first_name: string;
             last_name: string;
             sign_up_type?: components["schemas"]["SignUpTypeEnum"] | components["schemas"]["BlankEnum"] | components["schemas"]["NullEnum"];
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: email */
-            readonly email?: string;
+            email?: $Read<string>;
         };
         UserDetailedPermissions: {
             admin: boolean;
@@ -9029,7 +9043,7 @@ export interface components {
             user_ids: number[];
         };
         UserList: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: email */
             email: string;
             first_name: string;
@@ -9037,7 +9051,7 @@ export interface components {
             /** Format: date-time */
             last_login?: string | null;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
         };
         UserObjectPermissions: {
             permissions: string[];
@@ -9046,61 +9060,61 @@ export interface components {
         };
         UserOrganisation: {
             role: components["schemas"]["RoleEnum"];
-            readonly organisation?: components["schemas"]["OrganisationSerializerBasic"];
+            organisation?: $Read<components["schemas"]["OrganisationSerializerBasic"]>;
             /** @description Inactive members can still log in, but cannot access the organisation, and do not count towards its seat limit. */
-            readonly is_active?: boolean;
+            is_active?: $Read<boolean>;
         };
         UserOrganisationPermissionList: {
-            readonly id?: number;
+            id?: $Read<number>;
             user: components["schemas"]["UserList"];
             permissions?: string[];
         };
         UserOrganisationPermissionUpdateCreate: {
-            readonly id?: number;
+            id?: $Read<number>;
             user: number;
             permissions?: string[];
         };
         UserPermissionGroup: {
-            readonly id?: number;
+            id?: $Read<number>;
             name: string;
-            readonly users?: number[];
+            users?: $Read<number[]>;
             /** @description If set to true, all new users will be added to this group */
             is_default?: boolean;
             /** @description Unique ID of the group in an external system */
             external_id?: string | null;
         };
         UserPermissionGroupMembership: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: email */
             email: string;
             first_name: string;
             last_name: string;
             /** Format: date-time */
             last_login?: string | null;
-            readonly group_admin?: boolean;
+            group_admin?: $Read<boolean>;
         };
         UserPermissionGroupOrganisationPermissionList: {
-            readonly id?: number;
+            id?: $Read<number>;
             group: components["schemas"]["UserPermissionGroup"];
             permissions?: string[];
         };
         UserPermissionGroupOrganisationPermissionUpdateCreate: {
-            readonly id?: number;
+            id?: $Read<number>;
             group: number;
             permissions?: string[];
         };
         UserPermissionGroupSerializerDetail: {
-            readonly id?: number;
+            id?: $Read<number>;
             name: string;
-            readonly users?: components["schemas"]["UserPermissionGroupMembership"][];
+            users?: $Read<components["schemas"]["UserPermissionGroupMembership"][]>;
             /** @description If set to true, all new users will be added to this group */
             is_default?: boolean;
             /** @description Unique ID of the group in an external system */
             external_id?: string | null;
         };
         UserPermissionGroupSummary: {
-            readonly id?: number;
-            readonly name?: string;
+            id?: $Read<number>;
+            name?: $Read<string>;
         };
         UsernameResetConfirm: {
             /**
@@ -9377,19 +9391,19 @@ export interface components {
          */
         VcsProviderEnum: "github";
         WarehouseConnection: {
-            readonly id?: number;
+            id?: $Read<number>;
             warehouse_type: components["schemas"]["WarehouseTypeEnum"];
-            readonly status?: components["schemas"]["WarehouseConnectionStatusEnum"];
-            readonly status_detail?: string | null;
+            status?: $Read<components["schemas"]["WarehouseConnectionStatusEnum"]>;
+            status_detail?: $Read<string | null>;
             name?: string;
             config?: unknown | null;
-            credentials?: unknown | null;
+            credentials?: $Write<unknown | null>;
             /** Format: date-time */
-            readonly created_at?: string;
-            readonly total_events_received?: number | null;
-            readonly unique_events_count?: number | null;
+            created_at?: $Read<string>;
+            total_events_received?: $Read<number | null>;
+            unique_events_count?: $Read<number | null>;
             /** Format: date-time */
-            readonly last_event_received_at?: string | null;
+            last_event_received_at?: $Read<string | null>;
         };
         /**
          * @description * `created` - Created
@@ -9423,18 +9437,18 @@ export interface components {
          */
         WarehouseTypeEnum: "flagsmith" | "snowflake" | "clickhouse" | "databricks" | "postgres";
         Webhook: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uri */
             url: string;
             enabled?: boolean;
             /** Format: date-time */
-            readonly created_at?: string;
+            created_at?: $Read<string>;
             /** Format: date-time */
-            readonly updated_at?: string;
+            updated_at?: $Read<string>;
             secret?: string;
         };
         WebhookConfiguration: {
-            readonly id?: number;
+            id?: $Read<number>;
             /** Format: uri */
             url: string;
             secret?: string;
@@ -9451,23 +9465,23 @@ export interface components {
         };
         /** @description Adds nested create feature */
         WritableNestedFeatureState: {
-            readonly id?: number;
+            id?: $Read<number>;
             feature_state_value?: components["schemas"]["FeatureStateValue"];
             multivariate_feature_state_values?: components["schemas"]["MultivariateFeatureStateValue"][];
             /** @description Can be passed as an alternative to `identity` */
             identifier?: string;
             /** Format: date-time */
-            readonly deleted_at?: string | null;
+            deleted_at?: $Read<string | null>;
             /** Format: uuid */
-            readonly uuid?: string;
+            uuid?: $Read<string>;
             enabled?: boolean;
             /** Format: date-time */
-            readonly created_at?: string;
+            created_at?: $Read<string>;
             /** Format: date-time */
-            readonly updated_at?: string;
+            updated_at?: $Read<string>;
             /** Format: date-time */
             live_from?: string | null;
-            readonly version?: number | null;
+            version?: $Read<number | null>;
             feature: number;
             environment: number | null;
             identity?: number | null;
@@ -9494,21 +9508,21 @@ export interface components {
             feature_name: string;
         };
         _Identity: {
-            readonly id?: number;
+            id?: $Read<number>;
             identifier: string;
         };
         /** @description Adds nested create feature */
         _NestedSegmentRule: {
-            readonly id?: number;
+            id?: $Read<number>;
             type: components["schemas"]["SegmentRuleTypeEnum"];
             conditions?: components["schemas"]["Condition"][];
-            delete?: boolean;
+            delete?: $Write<boolean>;
         };
         _SegmentCohort: {
-            readonly id?: number;
+            id?: $Read<number>;
             environment: number;
-            readonly environment_api_key?: string;
-            readonly environment_name?: string;
+            environment_api_key?: $Read<string>;
+            environment_name?: $Read<string>;
             source_type?: components["schemas"]["SourceTypeEnum"];
             version?: number;
             /** Format: date-time */

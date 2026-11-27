@@ -12,12 +12,15 @@ export const variableDescriptions = {
   FLAGSMITH_INTERNAL_URL:
     "URL for FlagOps' own requests to Flagsmith, when it differs from FLAGSMITH_URL",
   FLAGSMITH_ORG_API_KEY: 'organisation API key of the Flagsmith organisation FlagOps manages',
+  FLAGSMITH_PROJECT_ID:
+    'ID of the Flagsmith project FlagOps manages, needed when the organisation has several',
   FLAGOPS_IN_DOCKER: 'set to 1 by the FlagOps image',
   FLAGOPS_PORT: 'port FlagOps listens on',
   FLAGOPS_BIND: 'IP address FlagOps listens on',
   FLAGOPS_ALLOWED_HOSTS: 'hostnames that browsers use to reach FlagOps',
   FLAGOPS_TRUST_PROXY: 'whether FlagOps runs behind a reverse proxy that sets X-Forwarded headers',
   FLAGOPS_DATA_DIR: "directory for FlagOps' database",
+  FLAGOPS_SYNC_INTERVAL_SECONDS: 'seconds between syncs from Flagsmith',
   LOG_LEVEL: 'how much FlagOps logs',
 } as const;
 
@@ -68,12 +71,17 @@ const apiKey = text
   .regex(/^\S{20,128}$/, 'must be 20 to 128 characters without spaces')
   .transform((value) => new Secret(value));
 
-const port = text
-  .refine(
-    (value) => /^\d{1,5}$/.test(value) && Number(value) >= 1 && Number(value) <= 65535,
-    'must be a whole number from 1 to 65535',
-  )
-  .transform(Number);
+/** A whole number within the limits of architecture.md 21. */
+function wholeNumber(min: number, max: number) {
+  return text
+    .refine(
+      (value) => /^\d{1,10}$/.test(value) && Number(value) >= min && Number(value) <= max,
+      `must be a whole number from ${min} to ${max}`,
+    )
+    .transform(Number);
+}
+
+const port = wholeNumber(1, 65535);
 
 const ipAddress = text.refine(
   (value) => isIP(value) !== 0,
@@ -102,11 +110,13 @@ export const envSchema = z.object({
   FLAGSMITH_URL: required(httpUrl),
   FLAGSMITH_INTERNAL_URL: optional(httpUrl),
   FLAGSMITH_ORG_API_KEY: required(apiKey),
+  FLAGSMITH_PROJECT_ID: optional(wholeNumber(1, 2_147_483_647)),
   FLAGOPS_IN_DOCKER: optional(zeroOrOne),
   FLAGOPS_PORT: optional(port),
   FLAGOPS_BIND: optional(ipAddress),
   FLAGOPS_ALLOWED_HOSTS: optional(hostnames),
   FLAGOPS_TRUST_PROXY: optional(trueOrFalse),
   FLAGOPS_DATA_DIR: optional(text),
+  FLAGOPS_SYNC_INTERVAL_SECONDS: optional(wholeNumber(15, 3600)),
   LOG_LEVEL: optional(z.enum(logLevels, { error: 'must be error, warn, info or debug' })),
 } satisfies Record<VariableName, z.ZodType>);

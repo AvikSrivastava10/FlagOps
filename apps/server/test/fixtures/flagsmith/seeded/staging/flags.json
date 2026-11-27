@@ -1,0 +1,103 @@
+{
+  "new_checkout": {
+    "environment_default": {
+      "enabled": true,
+      "value": null,
+      "variants": []
+    },
+    "segment_overrides": []
+  },
+  "dark_mode": {
+    "environment_default": {
+      "enabled": true,
+      "value": null,
+      "variants": []
+    },
+    "segment_overrides": []
+  },
+  "holiday_banner": {
+    "environment_default": {
+      "enabled": false,
+      "value": null,
+      "variants": []
+    },
+    "segment_overrides": []
+  },
+  "payments_kill_switch": {
+    "environment_default": {
+      "enabled": false,
+      "value": null,
+      "variants": []
+    },
+    "segment_overrides": []
+  },
+  "admin_reports": {
+    "environment_default": {
+      "enabled": false,
+      "value": null,
+      "variants": []
+    },
+    "segment_overrides": [
+      {
+        "segment": {
+          "id": 2
+        },
+        "priority": 0,
+        "enabled": true,
+        "value": null,
+        "variants": []
+      }
+    ]
+  },
+  "recommendations_v2": {
+    "environment_default": {
+      "enabled": true,
+      "value": {
+        "type": "string",
+        "value": "control"
+      },
+      "variants": [
+        {
+          "id": 1,
+          "weight": 50
+        }
+      ]
+    },
+    "segment_overrides": []
+  },
+  "legacy_search": {
+    "environment_default": {
+      "enabled": true,
+      "value": null,
+      "variants": []
+    },
+    "segment_overrides": []
+  },
+  "free_shipping_threshold": {
+    "environment_default": {
+      "enabled": true,
+      "value": {
+        "type": "integer",
+        "value": "50"
+      },
+      "variants": []
+    },
+    "segment_overrides": []
+  },
+  "gift_wrap": {
+    "environment_default": {
+      "enabled": false,
+      "value": null,
+      "variants": []
+    },
+    "segment_overrides": []
+  },
+  "order_tracking_v2": {
+    "environment_default": {
+      "enabled": false,
+      "value": null,
+      "variants": []
+    },
+    "segment_overrides": []
+  }
+}

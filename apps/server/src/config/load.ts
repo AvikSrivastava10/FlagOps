@@ -16,13 +16,20 @@ export class ConfigError extends Error {
 }
 
 export type Config = Readonly<{
-  flagsmith: Readonly<FlagsmithUrls & { orgApiKey: Secret }>;
+  flagsmith: Readonly<
+    FlagsmithUrls & {
+      orgApiKey: Secret;
+      /** `FLAGSMITH_PROJECT_ID`; without it, FlagOps manages the organisation's only project. */
+      projectId: number | undefined;
+    }
+  >;
   http: Readonly<{
     port: number;
     bind: string;
     allowedHosts: readonly string[];
     trustProxy: boolean;
   }>;
+  jobs: Readonly<{ syncIntervalSeconds: number }>;
   dataDir: string;
   logLevel: LogLevel;
 }>;
@@ -57,13 +64,18 @@ export function loadConfig(env: NodeJS.ProcessEnv): Config {
     inDocker,
   });
   return Object.freeze({
-    flagsmith: Object.freeze({ ...urls, orgApiKey: vars.FLAGSMITH_ORG_API_KEY }),
+    flagsmith: Object.freeze({
+      ...urls,
+      orgApiKey: vars.FLAGSMITH_ORG_API_KEY,
+      projectId: vars.FLAGSMITH_PROJECT_ID,
+    }),
     http: Object.freeze({
       port: vars.FLAGOPS_PORT ?? 3000,
       bind: vars.FLAGOPS_BIND ?? (inDocker ? '0.0.0.0' : '127.0.0.1'),
       allowedHosts: Object.freeze(vars.FLAGOPS_ALLOWED_HOSTS ?? defaultAllowedHosts),
       trustProxy: vars.FLAGOPS_TRUST_PROXY ?? false,
     }),
+    jobs: Object.freeze({ syncIntervalSeconds: vars.FLAGOPS_SYNC_INTERVAL_SECONDS ?? 60 }),
     dataDir: path.resolve(vars.FLAGOPS_DATA_DIR ?? (inDocker ? '/data' : 'data')),
     logLevel: vars.LOG_LEVEL ?? 'info',
   });

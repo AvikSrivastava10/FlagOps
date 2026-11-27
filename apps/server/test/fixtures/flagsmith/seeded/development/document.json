@@ -1,0 +1,219 @@
+{
+  "id": 1,
+  "api_key": "env-key-development",
+  "project": {
+    "id": 1,
+    "name": "FlagOps Demo Shop",
+    "organisation": {
+      "id": 1,
+      "name": "FlagOps Demo",
+      "feature_analytics": false,
+      "stop_serving_flags": false,
+      "persist_trait_data": true
+    },
+    "hide_disabled_flags": false,
+    "segments": [
+      {
+        "id": 1,
+        "name": "beta_testers",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "EQUAL",
+                    "value": "true",
+                    "property_": "beta"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": []
+      },
+      {
+        "id": 2,
+        "name": "staff",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "EQUAL",
+                    "value": "staff",
+                    "property_": "role"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": []
+      }
+    ],
+    "enable_realtime_updates": false,
+    "server_key_only_feature_ids": []
+  },
+  "feature_states": [
+    {
+      "feature": {
+        "id": 1,
+        "name": "new_checkout",
+        "type": "STANDARD"
+      },
+      "enabled": true,
+      "django_id": 1,
+      "feature_segment": null,
+      "featurestate_uuid": "093273c6-8c33-414e-87ce-edc3bcd508d4",
+      "feature_state_value": null,
+      "multivariate_feature_state_values": []
+    },
+    {
+      "feature": {
+        "id": 2,
+        "name": "dark_mode",
+        "type": "STANDARD"
+      },
+      "enabled": true,
+      "django_id": 4,
+      "feature_segment": null,
+      "featurestate_uuid": "7f5cfce8-efd9-491b-b382-b6cbcb11683b",
+      "feature_state_value": null,
+      "multivariate_feature_state_values": []
+    },
+    {
+      "feature": {
+        "id": 3,
+        "name": "holiday_banner",
+        "type": "STANDARD"
+      },
+      "enabled": false,
+      "django_id": 7,
+      "feature_segment": null,
+      "featurestate_uuid": "9de47840-51b2-4089-83a1-1f917366f3e4",
+      "feature_state_value": null,
+      "multivariate_feature_state_values": []
+    },
+    {
+      "feature": {
+        "id": 4,
+        "name": "payments_kill_switch",
+        "type": "STANDARD"
+      },
+      "enabled": false,
+      "django_id": 10,
+      "feature_segment": null,
+      "featurestate_uuid": "d93d2737-e5ce-4504-a89d-c86d1eb54909",
+      "feature_state_value": null,
+      "multivariate_feature_state_values": []
+    },
+    {
+      "feature": {
+        "id": 5,
+        "name": "admin_reports",
+        "type": "STANDARD"
+      },
+      "enabled": false,
+      "django_id": 13,
+      "feature_segment": null,
+      "featurestate_uuid": "b7ecc13d-9caa-4f95-b62e-f8daccab2b0a",
+      "feature_state_value": null,
+      "multivariate_feature_state_values": []
+    },
+    {
+      "feature": {
+        "id": 6,
+        "name": "recommendations_v2",
+        "type": "MULTIVARIATE"
+      },
+      "enabled": true,
+      "django_id": 16,
+      "feature_segment": null,
+      "featurestate_uuid": "f86d0476-0f0e-43ee-905c-e7cdaf1d36e7",
+      "feature_state_value": "control",
+      "multivariate_feature_state_values": [
+        {
+          "multivariate_feature_option": {
+            "value": "v2",
+            "id": 1,
+            "key": null
+          },
+          "percentage_allocation": 100,
+          "id": 4,
+          "mv_fs_value_uuid": "b482302d-c0d2-4bd0-8b6d-75fd25390c58"
+        }
+      ]
+    },
+    {
+      "feature": {
+        "id": 7,
+        "name": "legacy_search",
+        "type": "STANDARD"
+      },
+      "enabled": true,
+      "django_id": 19,
+      "feature_segment": null,
+      "featurestate_uuid": "ff62130e-86d8-428f-bec5-74915df214a7",
+      "feature_state_value": null,
+      "multivariate_feature_state_values": []
+    },
+    {
+      "feature": {
+        "id": 8,
+        "name": "free_shipping_threshold",
+        "type": "STANDARD"
+      },
+      "enabled": true,
+      "django_id": 22,
+      "feature_segment": null,
+      "featurestate_uuid": "fe9825a9-48f4-4d4f-8e98-edd296902dbe",
+      "feature_state_value": 50,
+      "multivariate_feature_state_values": []
+    },
+    {
+      "feature": {
+        "id": 9,
+        "name": "gift_wrap",
+        "type": "STANDARD"
+      },
+      "enabled": false,
+      "django_id": 25,
+      "feature_segment": null,
+      "featurestate_uuid": "b37fe5df-a7c5-4506-864b-29b11565b857",
+      "feature_state_value": null,
+      "multivariate_feature_state_values": []
+    },
+    {
+      "feature": {
+        "id": 10,
+        "name": "order_tracking_v2",
+        "type": "STANDARD"
+      },
+      "enabled": true,
+      "django_id": 28,
+      "feature_segment": null,
+      "featurestate_uuid": "a6733b7a-6b1b-4421-9d2f-769f5118551e",
+      "feature_state_value": null,
+      "multivariate_feature_state_values": []
+    }
+  ],
+  "identity_overrides": [],
+  "name": "Development",
+  "allow_client_traits": true,
+  "updated_at": "2026-11-27T12:55:47.211685+00:00",
+  "hide_sensitive_data": false,
+  "hide_disabled_flags": null,
+  "use_identity_composite_key_for_hashing": true,
+  "use_identity_overrides_in_local_eval": true
+}

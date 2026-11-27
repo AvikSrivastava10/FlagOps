@@ -25,7 +25,6 @@ export const errorHttpStatus = {
   github_repo_not_allowed: 403,
   auth_required: 401,
   auth_invalid_credentials: 401,
-  auth_mfa_required: 202,
   auth_mfa_invalid: 401,
   auth_not_org_admin: 403,
   auth_login_not_allowed: 403,
