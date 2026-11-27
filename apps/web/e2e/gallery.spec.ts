@@ -208,9 +208,25 @@ test.describe('gallery', () => {
     await page.keyboard.press('ArrowRight');
     await expect(plate('development')).toBeFocused();
     await page.keyboard.press('ArrowDown');
-    await expect(
-      region.locator('section[data-stage="development"] [data-flag-entry]'),
-    ).toBeFocused();
+    const entry = region.locator('section[data-stage="development"] [data-flag-entry]');
+    await expect(entry).toBeFocused();
+    // The station's list is a scroll box, which clips at its padding: the padding has to hold the
+    // 3px ring and its 2px offset on every side of a focused entry.
+    const room = await entry.evaluate((element) => {
+      const list = element.closest('ul');
+      if (list === null) return null;
+      const [inner, outer] = [element.getBoundingClientRect(), list.getBoundingClientRect()];
+      return Math.min(
+        inner.left - outer.left,
+        outer.right - inner.right,
+        inner.top - outer.top,
+        outer.bottom - inner.bottom,
+      );
+    });
+    expect(room).toBeGreaterThanOrEqual(5);
+    await region
+      .locator('section[data-stage="development"]')
+      .screenshot(shot('focus-station-entry'));
     await page.keyboard.press('End');
     await expect(plate('archived')).toBeFocused();
     await page.keyboard.press('ArrowRight');

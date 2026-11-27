@@ -47,9 +47,13 @@
   padding: var(--space-1) 0;
 }
 
-/* Long lists scroll inside the station; the plate and its count stay visible above. */
+/*
+ * Long lists scroll inside the station; the plate and its count stay visible above. A scroll box
+ * clips at its padding, so the padding holds a focused entry's whole ring and offset (5px).
+ */
 .column .list {
   max-block-size: calc(var(--space-8) * 6);
+  padding: calc(var(--focus-ring) + var(--focus-offset));
   overflow-y: auto;
   overscroll-behavior: contain;
 }
