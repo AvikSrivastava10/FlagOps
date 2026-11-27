@@ -9,6 +9,11 @@ let client: FlagsmithClient;
 
 beforeEach(() => {
   ({ fake, client } = fakeClient());
+  client.writeGuard.manage(
+    { id: 1, name: 'FlagOps Demo' },
+    { id: 1, name: 'Shop', organisation: 1 },
+    [],
+  );
 });
 
 function addTag(id: number, label: string, isPermanent: boolean): void {

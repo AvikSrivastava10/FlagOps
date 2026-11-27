@@ -12,7 +12,7 @@ import {
 import { getFlag } from '../../src/flagsmith/flag-api.js';
 import { listIdentities, listIdentityOverrides } from '../../src/flagsmith/identities-api.js';
 import { setupMetadataFields, type FlagopsFields } from '../../src/flagsmith/metadata.js';
-import { listProjects } from '../../src/flagsmith/projects.js';
+import { listProjects, organisationOfKey } from '../../src/flagsmith/projects.js';
 import { listTags, type TypeTagIds } from '../../src/flagsmith/tags.js';
 import { createLogger } from '../../src/logger.js';
 import { captureLogs } from '../helpers/log-capture.js';
@@ -44,12 +44,14 @@ describe.skipIf(skip !== undefined)(`seed, live${skip === undefined ? '' : ` (${
       logger: createLogger('error', captureLogs().destination),
     });
 
+  /** The demo project, handed to the write guard as the sync does, so the harness may write. */
   async function seededProject() {
     const [project] = await listProjects(client, credential);
     if (project === undefined) {
       throw new Error('The demo organisation has no project: run pnpm seed first');
     }
     const environments = await listEnvironments(client, credential, project.id);
+    client.writeGuard.manage(await organisationOfKey(client, credential), project, environments);
     return { project, environments };
   }
 

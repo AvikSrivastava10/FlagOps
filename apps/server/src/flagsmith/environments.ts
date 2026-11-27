@@ -59,6 +59,7 @@ export async function createEnvironment(
   credential: FlagsmithCredential,
   input: { name: string; project: number },
 ): Promise<Environment> {
+  client.writeGuard.checkProject(input.project);
   const path = '/api/v1/environments/';
   const { data } = await client.api.POST(path, {
     body: { name: input.name, project: input.project },
@@ -76,6 +77,7 @@ export async function enableV2Versioning(
   credential: FlagsmithCredential,
   apiKey: string,
 ): Promise<void> {
+  client.writeGuard.checkEnvironment(apiKey);
   await client.api.POST('/api/v1/environments/{api_key}/enable-v2-versioning/', {
     params: { path: { api_key: apiKey } },
     headers: authHeaders(credential),

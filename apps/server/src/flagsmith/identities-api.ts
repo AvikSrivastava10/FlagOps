@@ -94,6 +94,7 @@ export async function upsertTraits(
   environmentKey: string,
   traits: readonly TraitUpsert[],
 ): Promise<void> {
+  client.writeGuard.checkEnvironment(environmentKey);
   await client.api.PUT('/api/v1/traits/bulk/', {
     body: traits.map((trait) => ({
       identity: { identifier: trait.identifier },
@@ -150,6 +151,7 @@ export async function createIdentityOverride(
   identityId: number,
   state: { feature: number; enabled: boolean },
 ): Promise<void> {
+  client.writeGuard.checkEnvironment(environmentKey);
   await client.api.POST(
     '/api/v1/environments/{environment_api_key}/identities/{identity_pk}/featurestates/',
     {
@@ -166,6 +168,7 @@ export async function updateIdentityOverride(
   environmentKey: string,
   override: { identityId: number; featureStateId: number; enabled: boolean },
 ): Promise<void> {
+  client.writeGuard.checkEnvironment(environmentKey);
   await client.api.PATCH(
     '/api/v1/environments/{environment_api_key}/identities/{identity_pk}/featurestates/{id}/',
     {

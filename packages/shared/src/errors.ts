@@ -13,6 +13,7 @@ export const errorHttpStatus = {
   flagsmith_rate_limited: 429,
   flagsmith_server_error: 502,
   flagsmith_unexpected_response: 502,
+  flagsmith_project_not_managed: 403,
   github_not_configured: 409,
   github_unreachable: 503,
   github_bad_credentials: 503,

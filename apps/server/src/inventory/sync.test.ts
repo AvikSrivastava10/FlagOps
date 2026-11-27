@@ -1,6 +1,6 @@
 import { FlagOpsError } from '@flagops/shared';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { organisationKey } from '../../test/helpers/flagsmith-client.js';
+import { fakeClient, organisationKey } from '../../test/helpers/flagsmith-client.js';
 import { captureLogs } from '../../test/helpers/log-capture.js';
 import { seeder } from '../../test/helpers/seeded-fake.js';
 import { keyOrganisationResolver } from '../flagsmith/projects.js';
@@ -137,6 +137,32 @@ describe('inventory sync', () => {
     expect(logs.entries()).toContainEqual(
       expect.objectContaining({ msg: 'Sync from Flagsmith recovered' }),
     );
+  });
+
+  it("hands the project it selected, with the project's environments, to the write guard", async () => {
+    const { client } = fakeClient(run.fake);
+    const sync = createInventorySync({
+      client,
+      credential: organisationKey,
+      keyOrganisation: keyOrganisationResolver(client, organisationKey),
+      projectId: undefined,
+      store: createInventoryStore(),
+      logger: createLogger('error', captureLogs().destination),
+    });
+    expect(() => {
+      client.writeGuard.checkProject(1);
+    }).toThrow(/has not selected/);
+
+    const inventory = await sync.run();
+
+    // Admitted targets pass silently; anything else is refused.
+    client.writeGuard.checkProject(inventory.project.id);
+    for (const environment of inventory.environments) {
+      client.writeGuard.checkEnvironment(environment.apiKey);
+    }
+    expect(() => {
+      client.writeGuard.checkProject(inventory.project.id + 1);
+    }).toThrow(/refused a write to project/);
   });
 
   it('uses FLAGSMITH_PROJECT_ID when it is set, and names a project that does not exist', async () => {

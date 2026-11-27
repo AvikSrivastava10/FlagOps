@@ -86,16 +86,21 @@ export function keyOrganisationResolver(
   return async () => (organisation ??= await organisationOfKey(client, credential));
 }
 
-/** `POST /api/v1/projects/`. Open-source Flagsmith allows one project per organisation. */
+/**
+ * `POST /api/v1/projects/`, with the organisation key. Open-source Flagsmith allows one project per
+ * organisation. This is the one write that comes before the write guard manages a project
+ * (architecture.md 6.6), so it takes the organisation from the key rather than from its caller.
+ */
 export async function createProject(
   client: FlagsmithClient,
-  credential: FlagsmithCredential,
-  input: { name: string; organisation: number },
+  organisationKey: FlagsmithCredential,
+  name: string,
 ): Promise<Project> {
+  const organisation = await organisationOfKey(client, organisationKey);
   const path = '/api/v1/projects/';
   const { data } = await client.api.POST(path, {
-    body: { name: input.name, organisation: input.organisation },
-    headers: authHeaders(credential),
+    body: { name, organisation: organisation.id },
+    headers: authHeaders(organisationKey),
   });
   return parseResponse(client, projectSchema, data, { method: 'POST', path });
 }

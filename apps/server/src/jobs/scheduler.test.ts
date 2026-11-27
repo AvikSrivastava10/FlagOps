@@ -2,7 +2,7 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { FlagOpsError } from '@flagops/shared';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { captureLogs } from '../../test/helpers/log-capture.js';
 import { openDatabase, type Db } from '../db/connection.js';
 import { migrate } from '../db/migrate.js';
@@ -20,6 +20,7 @@ beforeEach(() => {
 });
 
 afterEach(async () => {
+  vi.useRealTimers();
   await scheduler?.stop();
   scheduler = undefined;
   db.close();
@@ -119,18 +120,24 @@ describe('createScheduler', () => {
     ]);
   });
 
-  it('runs a job again after its interval', async () => {
+  it('runs a job again after its interval, counted from the end of the previous run', async () => {
+    // Fake timers make the count exact; a real clock under load lets the interval drift.
+    vi.useFakeTimers();
     let runs = 0;
     scheduler = createScheduler({
       db,
       logger: createLogger('error'),
-      jobs: [{ name: 'sync', intervalMs: 5, run: async () => void (runs += 1) }],
+      jobs: [{ name: 'sync', intervalMs: 5_000, run: async () => void (runs += 1) }],
     });
 
     scheduler.start();
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
-    expect(runs).toBeGreaterThan(2);
+    expect(runs).toBe(1);
+    await vi.advanceTimersByTimeAsync(4_999);
+    expect(runs).toBe(1);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(runs).toBe(2);
+    await vi.advanceTimersByTimeAsync(5_000);
+    expect(runs).toBe(3);
   });
 
   it('stops the timers and waits for a running job', async () => {

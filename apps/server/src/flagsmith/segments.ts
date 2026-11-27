@@ -71,6 +71,7 @@ export async function createSegment(
   projectId: number,
   input: SegmentInput,
 ): Promise<Segment> {
+  client.writeGuard.checkProject(projectId);
   const path = '/api/v1/projects/{project_pk}/segments/';
   const { data } = await client.api.POST(path, {
     params: { path: { project_pk: projectId } },
@@ -88,6 +89,7 @@ export async function updateSegment(
   segmentId: number,
   input: SegmentInput,
 ): Promise<Segment> {
+  client.writeGuard.checkProject(projectId);
   const path = '/api/v1/projects/{project_pk}/segments/{id}/';
   const { data } = await client.api.PUT(path, {
     params: { path: { project_pk: projectId, id: segmentId } },

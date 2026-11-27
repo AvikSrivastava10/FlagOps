@@ -1,3 +1,4 @@
+import type { FlagsmithClient } from '../../src/flagsmith/client.js';
 import { featureContentTypeId, type FakeFlagsmith } from './fake-flagsmith.js';
 
 /** IDs of the small project `addSmallProject` puts into a fake Flagsmith. */
@@ -124,5 +125,19 @@ export function addSmallProject(fake: FakeFlagsmith): void {
   state.bindings.push(
     { id: small.typeBindingId, field: 50, content_type: featureContentTypeId },
     { id: small.stepsBindingId, field: 51, content_type: featureContentTypeId },
+  );
+}
+
+/** Hands the small project and its environment to the client's write guard, as the sync does. */
+export function manageSmallProject(fake: FakeFlagsmith, client: FlagsmithClient): void {
+  const [organisation] = fake.state.organisations;
+  const project = fake.state.projects.find((item) => item.id === small.projectId);
+  if (organisation === undefined || project === undefined) {
+    throw new Error('add the small project first');
+  }
+  client.writeGuard.manage(
+    organisation,
+    project,
+    fake.state.environments.filter((environment) => environment.project === small.projectId),
   );
 }

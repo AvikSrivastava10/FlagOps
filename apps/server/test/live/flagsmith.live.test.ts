@@ -54,6 +54,8 @@ describe.skipIf(skip !== undefined)(
       }
       project = first;
       environments = await listEnvironments(client, credential, project.id);
+      // The PUT round trip writes, so the guard takes the project, as the sync does.
+      client.writeGuard.manage(await organisationOfKey(client, credential), project, environments);
       segments = await listSegments(client, credential, project.id);
       for (const environment of environments) {
         documents.set(

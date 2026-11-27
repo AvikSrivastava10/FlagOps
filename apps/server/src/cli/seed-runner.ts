@@ -34,6 +34,7 @@ import {
   createProject,
   listProjects,
   organisationOfKey,
+  type Organisation,
   type Project,
 } from '../flagsmith/projects.js';
 import { createSegment, listSegments, updateSegment, type Segment } from '../flagsmith/segments.js';
@@ -98,7 +99,7 @@ export async function runSeed(
   const run: Run = { ...context, report };
   const organisation = await organisationOfKey(run.client, run.credential);
   const project = await ensureProject(run, organisation);
-  const environments = await ensureEnvironments(run, project);
+  const environments = await ensureEnvironments(run, organisation, project);
   await ensureV2Versioning(run, environments);
   const fields = await ensureMetadataFields(run, organisation.id, project.id);
   const tagIds = await ensureTypeTags(run, project.id);
@@ -117,10 +118,7 @@ export async function runSeed(
   return run.report;
 }
 
-async function ensureProject(
-  run: Run,
-  organisation: { id: number; name: string },
-): Promise<Project> {
+async function ensureProject(run: Run, organisation: Organisation): Promise<Project> {
   const projects = (await listProjects(run.client, run.credential)).filter(
     (project) => project.organisation === organisation.id,
   );
@@ -135,18 +133,24 @@ async function ensureProject(
   if (existing !== undefined) {
     return existing;
   }
-  const project = await createProject(run.client, run.credential, {
-    name: seedProjectName,
-    organisation: organisation.id,
-  });
+  const project = await createProject(run.client, run.credential, seedProjectName);
   changed(run, `Created the project ${seedProjectName}`);
   return project;
 }
 
 type SeedEnvironments = Record<SeedEnvironmentName, Environment>;
 
-async function ensureEnvironments(run: Run, project: Project): Promise<SeedEnvironments> {
+/**
+ * Creates the missing demo environments. The write guard (architecture.md 6.6) takes the project
+ * before the first environment is created, and the three demo environments once they all exist.
+ */
+async function ensureEnvironments(
+  run: Run,
+  organisation: Organisation,
+  project: Project,
+): Promise<SeedEnvironments> {
   const existing = await listEnvironments(run.client, run.credential, project.id);
+  run.client.writeGuard.manage(organisation, project, []);
   const environments: Partial<SeedEnvironments> = {};
   for (const name of seedEnvironmentNames) {
     let environment = existing.find((item) => item.name === name);
@@ -168,7 +172,9 @@ async function ensureEnvironments(run: Run, project: Project): Promise<SeedEnvir
       `The project also has ${extra.map((item) => item.name).join(', ')}. The demo's expected stages assume Development, Staging and Production only.`,
     );
   }
-  return environments as SeedEnvironments;
+  const seeded = environments as SeedEnvironments;
+  run.client.writeGuard.manage(organisation, project, Object.values(seeded));
+  return seeded;
 }
 
 /**

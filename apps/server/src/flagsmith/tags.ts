@@ -71,6 +71,7 @@ export async function setupTypeTags(
   projectId: number,
   recorded: TypeTagIds,
 ): Promise<TypeTagSetup> {
+  client.writeGuard.checkProject(projectId);
   const tags = await listTags(client, credential, projectId);
   const setup: TypeTagSetup = { tagIds: {}, created: [], corrected: [], problems: [] };
   for (const type of flagTypes) {

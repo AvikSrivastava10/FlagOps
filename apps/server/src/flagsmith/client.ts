@@ -5,6 +5,7 @@ import type { z } from 'zod';
 import { credentialKindOf } from './credentials.js';
 import { errorForResponse, unexpectedResponse, unreachable, type RequestLabel } from './errors.js';
 import type { paths } from './openapi/schema.js';
+import { createWriteGuard, type WriteGuard } from './write-guard.js';
 
 /** The typed Admin API client: request paths, parameters and bodies are checked against the pinned schema. */
 export type FlagsmithApi = Client<paths>;
@@ -13,6 +14,8 @@ export type FlagsmithClient = {
   readonly api: FlagsmithApi;
   /** The release the latest Flagsmith response announced in its `Flagsmith-Version` header. */
   observedVersion(): string | undefined;
+  /** What this process may write to (architecture.md 6.6); every write function checks it. */
+  readonly writeGuard: WriteGuard;
 };
 
 export type FlagsmithClientOptions = {
@@ -41,27 +44,29 @@ function retryAfterSeconds(response: Response): number | undefined {
   return Number.isFinite(value) && value > 0 ? Math.ceil(value) : undefined;
 }
 
-async function readErrorBody(response: Response): Promise<unknown> {
-  const text = await response.text();
-  if (!isJsonContentType(response)) {
-    return text;
-  }
+/** The parsed body, or undefined when the text is not JSON (JSON itself never parses to undefined). */
+function parseJson(text: string): unknown {
   try {
     return JSON.parse(text) as unknown;
   } catch {
-    return text;
+    return undefined;
   }
 }
 
 /**
  * Creates the only client that talks to Flagsmith (architecture.md 4). Every request goes through
  * `send`, which:
- * - applies the timeouts of architecture.md 18.1 and retries a failed read twice;
+ * - applies the timeouts of architecture.md 18.1 to the whole response, body included, and
+ *   retries a failed read twice;
  * - logs one debug line per attempt, with the path but never the query string or headers;
  * - records the `Flagsmith-Version` header;
  * - turns every failure into a typed FlagOps error, so callers only ever see successful JSON.
  *   Flagsmith answers unknown paths with its dashboard's HTML and status 200, so a successful
  *   response that is not JSON is an error too (architecture.md 6.5).
+ *
+ * openapi-fetch reads the body only after `send` returns, outside its error handling. So `send`
+ * reads the body itself, under the attempt's timeout, and hands openapi-fetch a response built from
+ * the text it read: a body that stalls or is cut off fails the attempt like a refused connection.
  */
 export function createFlagsmithClient(options: FlagsmithClientOptions): FlagsmithClient {
   const baseFetch = options.fetch ?? ((request: Request) => fetch(request));
@@ -73,13 +78,15 @@ export function createFlagsmithClient(options: FlagsmithClientOptions): Flagsmit
     const label: RequestLabel = { method: request.method, path: new URL(request.url).pathname };
     const delays = isRead ? retryDelays : [];
     for (let attempt = 0; ; attempt += 1) {
+      const delay = delays[attempt];
       const startedAt = performance.now();
       const signal = AbortSignal.timeout(isRead ? readTimeoutMs : writeTimeoutMs);
       let response: Response;
+      let text: string;
       try {
         response = await baseFetch(new Request(isRead ? request.clone() : request, { signal }));
+        text = await response.text();
       } catch (error) {
-        const delay = delays[attempt];
         options.logger.debug({ ...label, attempt, err: error }, 'Flagsmith request failed');
         if (delay === undefined) {
           throw unreachable(options.baseUrl, error);
@@ -98,38 +105,45 @@ export function createFlagsmithClient(options: FlagsmithClientOptions): Flagsmit
         },
         'Flagsmith request',
       );
-      const delay = delays[attempt];
       if (response.status >= 500 && delay !== undefined) {
-        await response.body?.cancel();
         await sleep(delay);
         continue;
       }
+      const isJson = isJsonContentType(response);
+      // openapi-fetch reads an empty body as "no data", so only a body with content must parse.
+      const parsed = isJson && text !== '' ? parseJson(text) : text;
+      const isValidJson = isJson && parsed !== undefined;
       if (!response.ok) {
         throw errorForResponse({
           status: response.status,
-          body: await readErrorBody(response),
-          isJson: isJsonContentType(response),
+          body: parsed ?? text,
+          isJson: isValidJson,
           credential: credentialKindOf(request.headers),
           label,
           retryAfterSeconds: retryAfterSeconds(response),
           observedVersion: version,
         });
       }
-      if (hasBody(response) && !isJsonContentType(response)) {
-        await response.body?.cancel();
+      if (!hasBody(response)) {
+        return new Response(null, response);
+      }
+      if (!isValidJson) {
         throw unexpectedResponse(
           label,
-          `content of type ${response.headers.get('content-type') ?? 'unknown'} instead of JSON`,
+          isJson
+            ? 'a body that is not valid JSON'
+            : `content of type ${response.headers.get('content-type') ?? 'unknown'} instead of JSON`,
           version,
         );
       }
-      return response;
+      return new Response(text, response);
     }
   }
 
   return {
     api: createClient<paths>({ baseUrl: options.baseUrl, fetch: send }),
     observedVersion: () => version,
+    writeGuard: createWriteGuard(),
   };
 }
 

@@ -2,7 +2,7 @@ import { FlagOpsError } from '@flagops/shared';
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { FakeFlagsmith } from '../../test/helpers/fake-flagsmith.js';
 import { fakeClient, organisationKey } from '../../test/helpers/flagsmith-client.js';
-import { addSmallProject, small } from '../../test/helpers/fake-project.js';
+import { addSmallProject, manageSmallProject, small } from '../../test/helpers/fake-project.js';
 import type { FlagsmithClient } from './client.js';
 import { checkPutBody, getFlag, putFlag, type FlagApiBody } from './flag-api.js';
 
@@ -15,6 +15,7 @@ let client: FlagsmithClient;
 beforeEach(() => {
   ({ fake, client } = fakeClient());
   addSmallProject(fake);
+  manageSmallProject(fake, client);
 });
 
 async function errorOf(promise: Promise<unknown>): Promise<FlagOpsError> {
@@ -128,6 +129,7 @@ describe('putFlag', () => {
     fake.fetch = async (request) =>
       request.method === 'PUT' ? Response.json({}, { status: 200 }) : originalFetch(request);
     ({ client } = fakeClient(fake));
+    manageSmallProject(fake, client);
 
     const error = await errorOf(putFlag(client, organisationKey, target, onForBetaTesters, listed));
 

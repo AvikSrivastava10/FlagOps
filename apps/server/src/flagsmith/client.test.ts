@@ -41,6 +41,21 @@ function json(status: number, body: unknown, headers: Record<string, string> = {
   return Response.json(body, { status, headers: { 'flagsmith-version': '2.295.2', ...headers } });
 }
 
+/** Headers, the first bytes of a JSON body, then a dropped connection, as undici reports it. */
+function cutOff(status: number): Response {
+  const body = new ReadableStream<Uint8Array>({
+    start(controller) {
+      controller.enqueue(new TextEncoder().encode('[{"id": 1, "name": "Sh'));
+      controller.error(new TypeError('terminated'));
+    },
+  });
+  return new Response(body, { status, headers: { 'content-type': 'application/json' } });
+}
+
+function text(status: number, body: string): Response {
+  return new Response(body, { status, headers: { 'content-type': 'application/json' } });
+}
+
 async function errorOf(promise: Promise<unknown>): Promise<FlagOpsError> {
   const error: unknown = await promise.then(
     () => undefined,
@@ -174,6 +189,53 @@ describe('createFlagsmithClient', () => {
     );
     expect(error.code).toBe('flagsmith_server_error');
     expect(seen).toHaveLength(1);
+  });
+
+  it('retries a read whose body is cut off after the headers, then succeeds', async () => {
+    const { client, seen } = clientAnswering(cutOff(200), json(200, []));
+
+    await expect(listProjects(client, organisationKey)).resolves.toEqual([]);
+    expect(seen).toHaveLength(2);
+  });
+
+  it('reports flagsmith_unreachable when every body of a read is cut off', async () => {
+    const { client, seen } = clientAnswering(cutOff(200), cutOff(200), cutOff(200));
+
+    expect((await errorOf(listProjects(client, organisationKey))).code).toBe(
+      'flagsmith_unreachable',
+    );
+    expect(seen).toHaveLength(3);
+  });
+
+  it.each([201, 400])(
+    'reports a write whose body (HTTP %i) is cut off as flagsmith_unreachable, without retrying',
+    async (status) => {
+      const { client, seen } = clientAnswering(cutOff(status));
+
+      const error = await errorOf(
+        client.api.POST('/api/v1/projects/', {
+          body: { name: 'Shop', organisation: 1 },
+          headers: authHeaders(organisationKey),
+        }),
+      );
+      expect(error.code).toBe('flagsmith_unreachable');
+      expect(seen).toHaveLength(1);
+    },
+  );
+
+  it('reports a JSON body that does not parse as flagsmith_unexpected_response, success or error', async () => {
+    const { client } = clientAnswering(text(200, '[{"id": 1,'), text(400, '{"name": ['));
+
+    const success = await errorOf(listProjects(client, organisationKey));
+    expect(success.code).toBe('flagsmith_unexpected_response');
+    expect(success.message).toContain('a body that is not valid JSON');
+    const failure = await errorOf(
+      client.api.POST('/api/v1/projects/', {
+        body: { name: 'Shop', organisation: 1 },
+        headers: authHeaders(organisationKey),
+      }),
+    );
+    expect(failure.code).toBe('flagsmith_unexpected_response');
   });
 
   it('logs the method, path and status at debug, never the query string or a credential', async () => {

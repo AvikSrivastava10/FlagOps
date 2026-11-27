@@ -108,6 +108,7 @@ export async function createFeature(
   projectId: number,
   feature: NewFeature,
 ): Promise<Feature> {
+  client.writeGuard.checkProject(projectId);
   const path = '/api/v1/projects/{project_pk}/features/';
   const { data } = await client.api.POST(path, {
     params: { path: { project_pk: projectId } },
@@ -239,6 +240,7 @@ export async function updateFeature(
   ref: FeatureRef,
   change: FeatureChange,
 ): Promise<Feature> {
+  client.writeGuard.checkProject(ref.projectId);
   return withFeatureLock(ref.featureId, async () => {
     const current = await getFeature(client, credential, ref);
     const merged = merge(current, change);

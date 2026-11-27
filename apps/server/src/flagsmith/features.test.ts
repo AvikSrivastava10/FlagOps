@@ -2,7 +2,7 @@ import { FlagOpsError } from '@flagops/shared';
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { FakeFlagsmith } from '../../test/helpers/fake-flagsmith.js';
 import { fakeClient, organisationKey } from '../../test/helpers/flagsmith-client.js';
-import { addSmallProject, small } from '../../test/helpers/fake-project.js';
+import { addSmallProject, manageSmallProject, small } from '../../test/helpers/fake-project.js';
 import type { FlagsmithClient } from './client.js';
 import { getFeature, updateFeature } from './features.js';
 
@@ -15,6 +15,7 @@ let client: FlagsmithClient;
 beforeEach(() => {
   ({ fake, client } = fakeClient());
   addSmallProject(fake);
+  manageSmallProject(fake, client);
 });
 
 function giftWrap() {
@@ -108,6 +109,7 @@ describe('updateFeature', () => {
     fake.fetch = async (request) =>
       request.method === 'PATCH' ? Response.json({}, { status: 200 }) : originalFetch(request);
     ({ client } = fakeClient(fake));
+    manageSmallProject(fake, client);
 
     const error: unknown = await updateFeature(client, organisationKey, ref, {
       metadata: new Map([[small.typeBindingId, 'release']]),

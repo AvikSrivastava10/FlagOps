@@ -137,6 +137,8 @@ export async function setupMetadataFields(
   credential: FlagsmithCredential,
   scope: { organisationId: number; projectId: number },
 ): Promise<MetadataSetup> {
+  client.writeGuard.checkOrganisation(scope.organisationId);
+  client.writeGuard.checkProject(scope.projectId);
   const contentTypeId = await featureContentTypeId(client, credential, scope.organisationId);
   const existing = await listProjectMetadataFields(client, credential, scope.projectId);
   const bindings = await listMetadataBindings(

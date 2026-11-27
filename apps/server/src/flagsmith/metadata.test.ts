@@ -12,13 +12,15 @@ let client: FlagsmithClient;
 
 beforeEach(() => {
   ({ fake, client } = fakeClient());
-  fake.state.projects.push({
+  const project = {
     id: 1,
     name: 'Shop',
     organisation: 1,
     hide_disabled_flags: false,
     stale_flags_limit_days: 30,
-  });
+  };
+  fake.state.projects.push(project);
+  client.writeGuard.manage({ id: 1, name: 'FlagOps Demo' }, project, []);
 });
 
 function postsTo(path: string): number {

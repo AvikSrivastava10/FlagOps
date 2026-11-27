@@ -142,6 +142,7 @@ export async function putFlag(
   body: FlagApiBody,
   listedSegmentIds: ReadonlySet<number>,
 ): Promise<FlagApiConfig> {
+  client.writeGuard.checkEnvironment(target.environmentKey);
   const checked = checkPutBody(body, listedSegmentIds);
   const environment = await getEnvironment(client, credential, target.environmentKey);
   if (changeRequestsBlockWrites(environment)) {

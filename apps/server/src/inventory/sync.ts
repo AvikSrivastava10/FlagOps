@@ -40,8 +40,8 @@ const concurrentRequests = 6;
 
 /**
  * The project FlagOps manages: `FLAGSMITH_PROJECT_ID` when set, else the organisation's only
- * project (features.md S1.3). Writes go only to this project, which belongs to the organisation
- * of the key by construction (architecture.md 6.6).
+ * project (features.md S1.3). The sync hands it to the adapter's write guard, so writes go only
+ * to this project (architecture.md 6.6).
  */
 function selectProject(
   projects: readonly Project[],
@@ -170,6 +170,7 @@ export function createInventorySync(options: InventorySyncOptions): InventorySyn
     const environments = (await listEnvironments(client, credential, project.id)).sort(
       (a, b) => a.id - b.id,
     );
+    client.writeGuard.manage(organisation, project, environments);
     const [segments, tags, fieldNames] = await Promise.all([
       listSegments(client, credential, project.id),
       listTags(client, credential, project.id),
