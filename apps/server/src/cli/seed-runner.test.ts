@@ -212,14 +212,25 @@ describe('runSeed on an empty organisation', () => {
     );
     user7?.traits.set('beta', false);
     user7?.traits.set('extra', 'added');
+    const user10 = run.fake.state.identities.find(
+      (identity) =>
+        identity.identifier === 'user-0010' &&
+        identity.environment === environment(run.fake, 'Production').api_key,
+    );
+    const override = run.fake.state.identityOverrides.find((item) => item.identity === user10?.id);
+    if (override !== undefined) {
+      override.enabled = false;
+    }
 
     const report = await run.seed();
 
     expect(report.changes).toEqual([
       'Set dark_mode in Production',
       'Wrote the traits of 1 identities in Production, 0 of them new',
+      'Turned dark_mode back on for user-0010 in Production',
       'Wrote the exit plan of new_checkout',
     ]);
+    expect(override?.enabled).toBe(true);
     expect(newCheckout.is_archived).toBe(false);
     expect(metadataOf(run.fake, 'new_checkout').flagops_cleanup_prs).toBeUndefined();
     expect(newCheckout.description).toBe(
