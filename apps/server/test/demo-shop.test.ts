@@ -1,8 +1,10 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { readDemoShopFiles, type DemoFile } from './demo-publish.js';
+import { readDemoShopFiles, type DemoFile } from '../src/cli/demo-publish.js';
 
 // The demo shop that `pnpm demo:publish` pushes must keep the shapes that the scanner, the codemod
-// and the acceptance tests expect (architecture.md 13.2, brief DR-3 to DR-6, D-063).
+// and the acceptance tests expect (architecture.md 13.2, brief DR-3 to DR-6, D-063). It reads the
+// demo shop's files as data, and names its SDK packages, so it lives outside apps/server/src,
+// where only impact/engine/ may name an @flagsmith/ module (the source rules test).
 
 let files: DemoFile[];
 const text = (path: string): string => {
