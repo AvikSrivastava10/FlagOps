@@ -4,7 +4,10 @@ import type { CodeRecord } from '../../matcher/records.js';
 import type { Product } from '../../matcher/sdk-modules.js';
 import type { Db } from '../connection.js';
 
-/** Scans and their records (architecture.md 8.5, 16). Older scans are dropped beyond 20. */
+/**
+ * Scans and their records (architecture.md 8.5, 16). Each repository keeps its 20 newest scans,
+ * and always its newest successful scan, the reference set, however many runs failed since.
+ */
 const keptScansPerRepository = 20;
 
 export type SkippedFile = { path: string; reason: string };
@@ -96,9 +99,10 @@ function fromRow(row: ScanRow): StoredScan {
 
 function prune(db: Db, repository: string): void {
   db.prepare(
-    `DELETE FROM scans WHERE repository = ? AND id NOT IN
-       (SELECT id FROM scans WHERE repository = ? ORDER BY id DESC LIMIT ?)`,
-  ).run(repository, repository, keptScansPerRepository);
+    `DELETE FROM scans WHERE repository = ?
+       AND id NOT IN (SELECT id FROM scans WHERE repository = ? ORDER BY id DESC LIMIT ?)
+       AND id IS NOT (SELECT MAX(id) FROM scans WHERE repository = ? AND outcome = 'succeeded')`,
+  ).run(repository, repository, keptScansPerRepository, repository);
 }
 
 /** Stores a successful scan and its records in one transaction, and returns its ID. */
@@ -173,6 +177,15 @@ export function insertFailedScan(db: Db, scan: FailedScan): number {
     prune(db, scan.repository);
     return Number(lastInsertRowid);
   })();
+}
+
+/**
+ * Failed scans describe a repository's current outage, so a run that reaches the repository again
+ * deletes them. Returns how many there were.
+ */
+export function clearFailedScans(db: Db, repository: string): number {
+  return db.prepare("DELETE FROM scans WHERE repository = ? AND outcome = 'failed'").run(repository)
+    .changes;
 }
 
 /** The newest scan of a repository, successful or not. */

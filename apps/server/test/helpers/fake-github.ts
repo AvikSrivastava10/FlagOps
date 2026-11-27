@@ -49,6 +49,7 @@ export type RecordedRequest = {
 export type InjectedFailure = {
   status: number;
   headers?: Record<string, string>;
+  /** Sent as JSON, except a string, which is sent as it is, such as an HTML page. */
   body?: unknown;
 };
 
@@ -207,7 +208,8 @@ export class FakeGitHub {
       'x-ratelimit-reset': String(Math.floor(Date.now() / 1000) + 3600),
       ...reply.headers,
     });
-    response.end(reply.body === undefined ? '' : JSON.stringify(reply.body));
+    const payload = reply.body ?? '';
+    response.end(typeof payload === 'string' ? payload : JSON.stringify(payload));
   }
 
   #reply(method: string, url: URL, authorization: string | undefined, body: unknown): Reply {

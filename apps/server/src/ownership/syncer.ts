@@ -1,4 +1,4 @@
-import { FlagOpsError } from '@flagops/shared';
+import { FlagOpsError, type ErrorCode } from '@flagops/shared';
 import type { Logger } from 'pino';
 import type { Db } from '../db/connection.js';
 import { listOwnerMappings } from '../db/repos/owners.js';
@@ -11,8 +11,9 @@ import { syncOwners, type OwnerSyncReport } from './sync.js';
 /**
  * When the owner sync runs (architecture.md 8.5): after a scan job run that stored a new scan,
  * after "Scan now", once the owner mappings changed, and on the first run after FlagOps starts. A
- * sync that could not run through stays due. It waits until every tracked repository has a scan
- * with the current flag names, because a flag's owners come from all of them.
+ * sync that could not run through stays due, and so does one with an owner change that failed in
+ * a way the same request may not meet again (6.5, 18.2). It waits until every tracked repository
+ * has a scan with the current flag names, because a flag's owners come from all of them.
  */
 export type OwnerSyncerOptions = {
   db: Db;
@@ -24,7 +25,10 @@ export type OwnerSyncerOptions = {
   now: () => Date;
 };
 
-/** The latest owner sync since FlagOps started; the flag page shows its per-flag failures. */
+/**
+ * The latest owner sync since FlagOps started. `succeeded` means every flag had its turn, and the
+ * report lists the owner changes that failed, which the flag page shows.
+ */
 export type OwnerSyncStatus =
   | { state: 'not_run' }
   | { state: 'succeeded'; at: string; report: OwnerSyncReport }
@@ -33,7 +37,10 @@ export type OwnerSyncStatus =
 export type OwnerSyncer = {
   /** Makes the next run sync owners even when it stores no new scan. */
   request(): void;
-  /** Syncs owners when due, and returns the failure of a sync that could not run through. */
+  /**
+   * Syncs owners when due, and returns the first failure: of a sync that could not run through,
+   * or of an owner change, so the scan job's run fails as it does for a failed upload.
+   */
   syncIfDue(
     projectId: number,
     flagNamesHash: string,
@@ -42,10 +49,35 @@ export type OwnerSyncer = {
   status(): OwnerSyncStatus;
 };
 
+/**
+ * Failures the next run may not meet: the network, a server error and a rate limit. A change
+ * Flagsmith refused waits for the next trigger, because the same request would be refused again.
+ */
+const repeatedByNextRun: ReadonlySet<ErrorCode> = new Set<ErrorCode>([
+  'flagsmith_unreachable',
+  'flagsmith_server_error',
+  'flagsmith_rate_limited',
+]);
+
 export function createOwnerSyncer(options: OwnerSyncerOptions): OwnerSyncer {
   let due = true;
   let syncedMappings: string | undefined;
   let status: OwnerSyncStatus = { state: 'not_run' };
+
+  /** Warns on the first failure of each flag's outage only (architecture.md 18.2). */
+  function warnNewFailures(report: OwnerSyncReport): void {
+    const failingBefore = new Set(
+      status.state === 'succeeded' ? status.report.failures.map((failure) => failure.flag) : [],
+    );
+    for (const failure of report.failures) {
+      if (!failingBefore.has(failure.flag)) {
+        options.logger.warn(
+          { flag: failure.flag, code: failure.code },
+          `Owner sync failed for ${failure.flag}: ${failure.message}`,
+        );
+      }
+    }
+  }
 
   return {
     request() {
@@ -84,10 +116,17 @@ export function createOwnerSyncer(options: OwnerSyncerOptions): OwnerSyncer {
           projectId,
           derived,
         );
+        warnNewFailures(report);
         status = { state: 'succeeded', at: options.now().toISOString(), report };
-        due = false;
+        due = report.failures.some((failure) => repeatedByNextRun.has(failure.code));
         syncedMappings = mappings;
-        return undefined;
+        const [failure] = report.failures;
+        return failure === undefined
+          ? undefined
+          : new FlagOpsError(
+              failure.code,
+              `Owner sync failed for ${failure.flag}: ${failure.message}`,
+            );
       } catch (error) {
         if (!(error instanceof FlagOpsError)) {
           throw error;

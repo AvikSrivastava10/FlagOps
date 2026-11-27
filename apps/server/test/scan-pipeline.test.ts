@@ -7,7 +7,7 @@ import { Secret } from '../src/config/secret.js';
 import { openDatabase, type Db } from '../src/db/connection.js';
 import { migrate } from '../src/db/migrate.js';
 import { listAddedOwners, replaceOwnerMappings } from '../src/db/repos/owners.js';
-import { latestSuccessfulScan, scanRecords } from '../src/db/repos/scans.js';
+import { latestScan, latestSuccessfulScan, scanRecords } from '../src/db/repos/scans.js';
 import { keyOrganisationResolver } from '../src/flagsmith/projects.js';
 import { createGitHubClient } from '../src/github/client.js';
 import { createInventoryStore } from '../src/inventory/store.js';
@@ -67,6 +67,44 @@ function pushFiles(files: Record<string, string>): void {
 function scanAfterSync(): Promise<void> {
   scans.requestAll();
   return scans.run();
+}
+
+const info = 30;
+const warn = 40;
+
+/** The messages logged at `level` since the log held `from` entries. */
+function messages(level: number, from: number): string[] {
+  return logs
+    .entries()
+    .slice(from)
+    .filter((entry) => entry.level === level)
+    .map((entry) => String(entry.msg));
+}
+
+/** How many scans of each outcome the repository keeps. */
+function scanOutcomes(): Record<string, number> {
+  const rows = db
+    .prepare<[string], { outcome: string; count: number }>(
+      'SELECT outcome, COUNT(*) AS count FROM scans WHERE repository = ? GROUP BY outcome',
+    )
+    .all(repository);
+  return Object.fromEntries(rows.map((row) => [row.outcome, row.count]));
+}
+
+function tarballDownloads(): number {
+  return github.requests.filter((request) => request.path.includes('/tarball/')).length;
+}
+
+function addOwnerRequests(): number {
+  return run.fake.requests.filter((request) => request.path.endsWith('/add-owners/')).length;
+}
+
+/** Someone removes the operator as owner of new_checkout in Flagsmith's dashboard. */
+function removeOperatorFromNewCheckout(): void {
+  run.fake.state.owners = run.fake.state.owners.filter(
+    (owner) =>
+      !(owner.feature === flagId('new_checkout') && owner.kind === 'user' && owner.id === operator),
+  );
 }
 
 beforeAll(async () => {
@@ -221,5 +259,120 @@ describe('the scan pipeline on the demo shop', () => {
     const after = latestSuccessfulScan(db, repository);
     expect(after?.commitSha).toBe(before?.commitSha);
     expect(after?.flagNamesHash).not.toBe(before?.flagNamesHash);
+  });
+
+  it('repeats an owner change that failed with a server error on the next runs, without a new scan, and warns once', async () => {
+    const scan = latestSuccessfulScan(db, repository)?.id;
+    const downloads = tarballDownloads();
+    const mark = logs.entries().length;
+    removeOperatorFromNewCheckout();
+    run.fake.failNext(/\/add-owners\/$/, 502, { detail: 'down' });
+    run.fake.failNext(/\/add-owners\/$/, 502, { detail: 'down' });
+    scans.scanNow(undefined);
+
+    await expect(scans.run()).rejects.toMatchObject({ code: 'flagsmith_server_error' });
+    await expect(scanAfterSync()).rejects.toMatchObject({ code: 'flagsmith_server_error' });
+    expect(ownersOf('new_checkout')).toEqual([]);
+
+    await scanAfterSync();
+
+    expect(ownersOf('new_checkout')).toEqual([operator]);
+    expect(scans.status().ownerSync).toMatchObject({
+      state: 'succeeded',
+      report: { added: 1, removed: 0, failures: [] },
+    });
+    expect(messages(warn, mark)).toEqual([
+      expect.stringMatching(/^Owner sync failed for new_checkout: Flagsmith failed with HTTP 502/),
+    ]);
+    expect(latestSuccessfulScan(db, repository)?.id).toBe(scan);
+    expect(tarballDownloads()).toBe(downloads);
+  });
+
+  it('leaves an owner change that Flagsmith refused for the next trigger, such as "Scan now"', async () => {
+    removeOperatorFromNewCheckout();
+    run.fake.failNext(/\/add-owners\/$/, 400, { user_ids: ['Some users not found'] });
+    scans.scanNow(undefined);
+
+    await expect(scans.run()).rejects.toMatchObject({ code: 'flagsmith_validation' });
+    const attempts = addOwnerRequests();
+    await scanAfterSync();
+    expect(addOwnerRequests()).toBe(attempts);
+    expect(ownersOf('new_checkout')).toEqual([]);
+
+    scans.scanNow(undefined);
+    await scans.run();
+
+    expect(ownersOf('new_checkout')).toEqual([operator]);
+    expect(addOwnerRequests()).toBe(attempts + 1);
+  });
+
+  it('records a body that is not a tarball as a failed scan, keeps the reference set, and scans the commit once GitHub serves it', async () => {
+    const reference = latestSuccessfulScan(db, repository)?.id;
+    const mark = logs.entries().length;
+    pushFiles({
+      ...demoFiles,
+      'README.md': `${demoFiles['README.md'] ?? ''}\nServed as HTML once.\n`,
+    });
+    github.failNext(
+      { path: /\/tarball\// },
+      {
+        status: 200,
+        headers: { 'content-type': 'text/html' },
+        body: '<!doctype html><title>Sign in</title>',
+      },
+    );
+
+    await expect(scanAfterSync()).rejects.toMatchObject({ code: 'github_server_error' });
+
+    expect(latestScan(db, repository)).toMatchObject({
+      outcome: 'failed',
+      commitSha: github.head(repository),
+      errorCode: 'github_server_error',
+    });
+    expect(latestSuccessfulScan(db, repository)?.id).toBe(reference);
+    expect(messages(warn, mark)).toEqual([
+      `Scan of ${repository} failed: GitHub answered GET /repos/${repository}/tarball/${github.head(repository) ?? ''} with a response FlagOps does not understand (a body that is not a readable gzipped tarball).`,
+    ]);
+
+    await scanAfterSync();
+
+    expect(latestScan(db, repository)).toMatchObject({
+      outcome: 'succeeded',
+      commitSha: github.head(repository),
+    });
+    expect(scanOutcomes().failed).toBeUndefined();
+    expect(messages(info, mark)).toContain(`Scanning ${repository} works again`);
+  });
+
+  it('keeps the reference set through 25 failed runs, records each failure, warns once, and ends the outage on the next run', async () => {
+    const reference = latestSuccessfulScan(db, repository);
+    const records = scanRecords(db, reference?.id ?? 0);
+    const mark = logs.entries().length;
+
+    // A revoked token: every run fails at its head check, the first request it makes.
+    for (let attempt = 1; attempt <= 25; attempt += 1) {
+      github.failNext(
+        { path: /\/git\/ref\/heads\// },
+        { status: 401, body: { message: 'Bad credentials' } },
+      );
+      await expect(scanAfterSync()).rejects.toMatchObject({ code: 'github_bad_credentials' });
+      expect(latestScan(db, repository)).toMatchObject({
+        outcome: 'failed',
+        errorCode: 'github_bad_credentials',
+      });
+    }
+
+    expect(scanOutcomes()).toEqual({ failed: 20, succeeded: 1 });
+    expect(scans.status().repositories[0]?.current?.id).toBe(reference?.id);
+    expect(scanRecords(db, reference?.id ?? 0)).toEqual(records);
+    expect(messages(warn, mark)).toEqual([
+      `Scan of ${repository} failed: GitHub rejected GITHUB_TOKEN as bad credentials. Create a new token and update GITHUB_TOKEN.`,
+    ]);
+
+    await scanAfterSync();
+
+    expect(scanOutcomes()).toEqual({ succeeded: 1 });
+    expect(scans.status().repositories[0]?.latest?.id).toBe(reference?.id);
+    expect(messages(info, mark)).toEqual([`Scanning ${repository} works again`]);
   });
 });

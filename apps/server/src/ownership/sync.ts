@@ -1,4 +1,4 @@
-import { FlagOpsError } from '@flagops/shared';
+import { FlagOpsError, type ErrorCode } from '@flagops/shared';
 import type { Logger } from 'pino';
 import { appendAudit } from '../audit/audit.js';
 import type { Db } from '../db/connection.js';
@@ -18,7 +18,8 @@ import type { OwnerEvidence } from './derive.js';
 /**
  * Owner sync (architecture.md 8.5, step 3), with the organisation key: each flag gets the mapped
  * Flagsmith users and groups of its CODEOWNERS owners. FlagOps removes only the owners it added
- * itself, and every change is audited. A failure on one flag does not stop the others (18.2).
+ * itself, and every change is audited. A failure on one flag does not stop the others (18.2); the
+ * report lists it, and the syncer decides whether the next run repeats it and when to warn.
  */
 export type OwnerSyncDeps = {
   db: Db;
@@ -30,7 +31,7 @@ export type OwnerSyncDeps = {
 export type OwnerSyncReport = {
   added: number;
   removed: number;
-  failures: { flag: string; code: string; message: string }[];
+  failures: { flag: string; code: ErrorCode; message: string }[];
 };
 
 /** `@Name` and `name` are the same GitHub handle. */
@@ -126,10 +127,6 @@ async function apply(
     }
     audit('failed', error.message);
     report.failures.push({ flag: plan.flag, code: error.code, message: error.message });
-    deps.logger.warn(
-      { flag: plan.flag, code: error.code },
-      `Owner sync failed for ${plan.flag}: ${error.message}`,
-    );
     return;
   }
   if (change.action === 'add') {

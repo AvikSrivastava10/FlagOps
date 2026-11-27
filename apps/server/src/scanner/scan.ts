@@ -3,6 +3,7 @@ import { FlagOpsError } from '@flagops/shared';
 import type { Logger } from 'pino';
 import type { Db } from '../db/connection.js';
 import {
+  clearFailedScans,
   insertFailedScan,
   insertScan,
   latestScan,
@@ -17,12 +18,13 @@ import type { FlagsmithClient } from '../flagsmith/client.js';
 import { uploadCodeReferences } from '../flagsmith/code-references.js';
 import type { FlagsmithCredential } from '../flagsmith/credentials.js';
 import type { GitHubClient } from '../github/client.js';
+import { unexpectedResponseError } from '../github/errors.js';
 import { downloadTarball, getBranchHead, getDefaultBranch } from '../github/git-data.js';
 import type { InventoryStore } from '../inventory/store.js';
 import { matchRepository, type RepositoryFile } from '../matcher/match-repository.js';
 import type { CodeRecord } from '../matcher/records.js';
 import { createOwnerSyncer, type OwnerSyncStatus } from '../ownership/syncer.js';
-import { readArchive } from './archive.js';
+import { readArchive, type ArchiveContents } from './archive.js';
 import { codeownersLocations, parseCodeowners } from './codeowners.js';
 
 /**
@@ -89,6 +91,15 @@ function codeownersOf(files: readonly RepositoryFile[]): ScanCodeowners | null {
 
 type ScanOutcome = { scanned: boolean; failure: FlagOpsError | undefined };
 
+/** An exception FlagOps did not expect while scanning is a bug, kept as a failed scan (18.2). */
+function unexpectedScanError(repository: string, cause: unknown): FlagOpsError {
+  return new FlagOpsError(
+    'internal_error',
+    `Scanning ${repository} failed unexpectedly. The FlagOps log has the details.`,
+    { cause },
+  );
+}
+
 export function createScanService(options: ScanServiceOptions): ScanService {
   const now = options.now ?? (() => new Date());
   const pending = new Set<string>();
@@ -111,6 +122,26 @@ export function createScanService(options: ScanServiceOptions): ScanService {
     const branch = await getDefaultBranch(options.github, repository);
     defaultBranches.set(repository, branch);
     return branch;
+  }
+
+  /** A body that is not a readable tarball is an answer FlagOps does not understand (18.2). */
+  async function readTarball(repository: string, sha: string): Promise<ArchiveContents> {
+    const tarball = await downloadTarball(options.github, repository, sha);
+    try {
+      return await readArchive(tarball);
+    } catch {
+      throw unexpectedResponseError(
+        `GET /repos/${repository}/tarball/${sha}`,
+        'a body that is not a readable gzipped tarball',
+      );
+    }
+  }
+
+  /** A run that reached the repository ends its outage, whose failed scans go (16). */
+  function recovered(repository: string): void {
+    if (clearFailedScans(options.db, repository) > 0) {
+      options.logger.info({ repository }, `Scanning ${repository} works again`);
+    }
   }
 
   /** A failed upload marks the scan "uploaded: no"; the next run retries it (18.2). */
@@ -164,6 +195,7 @@ export function createScanService(options: ScanServiceOptions): ScanService {
       }
       const previous = latestSuccessfulScan(options.db, repository);
       if (previous?.commitSha === commitSha && previous.flagNamesHash === hash) {
+        recovered(repository);
         const failure =
           previous.uploadedAt === null
             ? await upload(
@@ -176,9 +208,7 @@ export function createScanService(options: ScanServiceOptions): ScanService {
             : undefined;
         return { scanned: false, failure };
       }
-      const contents = await readArchive(
-        await downloadTarball(options.github, repository, commitSha),
-      );
+      const contents = await readTarball(repository, commitSha);
       const result = matchRepository(contents.files, flagNames);
       const scanId = insertScan(
         options.db,
@@ -201,6 +231,7 @@ export function createScanService(options: ScanServiceOptions): ScanService {
         },
         result.records,
       );
+      recovered(repository);
       const references = result.records.filter((record) => record.kind === 'reference').length;
       options.logger.info(
         { repository, commit: commitSha, references },
@@ -208,20 +239,24 @@ export function createScanService(options: ScanServiceOptions): ScanService {
       );
       const failure = await upload(repository, scanId, commitSha, result.records, projectId);
       return { scanned: true, failure };
-    } catch (error) {
-      if (!(error instanceof FlagOpsError)) {
-        throw error;
-      }
+    } catch (caught) {
+      // Any failure is this repository's failed scan, and the run goes on with the next one.
+      const error =
+        caught instanceof FlagOpsError ? caught : unexpectedScanError(repository, caught);
       // A renamed default branch is read again on the next run.
       if (error.code === 'github_not_found') {
         defaultBranches.delete(repository);
       }
-      // Warn on the first failure of an outage only (architecture.md 18.2).
+      // Log the first failure of an outage only (architecture.md 18.2), and a bug with its stack.
       if (latestScan(options.db, repository)?.outcome !== 'failed') {
-        options.logger.warn(
-          { repository, code: error.code },
-          `Scan of ${repository} failed: ${error.message}`,
-        );
+        if (error.code === 'internal_error') {
+          options.logger.error({ err: caught, repository }, `Scan of ${repository} failed`);
+        } else {
+          options.logger.warn(
+            { repository, code: error.code },
+            `Scan of ${repository} failed: ${error.message}`,
+          );
+        }
       }
       insertFailedScan(options.db, {
         repository,
