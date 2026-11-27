@@ -4,6 +4,9 @@ docs/
 # Agent working files
 .agents/
 
+# Git worktrees for parallel build tracks
+.worktrees/
+
 # Dependencies
 node_modules/
 
