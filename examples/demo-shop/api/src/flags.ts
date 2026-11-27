@@ -20,6 +20,9 @@ export const flagsmith = new Flagsmith({
 
 /** Fetches the user's flags before each route runs; route handlers read `request.flags`. */
 export function registerFlags(app: FastifyInstance): void {
+  // Fastify wants request properties declared before requests arrive, so that every request
+  // object has the same shape.
+  app.decorateRequest('flags');
   app.addHook('onRequest', async (request) => {
     const user = currentUser(request);
     const traits = { role: user.role, plan: user.plan };

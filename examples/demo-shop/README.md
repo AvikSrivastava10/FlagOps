@@ -15,6 +15,8 @@ A small shop that reads its feature flags from Flagsmith: a React storefront in 
 | `free_shipping_threshold` | `web/src/cart/ShippingNote.tsx`, `api/src/routes/shipping.ts` | `flagsmith.getValue`; `request.flags.getFeatureValue` |
 | `order_tracking_v2` | `api/src/routes/orders.ts` | `request.flags.isFeatureEnabled`, twice |
 
+When FlagOps retires a flag, its pull request changes only code, so this table keeps listing the flag until the shop is reset.
+
 `web/src/App.tsx` also checks `recomendations_v2`, a misspelling of `recommendations_v2`. Flagsmith has no flag with that name, so the check is always false and the recommendations never show. The typo is deliberate: FlagOps reports it as a zombie reference.
 
 `flagops.json` tells FlagOps that `useFeature(name)` in `web/src/flags/useFeature.ts` returns whether the named flag is on, so FlagOps finds and removes the checks made through it as well.
