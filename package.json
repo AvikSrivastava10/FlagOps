@@ -22,7 +22,9 @@
     "test": "vitest run",
     "test:live": "vitest run --config vitest.live.config.ts --project live",
     "test:live-session": "vitest run --config vitest.live.config.ts --project live-session",
+    "test:live-github": "vitest run --config vitest.live.config.ts --project live-github",
     "seed": "tsx --conditions=development --env-file-if-exists=.env apps/server/src/cli/seed.ts",
+    "demo:publish": "tsx --conditions=development --env-file-if-exists=.env apps/server/src/cli/demo-publish.ts",
     "openapi:generate": "pnpm --filter @flagops/server run openapi:generate",
     "openapi:check": "tsx --env-file-if-exists=.env apps/server/scripts/openapi-check.ts"
   },
