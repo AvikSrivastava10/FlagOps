@@ -1,7 +1,13 @@
+/* Fixed columns: the field takes a third, source and target share the rest equally. */
 .table {
   inline-size: 100%;
+  table-layout: fixed;
   border-block: var(--rule-structural) solid var(--color-ink);
   font: var(--weight-regular) var(--text-small) var(--font-ui);
+}
+
+.table thead th:first-child {
+  inline-size: 34%;
 }
 
 .caption {
