@@ -48,7 +48,7 @@ export async function getBranchHead(
   }
 }
 
-export type Commit = { sha: string; treeSha: string; parentShas: string[]; message: string };
+export type Commit = { treeSha: string; parentShas: string[] };
 
 export async function getCommit(
   client: GitHubClient,
@@ -60,17 +60,13 @@ export async function getCommit(
     repository,
     path: `/git/commits/${encodeURIComponent(sha)}`,
     schema: z.object({
-      sha: shaSchema,
-      message: z.string(),
       tree: z.object({ sha: shaSchema }),
       parents: z.array(z.object({ sha: shaSchema })),
     }),
   });
   return {
-    sha: commit.sha,
     treeSha: commit.tree.sha,
     parentShas: commit.parents.map((parent) => parent.sha),
-    message: commit.message,
   };
 }
 
