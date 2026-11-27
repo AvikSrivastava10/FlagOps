@@ -2,6 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import {
   demoShopRoot,
+  listUncommittedPaths,
   publishDemoShop,
   readDemoShopFiles,
   type DemoFile,
@@ -33,7 +34,7 @@ describe.skipIf(missing.length > 0)(
     const repository = process.env.DEMO_REPO?.trim() ?? '';
     const logger = createLogger('info', captureLogs().destination);
     let client: GitHubClient;
-    let files: DemoFile[];
+    let files: DemoFile[] = [];
 
     async function headFiles(): Promise<Record<string, string>> {
       const head = await getBranchHead(client, repository, 'main');
@@ -58,6 +59,13 @@ describe.skipIf(missing.length > 0)(
     }
 
     beforeAll(async () => {
+      // Like pnpm demo:publish, the suite publishes only a clean, committed demo shop.
+      const uncommitted = await listUncommittedPaths(demoShopRoot);
+      if (uncommitted.length > 0) {
+        throw new Error(
+          `Commit or remove the demo shop's changes first: ${uncommitted.join(', ')}`,
+        );
+      }
       client = createGitHubClient({
         token: new Secret(process.env.GITHUB_TOKEN?.trim() ?? ''),
         repositories: [repository],
@@ -67,7 +75,9 @@ describe.skipIf(missing.length > 0)(
 
     afterAll(async () => {
       // Whatever failed above, DEMO_REPO ends up holding the pristine demo shop (testing.md 9).
-      await publishDemoShop(client, repository, files, logger);
+      if (files.length > 0) {
+        await publishDemoShop(client, repository, files, logger);
+      }
     }, 5 * minute);
 
     const pristine = () =>

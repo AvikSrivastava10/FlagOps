@@ -217,4 +217,36 @@ describe('publishDemoShop', () => {
     expect(github.head(repository)).toBe(before);
     expect(github.pullRequest(repository, ours)?.state).toBe('open');
   });
+
+  it('continues from the README commit when a refusal stopped the first publish after it', async () => {
+    github.addRepository(repository);
+    // A token with Contents write but no Workflows write passes the README commit and is refused
+    // once the branch would get .github/workflows/ci.yml.
+    github.failNext(
+      { method: 'PATCH', path: /\/git\/refs\/heads\/main$/ },
+      {
+        status: 403,
+        headers: { 'x-accepted-github-permissions': 'contents=write,workflows=write' },
+        body: { message: 'Resource not accessible by personal access token' },
+      },
+    );
+
+    await expect(publish()).rejects.toMatchObject({ code: 'github_missing_permission' });
+    const readmeCommit = github.head(repository);
+    expect(github.files(repository)).toEqual({ 'README.md': '# Demo shop\n' });
+
+    const result = await publish();
+
+    expect(result).toMatchObject({
+      initialised: false,
+      plan: {
+        added: ['.github/workflows/ci.yml', 'web/src/checkout/LegacyCheckout.tsx'],
+        changed: [],
+        removed: [],
+      },
+    });
+    expect(github.commit(result.headSha)?.parents).toEqual([readmeCommit]);
+    expect(github.commit(result.headSha)?.message).toMatch(/^Restore the demo shop\n/);
+    expect(github.files(repository)).toEqual(pristine);
+  });
 });
