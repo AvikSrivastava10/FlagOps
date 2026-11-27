@@ -5,17 +5,20 @@
  * flags "approximate" with the cause instead of presenting their numbers as exact.
  *
  * The codes R2 to R13 are those of the impact-preview spike report, section 4. R15 (MODULO
- * arithmetic) and R16 (condition properties) were found later, by running conditions through
- * both engines. The edge probes of the parity suite hold a condition for every check, and the
- * suite fails when the engines differ on a flag the lint does not mark. Where a check cannot
- * tell, it warns.
+ * arithmetic), R16 (condition properties) and R17 (semver comparisons) were found later, by
+ * running conditions through both engines, as were the REGEX dialect differences R2 now covers
+ * beyond JavaScript syntax errors (regex-dialect.ts). The edge probes of the parity suite hold a
+ * condition for every check, and the suite fails when the engines differ on a flag the lint does
+ * not mark. Where a check cannot tell, it warns.
  */
+import { portableRegex } from './regex-dialect.js';
 import {
   anchorLikePythonMatch,
   coerceTraitValue,
   flagsReadBy,
   inValuesLikePython,
   pythonNumberKind,
+  serverHashKey,
 } from './server-profile.js';
 import type {
   EnvironmentDocument,
@@ -26,7 +29,7 @@ import type {
 } from './types.js';
 
 export type DivergenceCode =
-  'R2' | 'R3' | 'R4' | 'R5' | 'R6' | 'R7' | 'R8' | 'R10' | 'R13' | 'R15' | 'R16';
+  'R2' | 'R3' | 'R4' | 'R5' | 'R6' | 'R7' | 'R8' | 'R10' | 'R13' | 'R15' | 'R16' | 'R17';
 
 export type DivergenceCause = { code: DivergenceCode; description: string };
 
@@ -55,7 +58,12 @@ export type DivergenceLint = {
  * - `negative`: a number below 0;
  * - `number-prefixed-text`: text such as "3px" that JavaScript's parseFloat() reads as a number;
  * - `exponent-float`: a float that Python's str() writes with an exponent and JavaScript without,
- *   or differently (Python switches below 1e-4 and from 1e16, JavaScript below 1e-6 and from 1e21).
+ *   or differently (Python switches below 1e-4 and from 1e16, JavaScript below 1e-6 and from 1e21);
+ * - `non-semver-text`: text that is not a strict SemVer version (R17);
+ * - `beyond-printable-ascii`: text with a character outside printable ASCII, where Python's
+ *   Unicode classes \d, \w, \s and \b may differ from JavaScript's (R2);
+ * - `line-break-or-astral`: text with "\n", "\r", "\u2028", "\u2029" or a character above U+FFFF,
+ *   where `.`, `$` and negated classes may differ (R2).
  */
 type Observed =
   | 'integer'
@@ -67,10 +75,22 @@ type Observed =
   | 'zero-or-empty'
   | 'negative'
   | 'number-prefixed-text'
-  | 'exponent-float';
+  | 'exponent-float'
+  | 'non-semver-text'
+  | 'beyond-printable-ascii'
+  | 'line-break-or-astral';
 
 const cause = {
   regexSyntax: { code: 'R2', description: 'REGEX pattern that JavaScript rejects' },
+  regexDialect: {
+    code: 'R2',
+    description: 'REGEX syntax that Python and JavaScript may read differently',
+  },
+  regexOnUnusualText: {
+    code: 'R2',
+    description:
+      'REGEX classes, "." or "$" on text with non-ASCII or control characters, which Python reads differently',
+  },
   regexOnBoolean: { code: 'R3', description: 'REGEX on a boolean trait' },
   regexOnExponentFloat: {
     code: 'R3',
@@ -134,6 +154,19 @@ const cause = {
     code: 'R16',
     description: 'JSONPath property that the two engines may resolve differently',
   },
+  semverAsText: {
+    code: 'R17',
+    description: 'NOT_EQUAL or CONTAINS with a semver value, which Node compares as plain text',
+  },
+  semverVersion: {
+    code: 'R17',
+    description: 'semver condition whose version is not strict SemVer, such as "v2.0.0"',
+  },
+  semverTrait: {
+    code: 'R17',
+    description:
+      'semver comparison on a trait with text or booleans that are not strict SemVer, such as "v2.1.0"',
+  },
 } as const satisfies Record<string, DivergenceCause>;
 
 const COMPARISONS = new Set([
@@ -164,9 +197,21 @@ const TRAIT_BRACKET_PATH = /^\$\.identity\.traits\[(?:'([^'\\\p{Cc}]+)'|"([^"\\\
 // The shape Flagsmith writes for a flag dependency, which the spike's fixtures cover.
 const DEPENDENCY_PATH = /^\$\.flags\["(?:[^"\\]|\\.)+"\]\.enabled$/;
 
+// The operators the Node engine hands to node-semver for a value ending in ":semver".
+const SEMVER_COMPARISONS = new Set([
+  'EQUAL',
+  'GREATER_THAN',
+  'GREATER_THAN_INCLUSIVE',
+  'LESS_THAN',
+  'LESS_THAN_INCLUSIVE',
+]);
+// SemVer 2.0.0 with ASCII digits, without the leading "v" or surrounding spaces node-semver allows.
+const STRICT_SEMVER =
+  /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[A-Za-z-][\dA-Za-z-]*)(?:\.(?:0|[1-9]\d*|\d*[A-Za-z-][\dA-Za-z-]*))*))?(?:\+[\dA-Za-z-]+(?:\.[\dA-Za-z-]+)*)?$/;
+
 /**
  * Lints the segments of the given documents, typically the target's document before and after a
- * change, against the traits of the identities the preview evaluates.
+ * change, against the identifiers and traits of the identities the preview evaluates.
  */
 export function lintDivergences(
   documents: readonly EnvironmentDocument[],
@@ -174,6 +219,7 @@ export function lintDivergences(
 ): DivergenceLint {
   const segments = segmentsById(documents);
   const traitTypes = observedTraitTypes(identities);
+  const contextTypes = observedContextTypes(documents, identities);
   const numericContextValues = new Set<string>();
   if (identities.some((identity) => pythonNumberKind(identity.identifier) !== undefined)) {
     numericContextValues.add('$.identity.identifier');
@@ -195,8 +241,7 @@ export function lintDivergences(
   for (const segment of segments) {
     for (const condition of conditionsOf(segment.rules)) {
       const property = condition.property_ ?? '';
-      const trait = traitName(property);
-      const types = (trait === undefined ? undefined : traitTypes.get(trait)) ?? noTypes;
+      const types = typesRead(property, traitTypes, contextTypes);
       for (const found of causesFor(condition, types, numericContextValues.has(property))) {
         warnings.push({
           segmentId: segment.id,
@@ -212,6 +257,21 @@ export function lintDivergences(
 }
 
 const noTypes: ReadonlySet<Observed> = new Set();
+const onOffState: ReadonlySet<Observed> = new Set(['boolean']);
+
+/** What the values a condition's property reads look like to the two engines. */
+function typesRead(
+  property: string,
+  traitTypes: ReadonlyMap<string, ReadonlySet<Observed>>,
+  contextTypes: ReadonlyMap<string, ReadonlySet<Observed>>,
+): ReadonlySet<Observed> {
+  const trait = traitName(property);
+  if (trait !== undefined) {
+    return traitTypes.get(trait) ?? noTypes;
+  }
+  // A flag dependency reads the flag's on/off state.
+  return DEPENDENCY_PATH.test(property) ? onOffState : (contextTypes.get(property) ?? noTypes);
+}
 
 type LintedSegment = { id: number; name: string; rules: SegmentRuleDoc[]; flags: Set<string> };
 
@@ -259,11 +319,19 @@ function causesFor(
     causes.push(cause.numericContextValue);
   }
   switch (condition.operator) {
-    case 'REGEX':
-      // Python matches against str() of the value, Node against its JavaScript string.
+    case 'REGEX': {
+      const portable = portableRegex(value);
       if (!compiles(anchorLikePythonMatch(value))) {
         causes.push(cause.regexSyntax);
+      } else if (portable === undefined) {
+        causes.push(cause.regexDialect);
+      } else if (
+        (portable.unicodeClasses && types.has('beyond-printable-ascii')) ||
+        (portable.lineSensitive && types.has('line-break-or-astral'))
+      ) {
+        causes.push(cause.regexOnUnusualText);
       }
+      // Python matches against str() of the value, Node against its JavaScript string.
       if (types.has('boolean')) {
         causes.push(cause.regexOnBoolean);
       }
@@ -274,6 +342,7 @@ function causesFor(
         causes.push(cause.wholeFloat);
       }
       break;
+    }
     case 'IN':
       // Python matches only text and integers, Node any value but a boolean or a falsy one.
       if (types.has('float')) {
@@ -296,9 +365,11 @@ function causesFor(
       causes.push(...splitCauses(value, property, types));
       break;
     default:
-      // Python casts the condition value with int() or float() and fails closed, NOT_EQUAL
-      // included; Node uses parseFloat().
-      if (COMPARISONS.has(condition.operator) && !value.endsWith(':semver')) {
+      if (value.endsWith(':semver')) {
+        causes.push(...semverCauses(condition.operator, value.slice(0, -':semver'.length), types));
+      } else if (COMPARISONS.has(condition.operator)) {
+        // Python casts the condition value with int() or float() and fails closed, NOT_EQUAL
+        // included; Node uses parseFloat().
         if (types.has('integer') && !INTEGER_LITERAL.test(value)) {
           causes.push(cause.integerComparedWithNonInteger);
         } else if (
@@ -310,6 +381,49 @@ function causesFor(
       }
   }
   return causes;
+}
+
+/**
+ * `_context_value_typed` (flag_engine/segments/evaluator.py) against the Node engine's
+ * `semverMatchingFunction`, for a condition value ending in ":semver". Python parses a text trait
+ * and the condition's version with python-semver, fails closed unless both are strict SemVer, and
+ * compares a boolean trait as a boolean. Node hands EQUAL and the four ordering operators to
+ * node-semver, which trims the text and accepts a leading "v", and compares NOT_EQUAL and CONTAINS
+ * as plain text. Both fail closed on numbers, and read NOT_CONTAINS, IN and REGEX values as text.
+ */
+function semverCauses(
+  operator: string,
+  version: string,
+  types: ReadonlySet<Observed>,
+): DivergenceCause[] {
+  if (operator === 'NOT_EQUAL' || operator === 'CONTAINS') {
+    return [cause.semverAsText];
+  }
+  const causes: DivergenceCause[] = [];
+  if (SEMVER_COMPARISONS.has(operator)) {
+    if (!isStrictSemver(version)) {
+      causes.push(cause.semverVersion);
+    }
+    if (types.has('boolean') || types.has('non-semver-text')) {
+      causes.push(cause.semverTrait);
+    }
+  }
+  return causes;
+}
+
+/**
+ * A version that python-semver and node-semver read alike: strict SemVer of at most 255
+ * characters (node-semver refuses more than 256, python-semver 3.2 more than 255), whose numbers
+ * have at most 15 digits, which node-semver holds exactly as doubles and python-semver as
+ * integers.
+ */
+function isStrictSemver(text: string): boolean {
+  const match = text.length > 255 ? null : STRICT_SEMVER.exec(text);
+  if (match === null) {
+    return false;
+  }
+  const [, major = '', minor = '', patch = '', prerelease = ''] = match;
+  return [major, minor, patch, ...prerelease.split('.')].every((part) => !/^\d{16,}$/.test(part));
 }
 
 /**
@@ -446,6 +560,35 @@ function observedTraitTypes(identities: readonly PreviewIdentity[]): Map<string,
   return types;
 }
 
+/**
+ * The context values that verified `$.` paths read, by path. FlagOps converts trait values only
+ * (R4), so Node reads these as text.
+ */
+function observedContextTypes(
+  documents: readonly EnvironmentDocument[],
+  identities: readonly PreviewIdentity[],
+): Map<string, Set<Observed>> {
+  const keys = documents.flatMap((document) => {
+    const profile = {
+      environmentKey: document.api_key,
+      useCompositeKeyForHashing: document.use_identity_composite_key_for_hashing,
+    };
+    return identities.map((identity) => serverHashKey(profile, identity));
+  });
+  const values: [string, string[]][] = [
+    ['$.identity.identifier', identities.map((identity) => identity.identifier)],
+    ['$.identity.key', keys],
+    ['$.environment.name', documents.map((document) => document.name ?? '')],
+    ['$.environment.key', documents.map((document) => document.api_key)],
+  ];
+  return new Map(
+    values.map(([path, texts]) => [
+      path,
+      new Set(texts.flatMap((text) => observe({ value: text, valueType: 'unicode' }))),
+    ]),
+  );
+}
+
 function observe(trait: IdentityTrait): Observed[] {
   const value = coerceTraitValue(trait.value);
   if (value === null) {
@@ -455,10 +598,7 @@ function observe(trait: IdentityTrait): Observed[] {
     return ['boolean'];
   }
   if (typeof value === 'string') {
-    if (value === '') {
-      return ['string', 'zero-or-empty'];
-    }
-    return Number.isNaN(Number.parseFloat(value)) ? ['string'] : ['string', 'number-prefixed-text'];
+    return observeText(value);
   }
   // A float trait, or a decimal string such as "20.0", is a float for Python even when whole.
   const isFloat =
@@ -481,6 +621,25 @@ function observe(trait: IdentityTrait): Observed[] {
   const magnitude = Math.abs(value);
   if (isFloat && magnitude !== 0 && (magnitude < 1e-4 || magnitude >= 1e16)) {
     found.push('exponent-float');
+  }
+  return found;
+}
+
+function observeText(text: string): Observed[] {
+  const found: Observed[] = ['string'];
+  if (text === '') {
+    found.push('zero-or-empty');
+  } else if (!Number.isNaN(Number.parseFloat(text))) {
+    found.push('number-prefixed-text');
+  }
+  if (!isStrictSemver(text)) {
+    found.push('non-semver-text');
+  }
+  if (/[^\x20-\x7e]/.test(text)) {
+    found.push('beyond-printable-ascii');
+  }
+  if (/[\n\r\u2028\u2029\ud800-\udfff]/.test(text)) {
+    found.push('line-break-or-astral');
   }
   return found;
 }

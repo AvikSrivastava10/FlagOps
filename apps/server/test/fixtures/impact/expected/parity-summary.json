@@ -63,10 +63,10 @@
     },
     {
       "label": "edge-probes",
-      "identities": 23,
+      "identities": 31,
       "reference": "flagsmith-flag-engine 11.1.2",
       "c5": {
-        "results": 1342,
+        "results": 2322,
         "mismatches": [
           "edge_01 probe_bool_modulo enabled,segment",
           "edge_01 probe_bool_regex enabled,segment",
@@ -192,17 +192,55 @@
           "007 probe_environment_name_numeric enabled,segment",
           "007 probe_identifier_numeric enabled,segment",
           "007 probe_is_not_set_without_property enabled,segment",
-          "007 probe_split_value_letters enabled,segment"
+          "007 probe_split_value_letters enabled,segment",
+          "p3_semver_01 probe_environment_name_numeric enabled,segment",
+          "p3_semver_01 probe_is_not_set_without_property enabled,segment",
+          "p3_semver_01 probe_semver_boolean enabled,segment",
+          "p3_semver_01 probe_semver_contains enabled,segment",
+          "p3_semver_01 probe_semver_lenient_condition enabled,segment",
+          "p3_semver_01 probe_semver_not_equal_build enabled,segment",
+          "p3_semver_01 probe_semver_not_equal_text enabled,segment",
+          "p3_semver_01 probe_semver_v_prefix enabled,segment",
+          "p3_semver_01 probe_split_value_letters enabled,segment",
+          "p3_semver_02 probe_environment_name_numeric enabled,segment",
+          "p3_semver_02 probe_is_not_set_without_property enabled,segment",
+          "p3_semver_02 probe_semver_contains enabled,segment",
+          "p3_semver_02 probe_semver_lenient_condition enabled,segment",
+          "p3_semver_02 probe_semver_v_prefix enabled,segment",
+          "p3_semver_02 probe_split_value_letters enabled,segment",
+          "p3_regex_01 probe_environment_name_numeric enabled,segment",
+          "p3_regex_01 probe_is_not_set_without_property enabled,segment",
+          "p3_regex_01 probe_regex_count_without_minimum enabled,segment",
+          "p3_regex_01 probe_regex_dollar_newline enabled,segment",
+          "p3_regex_01 probe_regex_dot_astral enabled,segment",
+          "p3_regex_01 probe_regex_dot_carriage_return enabled,segment",
+          "p3_regex_01 probe_regex_first_bracket enabled,segment",
+          "p3_regex_01 probe_regex_python_anchor enabled,segment",
+          "p3_regex_01 probe_regex_separator_space enabled,segment",
+          "p3_regex_01 probe_regex_unicode_boundary enabled,segment",
+          "p3_regex_01 probe_regex_unicode_digit enabled,segment",
+          "p3_regex_01 probe_regex_unicode_word enabled,segment",
+          "p3_regex_01 probe_split_value_letters enabled,segment",
+          "p3_regex_02 probe_environment_name_numeric enabled,segment",
+          "p3_regex_02 probe_is_not_set_without_property enabled,segment",
+          "p3_regex_02 probe_split_value_letters enabled,segment",
+          "p3_josé probe_environment_name_numeric enabled,segment",
+          "p3_josé probe_is_not_set_without_property enabled,segment",
+          "p3_josé probe_regex_key_unicode_word enabled,segment",
+          "p3_josé probe_split_value_letters enabled,segment"
         ],
         "failures": [
-          "p3_modulo_by_zero ZeroDivisionError: float modulo by zero"
+          "p3_modulo_by_zero ZeroDivisionError: float modulo by zero",
+          "p3_regex_named_group PatternError: unknown extension ?<n at position 1",
+          "p3_regex_lookbehind PatternError: look-behind requires fixed-width pattern",
+          "p3_regex_unbalanced PatternError: unbalanced parenthesis at position 1"
         ]
       },
       "c1": {
-        "results": 1403,
+        "results": 2666,
         "mismatches": 0
       },
-      "sha256": "b37305aa88799c35648285b66a3fce8c89f7103c9f7c98167a89f0f87a2aa305"
+      "sha256": "4209eac12e25c63dc0101546cac9e0a8cf6230b9f51dcd38345794357a828233"
     }
   ],
   "edgeProbesApproximate": {
@@ -362,16 +400,136 @@
         "description": "integer trait compared with a value that is not an integer"
       }
     ],
+    "probe_regex_count_without_minimum": [
+      {
+        "code": "R2",
+        "description": "REGEX syntax that Python and JavaScript may read differently"
+      }
+    ],
+    "probe_regex_dollar_newline": [
+      {
+        "code": "R2",
+        "description": "REGEX classes, \".\" or \"$\" on text with non-ASCII or control characters, which Python reads differently"
+      }
+    ],
+    "probe_regex_dot_astral": [
+      {
+        "code": "R2",
+        "description": "REGEX classes, \".\" or \"$\" on text with non-ASCII or control characters, which Python reads differently"
+      }
+    ],
+    "probe_regex_dot_carriage_return": [
+      {
+        "code": "R2",
+        "description": "REGEX classes, \".\" or \"$\" on text with non-ASCII or control characters, which Python reads differently"
+      }
+    ],
     "probe_regex_exponent_float": [
       {
         "code": "R3",
         "description": "REGEX on a float that Python and JavaScript write differently"
       }
     ],
+    "probe_regex_first_bracket": [
+      {
+        "code": "R2",
+        "description": "REGEX syntax that Python and JavaScript may read differently"
+      }
+    ],
+    "probe_regex_js_named_group": [
+      {
+        "code": "R2",
+        "description": "REGEX syntax that Python and JavaScript may read differently"
+      }
+    ],
+    "probe_regex_key_unicode_word": [
+      {
+        "code": "R2",
+        "description": "REGEX classes, \".\" or \"$\" on text with non-ASCII or control characters, which Python reads differently"
+      }
+    ],
+    "probe_regex_python_anchor": [
+      {
+        "code": "R2",
+        "description": "REGEX syntax that Python and JavaScript may read differently"
+      }
+    ],
     "probe_regex_python_syntax": [
       {
         "code": "R2",
         "description": "REGEX pattern that JavaScript rejects"
+      }
+    ],
+    "probe_regex_separator_space": [
+      {
+        "code": "R2",
+        "description": "REGEX classes, \".\" or \"$\" on text with non-ASCII or control characters, which Python reads differently"
+      }
+    ],
+    "probe_regex_unbalanced_parenthesis": [
+      {
+        "code": "R2",
+        "description": "REGEX syntax that Python and JavaScript may read differently"
+      }
+    ],
+    "probe_regex_unicode_boundary": [
+      {
+        "code": "R2",
+        "description": "REGEX classes, \".\" or \"$\" on text with non-ASCII or control characters, which Python reads differently"
+      }
+    ],
+    "probe_regex_unicode_digit": [
+      {
+        "code": "R2",
+        "description": "REGEX classes, \".\" or \"$\" on text with non-ASCII or control characters, which Python reads differently"
+      }
+    ],
+    "probe_regex_unicode_word": [
+      {
+        "code": "R2",
+        "description": "REGEX classes, \".\" or \"$\" on text with non-ASCII or control characters, which Python reads differently"
+      }
+    ],
+    "probe_regex_variable_lookbehind": [
+      {
+        "code": "R2",
+        "description": "REGEX syntax that Python and JavaScript may read differently"
+      }
+    ],
+    "probe_semver_boolean": [
+      {
+        "code": "R17",
+        "description": "semver comparison on a trait with text or booleans that are not strict SemVer, such as \"v2.1.0\""
+      }
+    ],
+    "probe_semver_contains": [
+      {
+        "code": "R17",
+        "description": "NOT_EQUAL or CONTAINS with a semver value, which Node compares as plain text"
+      }
+    ],
+    "probe_semver_lenient_condition": [
+      {
+        "code": "R17",
+        "description": "semver condition whose version is not strict SemVer, such as \"v2.0.0\""
+      }
+    ],
+    "probe_semver_not_equal_build": [
+      {
+        "code": "R17",
+        "description": "NOT_EQUAL or CONTAINS with a semver value, which Node compares as plain text"
+      }
+    ],
+    "probe_semver_not_equal_text": [
+      {
+        "code": "R17",
+        "description": "NOT_EQUAL or CONTAINS with a semver value, which Node compares as plain text"
+      }
+    ],
+    "probe_semver_v_prefix": [
+      {
+        "code": "R17",
+        "description": "semver comparison on a trait with text or booleans that are not strict SemVer, such as \"v2.1.0\""
       }
     ],
     "probe_split_boolean": [

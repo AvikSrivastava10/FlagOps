@@ -277,13 +277,24 @@ describe('C5 golden parity: the server profile against the Python engine', () =>
     const failed = Object.keys(golden.failures ?? {});
 
     expect(Object.keys(golden.results)).toEqual(identifiers.filter((id) => !failed.includes(id)));
-    // Python raises on the MODULO by zero of this identity, so Flagsmith serves it nothing (R15).
-    expect(c5.failures).toEqual(['p3_modulo_by_zero ZeroDivisionError: float modulo by zero']);
-    expect(edgeLint.approximate['probe_modulo_by_zero']?.map((found) => found.code)).toEqual([
-      'R15',
+    // Python raises on a condition of each of these identities, so Flagsmith serves it nothing: a
+    // MODULO by zero (R15), and REGEX patterns that only JavaScript compiles (R2).
+    expect(c5.failures).toEqual([
+      'p3_modulo_by_zero ZeroDivisionError: float modulo by zero',
+      'p3_regex_named_group PatternError: unknown extension ?<n at position 1',
+      'p3_regex_lookbehind PatternError: look-behind requires fixed-width pattern',
+      'p3_regex_unbalanced PatternError: unbalanced parenthesis at position 1',
     ]);
-    // The other 22 identities x 61 flags.
-    expect(c5.results).toBe(22 * 61);
+    for (const [flag, code] of [
+      ['probe_modulo_by_zero', 'R15'],
+      ['probe_regex_js_named_group', 'R2'],
+      ['probe_regex_variable_lookbehind', 'R2'],
+      ['probe_regex_unbalanced_parenthesis', 'R2'],
+    ] as const) {
+      expect(edgeLint.approximate[flag]?.map((found) => found.code)).toEqual([code]);
+    }
+    // The other 27 identities x 86 flags.
+    expect(c5.results).toBe(27 * 86);
     const unmarked = c5.mismatches.filter(
       (mismatch) => !Object.hasOwn(edgeLint.approximate, mismatch.split(' ')[1] ?? ''),
     );
@@ -301,7 +312,7 @@ describe('C5 golden parity: the server profile against the Python engine', () =>
       return spikeIdentities.has(identifier) && spikeFlags.has(flag);
     });
     expect(onSpikeProbes).toHaveLength(39);
-    expect(c5.mismatches).toHaveLength(125);
+    expect(c5.mismatches).toHaveLength(160);
     // A split between options without a key, which C5 compares like every other flag.
     const unkeyed = run.map((evaluation) => evaluation.flags['probe_mv_unkeyed']);
     expect(new Set(unkeyed.map((outcome) => outcome?.variant))).toEqual(new Set([null, 'control']));
@@ -332,8 +343,28 @@ describe('C5 golden parity: the server profile against the Python engine', () =>
       'probe_modulo_number_text',
       'probe_modulo_underscore',
       'probe_not_equal_non_numeric',
+      'probe_regex_count_without_minimum',
+      'probe_regex_dollar_newline',
+      'probe_regex_dot_astral',
+      'probe_regex_dot_carriage_return',
       'probe_regex_exponent_float',
+      'probe_regex_first_bracket',
+      'probe_regex_js_named_group',
+      'probe_regex_key_unicode_word',
+      'probe_regex_python_anchor',
       'probe_regex_python_syntax',
+      'probe_regex_separator_space',
+      'probe_regex_unbalanced_parenthesis',
+      'probe_regex_unicode_boundary',
+      'probe_regex_unicode_digit',
+      'probe_regex_unicode_word',
+      'probe_regex_variable_lookbehind',
+      'probe_semver_boolean',
+      'probe_semver_contains',
+      'probe_semver_lenient_condition',
+      'probe_semver_not_equal_build',
+      'probe_semver_not_equal_text',
+      'probe_semver_v_prefix',
       'probe_split_boolean',
       'probe_split_empty_trait',
       'probe_split_exponent_float',

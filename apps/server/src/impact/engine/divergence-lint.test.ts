@@ -135,7 +135,66 @@ describe('lintDivergences', () => {
       [trait(20, 'int')],
       [],
     ],
-    ['a semver comparison', condition('t', 'GREATER_THAN', '2.0.0:semver'), [trait(2, 'int')], []],
+    [
+      'a semver comparison on a number, which both engines refuse',
+      condition('t', 'GREATER_THAN', '2.0.0:semver'),
+      [trait(2, 'int'), trait('3', 'unicode')],
+      [],
+    ],
+    [
+      'a semver comparison on strict versions',
+      condition('t', 'GREATER_THAN_INCLUSIVE', '2.0.0:semver'),
+      [trait('2.1.0', 'unicode'), trait('3.0.0-beta.1+build.5', 'unicode')],
+      [],
+    ],
+    [
+      'a semver comparison on a version with a "v"',
+      condition('t', 'GREATER_THAN_INCLUSIVE', '2.0.0:semver'),
+      [trait('2.1.0', 'unicode'), trait('v2.1.0', 'unicode')],
+      ['R17'],
+    ],
+    [
+      'a semver comparison on a version with a space',
+      condition('t', 'LESS_THAN', '2.0.0:semver'),
+      [trait(' 1.0.0', 'unicode')],
+      ['R17'],
+    ],
+    [
+      'a semver comparison on a version with a 16-digit number',
+      condition('t', 'EQUAL', '1.0.0:semver'),
+      [trait('1.0.1234567890123456', 'unicode')],
+      ['R17'],
+    ],
+    [
+      'a semver comparison on a boolean trait',
+      condition('t', 'EQUAL', '1.0.0:semver'),
+      [trait(true, 'bool')],
+      ['R17'],
+    ],
+    [
+      'a semver comparison with a version that is not strict',
+      condition('t', 'LESS_THAN_INCLUSIVE', 'v2.0.0:semver'),
+      [trait('2.1.0', 'unicode')],
+      ['R17'],
+    ],
+    [
+      'NOT_EQUAL with a semver value',
+      condition('t', 'NOT_EQUAL', '2.1.0:semver'),
+      [trait('2.1.0', 'unicode')],
+      ['R17'],
+    ],
+    [
+      'CONTAINS with a semver value',
+      condition('t', 'CONTAINS', '2.1:semver'),
+      [trait('2.1.0', 'unicode')],
+      ['R17'],
+    ],
+    [
+      'NOT_CONTAINS with a semver value, which both engines read as text',
+      condition('t', 'NOT_CONTAINS', '2.1:semver'),
+      [trait('2.1.0', 'unicode')],
+      [],
+    ],
     ['IN on a float trait', condition('t', 'IN', '1.5,2.5'), [trait(1.5, 'float')], ['R6']],
     ['IN on a whole float', condition('t', 'IN', '[1, 2, 3]'), [trait(3, 'float')], ['R13']],
     ['IN on a trait that is 0', condition('t', 'IN', '0,1'), [trait(0, 'int')], ['R6']],
@@ -275,6 +334,85 @@ describe('lintDivergences', () => {
     ['a flag dependency', condition('$.flags["banner"].enabled', 'NOT_EQUAL', 'true'), [], []],
   ] as const)('marks %s', (_description, found, values, codes) => {
     expect(codesFor(found, [...values])).toEqual(codes);
+  });
+
+  // JavaScript compiles each of these after the server profile anchors it.
+  it.each([
+    ['\\Z, an anchor in Python and a letter in JavaScript', 'abc\\Z'],
+    ['a JavaScript named group, which Python refuses', '(?<n>abc)'],
+    ['a count without a minimum, which only Python reads as a count', 'a{,2}'],
+    ['a first "]" in a class, a member in Python', '[]a]'],
+    ['an empty negated class, which Python refuses', '[^]'],
+    ['a range from a class escape, which Python refuses', '[\\w-.]'],
+    ['a ")" without its "(", which closes the anchoring group', 'a)|(b'],
+    ['a lookbehind of varying width, which Python refuses', '(?<=a|bc)d'],
+    ['a back-reference', '(a)\\1'],
+    ['a letter escape Python reads as a control character', '\\a'],
+    ['\\p, which Python refuses', '\\p{L}'],
+    ['a short \\x escape, which Python refuses', '\\x4'],
+    ['a surrogate escape', '\\ud83d'],
+    ['a character above U+FFFF', '\u{1F600}+'],
+    ['a "[" inside a class', '[[]'],
+    ['a quantified lookahead', '(?=a)*'],
+    ['a count above 9999', 'a{10000}'],
+    ['a bare "{"', 'a{'],
+  ])('marks REGEX syntax outside what both dialects read alike: %s (R2)', (_description, regex) => {
+    expect(codesFor(condition('t', 'REGEX', regex), [trait('abc', 'unicode')])).toEqual(['R2']);
+  });
+
+  it.each([
+    '',
+    '.*@flagsmith\\.com$',
+    '^[a-z]+_\\d{2,3}(?=@)\\w*@.+\\.com$',
+    'ab(?<=b)c',
+    'a(?<=a|b)(?<!x{2})d',
+    '^(ios|android)\\b',
+    '[\\d-][a-][-z]\\-\\_\\ \\/[\\]\\[]',
+    '\\x41\\u00e9[\\b\\n\\t\\f\\v\\r]',
+    'a{2}?b{1,}c{0,3}?d*?e+?f??',
+    '[^,]+|[(){}|*+?.$^]',
+    '\u00e9+',
+  ])('leaves the portable pattern %j alone on printable ASCII', (regex) => {
+    expect(
+      codesFor(condition('t', 'REGEX', regex), [trait('user_42@example.com', 'unicode')]),
+    ).toEqual([]);
+  });
+
+  it.each([
+    ['\\w on a letter beyond ASCII', '^\\w+$', 'Jos\u00e9', ['R2']],
+    ['\\w on ASCII', '^\\w+$', 'Jose', []],
+    ['\\d on a digit beyond ASCII', '^\\d$', '\u0663', ['R2']],
+    ['\\s on an ASCII separator', '^a\\sb$', 'a\x1cb', ['R2']],
+    ['\\b on a letter beyond ASCII', '\\b\u00e9', '\u00e9', ['R2']],
+    ['"." on a carriage return', '^a.b$', 'a\rb', ['R2']],
+    ['"." on a letter beyond ASCII', '^a.b$', 'a\u00e9b', []],
+    ['"$" on a final line break', '^abc$', 'abc\n', ['R2']],
+    ['"." on a character above U+FFFF', '^.$', '\u{1F600}', ['R2']],
+    ['a negated class on a character above U+FFFF', '^[^a]$', '\u{1F600}', ['R2']],
+    ['a range over the surrogates', '^[\\u0000-\\uffff]', '\u{1F600}', ['R2']],
+    ['a range below them on a character above U+FFFF', '^[a-z\\u00e0-\\u00ff]', '\u{1F600}', []],
+  ])('marks REGEX by the text it reads: %s', (_description, regex, text, codes) => {
+    expect(codesFor(condition('t', 'REGEX', regex), [trait(text, 'unicode')])).toEqual(codes);
+  });
+
+  it('observes the context values REGEX and semver conditions read', () => {
+    const wordy = condition('$.identity.identifier', 'REGEX', '^\\w+$');
+
+    expect(codesFor(wordy, [], { identifier: 'jos\u00e9' })).toEqual(['R2']);
+    expect(codesFor(wordy, [], { identifier: 'jose' })).toEqual([]);
+    expect(
+      codesFor(condition('$.identity.key', 'REGEX', '^env_\\w+$'), [], { identifier: 'jos\u00e9' }),
+    ).toEqual(['R2']);
+    expect(
+      codesFor(condition('$.environment.name', 'GREATER_THAN', '1.0.0:semver'), [], {
+        name: 'v2.0.0',
+      }),
+    ).toEqual(['R17']);
+    // A flag dependency reads the flag's on/off state, a boolean.
+    const dependency = '$.flags["banner"].enabled';
+    expect(codesFor(condition(dependency, 'EQUAL', '1.0.0:semver'), [])).toEqual(['R17']);
+    expect(codesFor(condition(dependency, 'REGEX', '^true$'), [])).toEqual(['R3']);
+    expect(codesFor(condition(dependency, 'NOT_EQUAL', 'true'), [])).toEqual([]);
   });
 
   it('marks conditions on context values that Python reads as numbers (R4)', () => {
