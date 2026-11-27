@@ -1,5 +1,10 @@
-/* The table scrolls inside its own box, so its header row and first column can stay sticky. */
+/*
+ * The table scrolls inside its own box, so its header row and first column can stay sticky. The
+ * box is positioned, so the visually hidden labels in the cells, which are absolutely positioned,
+ * scroll and clip with the table instead of widening the page.
+ */
 .scroller {
+  position: relative;
   inline-size: 100%;
   max-inline-size: 100%;
   max-block-size: calc(100dvh - var(--space-8) * 2);
