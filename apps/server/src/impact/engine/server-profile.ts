@@ -11,7 +11,8 @@
  * It also feeds the engine its inputs the way the Python engine reads them: numeric-looking trait
  * strings become numbers (R4), REGEX patterns are anchored like `re.match` (R1), and IN values
  * arrive split as Python splits them (R6). Every feature context carries provenance metadata,
- * which the engine hands back, so each result names the segment or override that decided it.
+ * which the engine hands back, so each result names the segment or override that decided it and
+ * says whether that state's multivariate split chose the value.
  */
 import { FlagOpsError } from '@flagops/shared';
 import {
@@ -38,7 +39,12 @@ import type {
 } from './types.js';
 
 /** What each feature context carries and the engine returns on the result that context decides. */
-type Provenance = { featureId: number; source: OutcomeSource };
+type Provenance = {
+  featureId: number;
+  source: OutcomeSource;
+  /** The state has variants, so the engine splits identities between them and its control value. */
+  splits: boolean;
+};
 
 const IDENTITY_OVERRIDES = 'identity_overrides';
 
@@ -254,12 +260,16 @@ export function anchorLikePythonMatch(pattern: string): string {
   return `^(?:${pattern})`;
 }
 
+const JSON_STRING = /"(?:[^"\\]|\\.)*"/g;
+
 /**
  * `_get_in_values` (flag_engine/segments/evaluator.py): a value starting with "[" is a JSON list
  * whose elements Python turns into strings, and anything else a comma-separated list (R6).
  * Handing the engine the list spares it a JSON.parse that throws on every comma-separated value.
  * Lists holding anything but strings and integers stay as they are: their Python `str()` forms
  * ("True", "None", "1.0") cannot be rebuilt from parsed JSON, so the divergence lint marks them.
+ * So do lists with number literals such as 1.0 or 1e3, which JSON.parse reads as integers and
+ * Python as floats, and lists with NaN or Infinity, which only Python's json reads.
  */
 export function inValuesLikePython(value: string): string | string[] {
   if (!value.startsWith('[')) {
@@ -269,11 +279,14 @@ export function inValuesLikePython(value: string): string | string[] {
   try {
     parsed = JSON.parse(value);
   } catch {
-    return value.split(',');
+    // The engine falls back to splitting at commas either way.
+    return /NaN|Infinity/.test(value) ? value : value.split(',');
   }
   if (
     !Array.isArray(parsed) ||
-    !parsed.every((item) => typeof item === 'string' || Number.isSafeInteger(item))
+    !parsed.every((item) => typeof item === 'string' || Number.isSafeInteger(item)) ||
+    // Outside the strings, only number literals remain.
+    /[.eE]/.test(value.replace(JSON_STRING, ''))
   ) {
     return value;
   }
@@ -340,7 +353,7 @@ function featureContext(
     name: state.feature.name,
     enabled: state.enabled,
     value: state.feature_state_value,
-    metadata: { featureId: state.feature.id, source },
+    metadata: { featureId: state.feature.id, source, splits: variants.length > 0 },
     ...(variants.length > 0 && { variants }),
     ...(contextPriority !== undefined && { priority: contextPriority }),
   };
@@ -405,6 +418,8 @@ function outcomeOf(flag: EngineFlagResult<Provenance>, hideDisabledFlags: boolea
     enabled: flag.enabled,
     value: hidden ? null : flag.value,
     variant: hidden ? null : flag.variant,
+    // The variant alone cannot tell: a variant without a key comes back as null.
+    fromSplit: !hidden && flag.metadata.splits,
     reason: flag.reason,
     source: flag.metadata.source,
   };

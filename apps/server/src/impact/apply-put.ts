@@ -6,8 +6,15 @@
  * (features/future/serializers.py and services.py): a body it rejects is one Flagsmith would
  * reject with the same status and message, writing nothing.
  *
- * Three checks need more than the document, so the caller makes them: change requests (409),
- * permissions, and the segment-override limit, which Flagsmith applies to Edge deployments only.
+ * Four checks need more than the document, so the caller makes them:
+ * - change requests (409);
+ * - permissions;
+ * - the segment-override limit, which Flagsmith applies to Edge deployments only;
+ * - circular dependencies (400 `circular_dependency`): for every override the PUT creates on a
+ *   segment that reads `$.flags`, Flagsmith refuses the body if a flag would end up depending on
+ *   itself. It counts scheduled overrides and the segment's overrides in other environments,
+ *   which no document carries, so this refusal may only appear when the PUT is sent.
+ *
  * Where Flagsmith reports several problems at once, the rejection names the first.
  */
 import type {
@@ -302,8 +309,8 @@ function typedValue(body: FlagValueBody | null, field: string): FlagValue {
       }
       // Adding 0 turns -0 into 0, as int('-0') does.
       const parsed = Number(body.value.replace(/[\s_]/g, '')) + 0;
-      // The column is a Postgres integer, which cannot store a wider value.
-      if (Math.abs(parsed) > 2 ** 31 - 1) {
+      // The column is a Postgres integer, which stores -2147483648 to 2147483647.
+      if (parsed < -(2 ** 31) || parsed > 2 ** 31 - 1) {
         reject(400, `'${body.value}' is out of range for a Flagsmith integer value`, { field });
       }
       return parsed;

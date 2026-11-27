@@ -122,8 +122,17 @@ export type FlagOutcome = {
   enabled: boolean;
   /** Null for a disabled flag when the environment hides disabled flags: the SDK never gets it. */
   value: FlagValue;
-  /** The variant key, `control`, or null when no multivariate split applied. */
+  /**
+   * The variant key, or `control` when the split put the identity outside every variant. Null
+   * without a split, for a variant without a key, and when the value is hidden.
+   */
   variant: string | null;
+  /**
+   * The multivariate split of the state that decided the result chose the value, one of its
+   * variants or its control value, so that state's bucketing seed decided it. False when the
+   * value is hidden.
+   */
+  fromSplit: boolean;
   /** The engine's reason, e.g. `DEFAULT`, `TARGETING_MATCH; segment=beta` or `SPLIT; weight=50`. */
   reason: string;
   source: OutcomeSource;

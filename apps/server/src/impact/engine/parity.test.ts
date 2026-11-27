@@ -22,7 +22,8 @@ import type {
 
 // The parity suite of architecture.md 10.6. The Python goldens come from Flagsmith's own engine,
 // flagsmith-flag-engine 11.1.2 (the version Flagsmith 2.295.2 runs), fed by a port of the server's
-// mapper. The P3 notes say how to regenerate them; CI needs no Python.
+// mapper. They are regenerated outside this repository, with that Python reference engine, only
+// when a pin or a fixture document changes. CI needs no Python.
 
 const fixtures = new URL('../../../test/fixtures/impact/', import.meta.url);
 const fixture = (name: string): unknown =>
@@ -50,6 +51,7 @@ const documentOf = (label: string) =>
 type PythonFlag = {
   enabled: boolean;
   value: FlagValue;
+  reason: string;
   variant: string | null;
   source: { kind: string; segmentId?: number; segmentName?: string };
 };
@@ -57,14 +59,30 @@ type PythonGolden = {
   engine: string;
   mapper: string;
   results: Record<string, Record<string, PythonFlag>>;
+  /** Identifier -> the error the engine raised, which fails Flagsmith's whole evaluation of it. */
+  failures?: Record<string, string>;
 };
 type Comparison = { results: number; mismatches: string[] };
+type GoldenComparison = Comparison & { failures: string[] };
 type SdkResults = Record<string, Record<string, unknown>>;
 
-/** C5: enabled, value, variant and the deciding segment of every result, field by field. */
-function compareWithGolden(run: EvaluationRun, golden: PythonGolden): Comparison {
-  const comparison: Comparison = { results: 0, mismatches: [] };
+/** Python gives a variant, or a SPLIT reason for a variant without a key, only after a split. */
+const pythonFromSplit = (flag: PythonFlag) =>
+  flag.variant !== null || flag.reason.startsWith('SPLIT;');
+
+/**
+ * C5: enabled, value, variant, whether a split chose the value, and the deciding segment of every
+ * result, field by field.
+ */
+function compareWithGolden(run: EvaluationRun, golden: PythonGolden): GoldenComparison {
+  const comparison: GoldenComparison = { results: 0, mismatches: [], failures: [] };
   for (const evaluation of run) {
+    const failure = golden.failures?.[evaluation.identifier];
+    if (failure !== undefined) {
+      // Flagsmith serves this identity no flags at all.
+      comparison.failures.push(`${evaluation.identifier} ${failure}`);
+      continue;
+    }
     const expected = golden.results[evaluation.identifier] ?? {};
     const flags = new Set([...Object.keys(evaluation.flags), ...Object.keys(expected)]);
     for (const flag of [...flags].sort()) {
@@ -78,6 +96,7 @@ function compareWithGolden(run: EvaluationRun, golden: PythonGolden): Comparison
               ours.enabled === python.enabled ? [] : ['enabled'],
               ours.value === python.value ? [] : ['value'],
               ours.variant === python.variant ? [] : ['variant'],
+              ours.fromSplit === pythonFromSplit(python) ? [] : ['split'],
               sameSource(ours.source, python.source) ? [] : ['segment'],
             ].flat();
       if (fields.length > 0) {
@@ -193,7 +212,7 @@ type ScenarioResult = {
   run: EvaluationRun;
   rerun: EvaluationRun;
   golden: PythonGolden;
-  c5: Comparison;
+  c5: GoldenComparison;
   c1: Comparison;
 };
 
@@ -248,6 +267,7 @@ describe('C5 golden parity: the server profile against the Python engine', () =>
       expect(run.map((evaluation) => evaluation.identifier)).toEqual(Object.keys(golden.results));
       expect(c5.results).toBe(250 * 20);
       expect(c5.mismatches).toEqual([]);
+      expect(c5.failures).toEqual([]);
     },
   );
 

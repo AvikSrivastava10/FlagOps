@@ -80,8 +80,8 @@ function codesFor(
   return lint.warnings.map((warning) => warning.cause.code);
 }
 
-// The spike's edge probes and the P3 divergence probes ran these conditions through both engines.
-// A case expects no warning only where the two engines gave the same result.
+// The edge probes of the parity suite run conditions like these through both engines, against
+// the Python goldens. A case expects no warning only where the two engines give the same result.
 describe('lintDivergences', () => {
   it.each([
     [
@@ -141,6 +141,24 @@ describe('lintDivergences', () => {
     ['IN on a trait that is 0', condition('t', 'IN', '0,1'), [trait(0, 'int')], ['R6']],
     ['IN on an empty trait', condition('t', 'IN', 'a,,b'), [trait('', 'unicode')], ['R6']],
     ['IN with a JSON list of floats', condition('t', 'IN', '[1.5, 2]'), [trait(2, 'int')], ['R6']],
+    [
+      'IN with a JSON list of whole-number float literals',
+      condition('t', 'IN', '[1.0, 2]'),
+      [trait(1, 'int')],
+      ['R6'],
+    ],
+    [
+      'IN with a JSON list of exponent literals',
+      condition('t', 'IN', '[1e3]'),
+      [trait(1000, 'int')],
+      ['R6'],
+    ],
+    [
+      'IN with a JSON list holding NaN',
+      condition('t', 'IN', '[NaN, 1]'),
+      [trait(1, 'int')],
+      ['R6'],
+    ],
     [
       'IN on a boolean trait, which neither engine matches',
       condition('t', 'IN', 'True,true'),

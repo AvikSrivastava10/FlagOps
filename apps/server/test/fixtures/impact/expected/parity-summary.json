@@ -7,13 +7,14 @@
       "reference": "flagsmith-flag-engine 11.1.2",
       "c5": {
         "results": 5000,
-        "mismatches": []
+        "mismatches": [],
+        "failures": []
       },
       "c1": {
         "results": 5000,
         "mismatches": 0
       },
-      "sha256": "d75ee4975dcd5143ee8690b9e623b8a8fa8157fbe8517b8977b34a4dbb4ef013"
+      "sha256": "8ba0f562247b607a5f9ae17be21877a7e9d3a80342337fdc05bec147821b2b66"
     },
     {
       "label": "proposed",
@@ -21,13 +22,14 @@
       "reference": "flagsmith-flag-engine 11.1.2",
       "c5": {
         "results": 5000,
-        "mismatches": []
+        "mismatches": [],
+        "failures": []
       },
       "c1": {
         "results": 5000,
         "mismatches": 0
       },
-      "sha256": "5e3289401ac16e08e5bf5c54213f7f2950dbbf5031c06b5f86c83e29990d5961"
+      "sha256": "fc288a9ceb983e67a46c690b68b04255038271d331df35cbefa06e390cfbf9ca"
     },
     {
       "label": "seeded-legacy-hashing",
@@ -35,13 +37,14 @@
       "reference": "flagsmith-flag-engine 11.1.2",
       "c5": {
         "results": 5000,
-        "mismatches": []
+        "mismatches": [],
+        "failures": []
       },
       "c1": {
         "results": 5000,
         "mismatches": 0
       },
-      "sha256": "d48b3ba29a7476bfa0031e73ef18c6870701c0154b72f8c8da2a091972009846"
+      "sha256": "5096c13ad02b00b9a396cdef4297ec58c056f5f85c62c667410a60bbc597c0fd"
     },
     {
       "label": "proposed-legacy-hashing",
@@ -49,13 +52,14 @@
       "reference": "flagsmith-flag-engine 11.1.2",
       "c5": {
         "results": 5000,
-        "mismatches": []
+        "mismatches": [],
+        "failures": []
       },
       "c1": {
         "results": 5000,
         "mismatches": 0
       },
-      "sha256": "0f2119c16adcb9937302ff7df5f925f01416538308faf8fe76576751190f56f1"
+      "sha256": "ba41638cd7c62800f9b1f85d42342eb701314873d5d277af4a3cbdcc9fd5b40f"
     },
     {
       "label": "edge-probes",
@@ -103,13 +107,14 @@
           "edge_12 probe_in_json_numbers enabled,segment",
           "edge_13 probe_in_zero enabled,segment",
           "edge_13 probe_split_on_trait enabled,segment"
-        ]
+        ],
+        "failures": []
       },
       "c1": {
         "results": 456,
         "mismatches": 0
       },
-      "sha256": "1ba31011e44dd43477367a2c6d02e34bfeade5aae48d5e78ebc29628218ae6c5"
+      "sha256": "eeecaf021eb979e6b59c43ff129246405f765dfc414d1a12dc422155293b459e"
     }
   ],
   "edgeProbesApproximate": {

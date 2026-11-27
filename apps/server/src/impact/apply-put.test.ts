@@ -222,6 +222,41 @@ describe('applyFlagPut', () => {
     });
   });
 
+  it.each([-2147483648, 2147483647])(
+    'accepts the integer %i, which the Postgres integer column stores',
+    (integer) => {
+      const outcome = accepted(HOLIDAY_BANNER, {
+        environment_default: { enabled: true, value: { type: 'integer', value: String(integer) } },
+      });
+
+      const environmentDefault = outcome.document.feature_states.find(
+        (state) => state.feature.id === HOLIDAY_BANNER,
+      );
+      expect(environmentDefault?.feature_state_value).toBe(integer);
+    },
+  );
+
+  it.each(['-2147483649', '2147483648'])(
+    'refuses the integer %s, which the Postgres integer column cannot store',
+    (integer) => {
+      const outcome = applyFlagPut(
+        seeded,
+        HOLIDAY_BANNER,
+        { environment_default: { enabled: true, value: { type: 'integer', value: integer } } },
+        segments,
+      );
+
+      expect(outcome).toEqual({
+        accepted: false,
+        rejection: {
+          status: 400,
+          message: `'${integer}' is out of range for a Flagsmith integer value`,
+          field: 'environment_default.value',
+        },
+      });
+    },
+  );
+
   it('estimates nothing when a new override serves one variant to everyone', () => {
     const outcome = accepted(RECOMMENDATIONS_V2, {
       environment_default: {

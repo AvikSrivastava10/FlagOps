@@ -141,11 +141,16 @@ function categorise(before: FlagOutcome, after: FlagOutcome): FlipCategory | nul
   return after.enabled ? 'valueChanged' : 'valueChangedWhileOff';
 }
 
+/**
+ * The unknown seed of a new split chose the value of every identity the split serves, whether it
+ * landed in a variant, keyed or not, or in control. A value that hide_disabled_flags hides is
+ * null whatever the seed.
+ */
 function isEstimated(outcome: FlagOutcome, splitSegmentIds: readonly number[]): boolean {
   return (
+    outcome.fromSplit &&
     outcome.source.kind === 'segment' &&
-    splitSegmentIds.includes(outcome.source.segmentId) &&
-    outcome.variant !== null
+    splitSegmentIds.includes(outcome.source.segmentId)
   );
 }
 

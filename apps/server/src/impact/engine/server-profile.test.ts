@@ -64,8 +64,15 @@ describe('input normalisation', () => {
     ['["DE","FR"]', ['DE', 'FR']],
     ['[1, 2, 3]', ['1', '2', '3']],
     ['[not json', ['[not json']],
+    ['["1.0", "2e3"]', ['1.0', '2e3']],
+    ['[-0, 7]', ['0', '7']],
+    // Python compares with "1.5", "1.0", "1000.0", "True", "nan" and all 20 digits, which parsed
+    // JSON cannot give back, so these stay for the divergence lint.
     ['[1.5, 2]', '[1.5, 2]'],
+    ['[1.0, 2]', '[1.0, 2]'],
+    ['[1e3]', '[1e3]'],
     ['[true]', '[true]'],
+    ['[NaN, 1]', '[NaN, 1]'],
     ['[12345678901234567890]', '[12345678901234567890]'],
   ] as const)('splits the IN value %s as Python does', (value, expected) => {
     expect(inValuesLikePython(value)).toEqual(expected);
@@ -145,6 +152,7 @@ describe('the server profile', () => {
       enabled: false,
       value: 'v1',
       variant: 'control',
+      fromSplit: true,
     });
     for (const profile of [hiddenByEnvironment, hiddenByProject]) {
       expect(profile.hideDisabledFlags).toBe(true);
@@ -153,8 +161,9 @@ describe('the server profile', () => {
         enabled: false,
         value: null,
         variant: null,
+        fromSplit: false,
       });
-      expect(flags['checkout_steps']).toMatchObject({ enabled: true, value: 3 });
+      expect(flags['checkout_steps']).toMatchObject({ enabled: true, value: 3, fromSplit: false });
     }
     expect(keptByEnvironment.hideDisabledFlags).toBe(false);
   });

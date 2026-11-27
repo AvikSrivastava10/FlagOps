@@ -27,9 +27,9 @@ const changes = fixture('proposed-changes.json') as {
   body: FlagPutBody;
 }[];
 
-/** Applies the first `count` of the spike's proposed changes, as a preview would. */
-function propose(count: number) {
-  let document = seeded;
+/** Applies the first `count` of the spike's proposed changes to `base`, as a preview would. */
+function propose(count: number, base = seeded) {
+  let document = base;
   const changed: string[] = [];
   const estimatedSplits: Record<string, number[]> = {};
   for (const change of changes.slice(0, count)) {
@@ -41,7 +41,26 @@ function propose(count: number) {
     changed.push(outcome.feature.name);
     estimatedSplits[outcome.feature.name] = outcome.estimatedSplitSegmentIds;
   }
-  return { document, flags: evaluatedFlags([seeded, document], changed), estimatedSplits };
+  return { base, document, flags: evaluatedFlags([base, document], changed), estimatedSplits };
+}
+
+/**
+ * The document with options that have no key, as Flagsmith creates the options sent along with
+ * a new flag, which is how the demo seed creates recommendations_v2.
+ */
+function withoutOptionKeys(document: EnvironmentDocument): EnvironmentDocument {
+  const copy = structuredClone(document);
+  const states = [
+    ...copy.feature_states,
+    ...copy.project.segments.flatMap((segment) => segment.feature_states),
+    ...copy.identity_overrides.flatMap((identity) => identity.identity_features),
+  ];
+  for (const state of states) {
+    for (const weight of state.multivariate_feature_state_values) {
+      weight.multivariate_feature_option.key = null;
+    }
+  }
+  return copy;
 }
 
 async function evaluate(document: EnvironmentDocument, flags?: string[]) {
@@ -165,6 +184,30 @@ describe('the flip report on the spike fixtures', () => {
     expect(estimated.filter((row) => row.before.enabled === row.after.enabled)).toHaveLength(55);
   });
 
+  it('marks the same values as estimated when the split options have no keys', async () => {
+    const keyed = buildFlipReport(runs.before, runs.after, {
+      estimatedSplits: all.estimatedSplits,
+    });
+    const unkeyed = propose(3, withoutOptionKeys(seeded));
+
+    const report = buildFlipReport(
+      await evaluate(unkeyed.base, unkeyed.flags),
+      await evaluate(unkeyed.document, unkeyed.flags),
+      { estimatedSplits: unkeyed.estimatedSplits },
+    );
+
+    const estimated = report.rows.filter((row) => row.valueEstimated);
+    const identifiers = (rows: typeof estimated) => rows.map((row) => row.identifier);
+    expect(identifiers(estimated)).toEqual(
+      identifiers(keyed.rows.filter((row) => row.valueEstimated)),
+    );
+    // Identities in the variant get a null variant, those in control "control".
+    expect(new Set(estimated.map((row) => row.after.variant))).toEqual(new Set([null, 'control']));
+    expect(report.flags.find((impact) => impact.feature === 'recommendations_v2')).toMatchObject({
+      valueEstimated: 55,
+    });
+  });
+
   it('yields one row per evaluated (identity, flag) pair', () => {
     const { rows } = buildFlipReport(runs.before, runs.after);
 
@@ -196,6 +239,7 @@ describe('buildFlipReport', () => {
     enabled,
     value,
     variant: null,
+    fromSplit: false,
     reason: 'DEFAULT',
     source: { kind: 'default' },
   });
@@ -245,6 +289,30 @@ describe('buildFlipReport', () => {
       transitions: [{ before: 'environment default', after: 'environment default', count: 5 }],
     });
     expect(report.flags[0]?.samples.valueChanged.map((row) => row.identifier)).toEqual(['user_2']);
+  });
+
+  it('estimates the values a new split serves, unless hide_disabled_flags hides them', () => {
+    const served = (enabled: boolean, hidden: boolean): FlagOutcome => ({
+      ...outcome(enabled, hidden ? null : 'v2'),
+      fromSplit: !hidden,
+      source: { kind: 'segment', segmentId: 9, segmentName: 'beta', priority: 0 },
+    });
+    const before = run([
+      [true, 'v1'],
+      [false, 'v1'],
+      [false, 'v1'],
+    ]);
+    const after = [served(true, false), served(true, false), served(false, true)];
+
+    const report = buildFlipReport(
+      before,
+      before.map((evaluation, index) => ({ ...evaluation, flags: { banner: after[index]! } })),
+      { estimatedSplits: { banner: [9] } },
+    );
+
+    expect(report.rows.map((row) => row.valueEstimated)).toEqual([true, true, false]);
+    // Only the first keeps its on/off result, so only its value change is itself an estimate.
+    expect(report.flags[0]?.valueEstimated).toBe(1);
   });
 
   it('refuses runs of different identities or flags', () => {
