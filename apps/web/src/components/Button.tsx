@@ -19,7 +19,8 @@ export type ButtonProps = Common &
     /**
      * Why the action is not allowed now. The button is then disabled, and the reason shows in a
      * tooltip and in text beside it (ui-design.md 5). It stays focusable, so keyboard users can
-     * reach the reason.
+     * reach the reason, and it stays the same element when the reason comes and goes, so focus
+     * never drops.
      */
     disabledReason?: string | null | undefined;
   };
@@ -33,6 +34,10 @@ function Content({ icon, children }: Pick<Common, 'icon' | 'children'>) {
   );
 }
 
+const ignore = (event: MouseEvent<HTMLButtonElement>) => {
+  event.preventDefault();
+};
+
 /** A square button with a plain verb (ui-design.md 7). */
 export function Button({
   variant = 'primary',
@@ -44,34 +49,24 @@ export function Button({
   onClick,
   ...props
 }: ButtonProps) {
-  const classes = cx(styles.button, styles[variant], className);
-  if (disabledReason === null) {
-    return (
-      <button {...props} type={type} className={classes} onClick={onClick}>
-        <Content icon={icon}>{children}</Content>
-      </button>
-    );
-  }
-  const ignore = (event: MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-  };
+  const disabled = disabledReason !== null;
   return (
-    <span className={styles.disabledGroup}>
+    <span className={styles.group}>
       <Tooltip text={disabledReason}>
         {(trigger) => (
           <button
             {...props}
             {...trigger}
             type={type}
-            className={cx(classes, styles.disabled)}
-            aria-disabled="true"
-            onClick={ignore}
+            className={cx(styles.button, styles[variant], disabled && styles.disabled, className)}
+            aria-disabled={disabled || undefined}
+            onClick={disabled ? ignore : onClick}
           >
             <Content icon={icon}>{children}</Content>
           </button>
         )}
       </Tooltip>
-      <span className={styles.reason}>{disabledReason}</span>
+      {disabled && <span className={styles.reason}>{disabledReason}</span>}
     </span>
   );
 }

@@ -45,7 +45,7 @@ function FileDiff({ file }: { file: DiffFile }) {
   const titleId = useId();
   const { added, removed } = counts(file);
   return (
-    <section className={styles.file} aria-labelledby={titleId} data-change={file.change}>
+    <section className={styles.file} data-change={file.change}>
       <header className={styles.header}>
         <h4 id={titleId} className={styles.path}>
           {file.path}

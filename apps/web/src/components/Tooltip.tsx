@@ -6,7 +6,8 @@ import styles from './Tooltip.module.css';
 
 /** What the trigger spreads: the tooltip's id as its description, a ref and the hover handlers. */
 export type TooltipTriggerProps = {
-  'aria-describedby': string;
+  /** Undefined while there is no tooltip text. */
+  'aria-describedby': string | undefined;
   /** A callback ref, so it fits any element type. */
   ref: (element: HTMLElement | null) => void;
   onMouseEnter: () => void;
@@ -16,7 +17,8 @@ export type TooltipTriggerProps = {
 };
 
 export type TooltipProps = {
-  text: string;
+  /** The tooltip's text; null renders the trigger alone, as the same element. */
+  text: string | null;
   /** Renders the trigger, which must be focusable, with the given props. */
   children: (trigger: TooltipTriggerProps) => ReactElement;
 };
@@ -33,24 +35,30 @@ export function Tooltip({ text, children }: TooltipProps) {
   const [trigger, setTrigger] = useState<HTMLElement | null>(null);
   const [tip, setTip] = useState<HTMLSpanElement | null>(null);
   const { open, triggerProps, contentProps } = useHoverFocus();
-  const position = useAnchoredPosition(trigger, tip, open);
+  const shown = open && text !== null;
+  const position = useAnchoredPosition(trigger, tip, shown);
   return (
     <>
-      {children({ 'aria-describedby': id, ref: setTrigger, ...triggerProps })}
-      {createPortal(
-        <span
-          role="tooltip"
-          id={id}
-          ref={setTip}
-          className={styles.tip}
-          hidden={!open}
-          style={open ? position : undefined}
-          {...contentProps}
-        >
-          {text}
-        </span>,
-        document.body,
-      )}
+      {children({
+        'aria-describedby': text === null ? undefined : id,
+        ref: setTrigger,
+        ...triggerProps,
+      })}
+      {text !== null &&
+        createPortal(
+          <span
+            role="tooltip"
+            id={id}
+            ref={setTip}
+            className={styles.tip}
+            hidden={!shown}
+            style={shown ? position : undefined}
+            {...contentProps}
+          >
+            {text}
+          </span>,
+          document.body,
+        )}
     </>
   );
 }
