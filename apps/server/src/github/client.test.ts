@@ -106,10 +106,12 @@ describe('GitHub client', () => {
     await expect(client().request(getRepository)).rejects.toMatchObject({ code });
   });
 
-  it('names the permission a 403 asks for', async () => {
+  it('names the permissions a 403 asks for', async () => {
+    // The header DEMO_REPO sent when the publish's first write was refused.
+    const header = 'contents=write; contents=write,workflows=write';
     failEveryPath(
       403,
-      { 'x-accepted-github-permissions': 'contents=write; workflows=write' },
+      { 'x-accepted-github-permissions': header },
       'Resource not accessible by personal access token',
     );
 
@@ -119,11 +121,25 @@ describe('GitHub client', () => {
 
     expect(error).toMatchObject({
       code: 'github_missing_permission',
-      details: { permissions: 'contents=write; workflows=write', status: 403 },
+      details: { permissions: header, status: 403 },
     });
     expect(String(error)).toContain(
-      'Resource not accessible by personal access token. It accepts a GITHUB_TOKEN with contents=write or workflows=write.',
+      `GitHub refused GET /repos/${repository}: Resource not accessible by personal access token. GITHUB_TOKEN needs contents=write, or contents=write and workflows=write.`,
     );
+  });
+
+  it('tells the operator to check access when a 403 names no permission', async () => {
+    failEveryPath(403, {}, 'Repository access blocked');
+
+    const error: unknown = await client()
+      .request(getRepository)
+      .catch((caught: unknown) => caught);
+
+    expect(error).toMatchObject({
+      code: 'github_missing_permission',
+      details: { permissions: null },
+    });
+    expect(String(error)).toContain('Check that GITHUB_TOKEN can access the repository.');
   });
 
   it('retries an idempotent GET twice after a 5xx', async () => {

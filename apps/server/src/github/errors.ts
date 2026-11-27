@@ -34,6 +34,26 @@ export function rateLimitedError(
   );
 }
 
+/**
+ * The `X-Accepted-GitHub-Permissions` header in words. It lists the permission sets GitHub
+ * accepts, separated by semicolons; a set needs all of its comma-separated permissions.
+ * "contents=write; contents=write,workflows=write" reads
+ * "contents=write, or contents=write and workflows=write".
+ */
+function describePermissions(header: string | null): string {
+  return (header ?? '')
+    .split(';')
+    .map((set) =>
+      set
+        .split(',')
+        .map((permission) => permission.trim())
+        .filter((permission) => permission !== '')
+        .join(' and '),
+    )
+    .filter((set) => set !== '')
+    .join(', or ');
+}
+
 /** Maps a non-2xx response to its typed error (architecture.md 7.1, 7.3 and 18.1). */
 export function errorForResponse(
   failed: FailedResponse,
@@ -53,17 +73,12 @@ export function errorForResponse(
     );
   }
   if (status === 403) {
-    // The header lists alternative permission sets, separated by semicolons.
-    const accepted = acceptedPermissions
-      ?.split(';')
-      .map((set) => set.trim())
-      .filter((set) => set !== '')
-      .join(' or ');
+    const needed = describePermissions(acceptedPermissions);
     return new GitHubError(
       'github_missing_permission',
-      accepted === undefined || accepted === ''
+      needed === ''
         ? `GitHub refused ${request}${said}. Check that GITHUB_TOKEN can access the repository.`
-        : `GitHub refused ${request}${said}. It accepts a GITHUB_TOKEN with ${accepted}. Grant that permission to the token and retry.`,
+        : `GitHub refused ${request}${said}. GITHUB_TOKEN needs ${needed}. Grant it to the token and retry.`,
       { details: { ...details, permissions: acceptedPermissions } },
     );
   }
