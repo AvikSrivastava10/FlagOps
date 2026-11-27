@@ -26,6 +26,9 @@ export function registerFlags(app: FastifyInstance): void {
   app.addHook('onRequest', async (request) => {
     const user = currentUser(request);
     const traits = { role: user.role, plan: user.plan };
-    request.flags = await flagsmith.getIdentityFlags(user.id, traits);
+    // Transient: Flagsmith stores nothing for the request. An existing identity is evaluated with
+    // its overrides and stored traits, these traits count for this evaluation only, and an
+    // anonymous or unknown user never becomes an identity.
+    request.flags = await flagsmith.getIdentityFlags(user.id, traits, true);
   });
 }

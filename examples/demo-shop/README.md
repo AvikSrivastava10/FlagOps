@@ -39,7 +39,9 @@ Set these first, in `web/.env.local` and `api/.env`:
 | `FLAGSMITH_ENVIRONMENT_KEY` | api | the environment's server-side key |
 | `FLAGSMITH_API_URL` | api | the Flagsmith API, default `http://localhost:8000/api/v1/` |
 
-The API evaluates flags remotely: each request asks Flagsmith for the user's flags, so a change in Flagsmith applies to the next request.
+The API evaluates flags remotely: each request asks Flagsmith for the user's flags, so a change in Flagsmith applies to the next request. The user comes from the `x-user-id`, `x-user-role` and `x-user-plan` headers, which the shop's sign-in gateway would set; without them, the request is an anonymous customer on the free plan.
+
+The API asks Flagsmith transiently, so running it never creates or changes identities. An existing identity is evaluated with its overrides and stored traits, the request's `role` and `plan` count for that evaluation only, and anonymous or unknown users are evaluated without being stored.
 
 ## Checks
 

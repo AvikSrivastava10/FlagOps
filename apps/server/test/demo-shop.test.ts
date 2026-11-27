@@ -32,7 +32,11 @@ describe('the published demo shop', () => {
     ['web/src/checkout/Checkout.tsx', "import { LegacyCheckout } from './LegacyCheckout';"],
     ['api/src/routes/checkout.ts', "if (request.flags.isFeatureEnabled('new_checkout')) {"],
     ['api/src/routes/checkout.ts', "import { legacyTotals } from '../pricing/legacyTotals.ts';"],
-    ['api/src/flags.ts', 'request.flags = await flagsmith.getIdentityFlags(user.id, traits);'],
+    // Transient, so running the API never adds or changes the identities of AT4's environment.
+    [
+      'api/src/flags.ts',
+      'request.flags = await flagsmith.getIdentityFlags(user.id, traits, true);',
+    ],
     ['web/src/theme/useTheme.ts', "const { dark_mode } = useFlags(['dark_mode']);"],
     ['web/src/settings/Appearance.tsx', "const flags = useFlags(['dark_mode']);"],
     ['web/src/settings/Appearance.tsx', 'flags.dark_mode.enabled'],
