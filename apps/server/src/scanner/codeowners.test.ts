@@ -61,4 +61,13 @@ describe('CODEOWNERS', () => {
       { handle: '@docs-team', kind: 'user' },
     ]);
   });
+
+  it('matches paths case-sensitively, as GitHub does', () => {
+    const codeowners = parseCodeowners('CODEOWNERS', ['/Web/ @web-team', '*.MD @docs'].join('\n'));
+
+    expect(ownersOf(codeowners, 'web/src/x.ts')).toBeUndefined();
+    expect(ownersOf(codeowners, 'Web/src/x.ts')?.line).toBe(1);
+    expect(ownersOf(codeowners, 'README.md')).toBeUndefined();
+    expect(ownersOf(codeowners, 'README.MD')?.line).toBe(2);
+  });
 });

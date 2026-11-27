@@ -2,7 +2,8 @@ import ignore, { type Ignore } from 'ignore';
 
 /**
  * CODEOWNERS (architecture.md 8.4): the first existing of these locations at the scanned commit,
- * parsed line by line. For each file, the last matching line wins.
+ * parsed line by line. For each file, the last matching line wins. Paths match case-sensitively,
+ * as GitHub matches them.
  */
 export const codeownersLocations = ['.github/CODEOWNERS', 'CODEOWNERS', 'docs/CODEOWNERS'] as const;
 
@@ -58,7 +59,8 @@ export function parseCodeowners(path: string, text: string): Codeowners {
       line,
       text: raw.trim(),
       owners: owners.filter((owner): owner is Owner => owner !== undefined),
-      matcher: ignore().add(pattern),
+      // `ignore` folds case unless told otherwise.
+      matcher: ignore({ ignorecase: false }).add(pattern),
     });
   });
   return codeowners;
