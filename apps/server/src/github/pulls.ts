@@ -3,7 +3,6 @@ import type { GitHubClient } from './client.js';
 
 export type PullRequest = {
   number: number;
-  title: string;
   url: string;
   headBranch: string;
   /** `owner/name` of the head branch's repository, or null when that fork was deleted. */
@@ -12,7 +11,6 @@ export type PullRequest = {
 
 const pullSchema = z.object({
   number: z.number().int(),
-  title: z.string(),
   html_url: z.string(),
   head: z.object({
     ref: z.string(),
@@ -33,7 +31,6 @@ export async function listOpenPullRequests(
   });
   return pulls.map((pull) => ({
     number: pull.number,
-    title: pull.title,
     url: pull.html_url,
     headBranch: pull.head.ref,
     headRepository: pull.head.repo?.full_name ?? null,

@@ -112,7 +112,7 @@ async function closeFlagOpsPullRequests(
   for (const pull of ours) {
     await closePullRequest(client, repository, pull.number);
     logger.info(
-      { repository, pullRequest: pull.number, branch: pull.headBranch },
+      { repository, pullRequest: pull.url, branch: pull.headBranch },
       'Closed a FlagOps pull request',
     );
   }

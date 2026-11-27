@@ -3,8 +3,6 @@ import type { GitHubClient } from './client.js';
 
 export type WorkflowRun = {
   id: number;
-  /** The workflow's name; GitHub documents it as nullable. */
-  name: string | null;
   event: string;
   /** `queued`, `in_progress`, `completed` and the other states GitHub reports. */
   status: string;
@@ -30,7 +28,6 @@ export async function listRunsForCommit(
       workflow_runs: z.array(
         z.object({
           id: z.number().int(),
-          name: z.string().nullable(),
           event: z.string(),
           status: z.string(),
           conclusion: z.string().nullable(),
@@ -43,7 +40,6 @@ export async function listRunsForCommit(
   });
   return page.workflow_runs.map((run) => ({
     id: run.id,
-    name: run.name,
     event: run.event,
     status: run.status,
     conclusion: run.conclusion,

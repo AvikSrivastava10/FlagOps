@@ -14,7 +14,6 @@ const emptyTree = (): TreeFiles => new Map();
 
 export type FakePullRequest = {
   number: number;
-  title: string;
   state: 'open' | 'closed';
   headBranch: string;
   /** `owner/name` of the head branch's repository: another repository means a fork. */
@@ -130,13 +129,12 @@ export class FakeGitHub {
 
   addPullRequest(
     repository: string,
-    pull: { headBranch: string; headRepository?: string; title?: string },
+    pull: { headBranch: string; headRepository?: string },
   ): number {
     const pulls = this.#repository(repository).pulls;
     const number = pulls.length + 1;
     pulls.push({
       number,
-      title: pull.title ?? `Pull request ${number}`,
       state: 'open',
       headBranch: pull.headBranch,
       headRepository: pull.headRepository ?? repository,
@@ -294,7 +292,6 @@ export class FakeGitHub {
           total_count: runs.length,
           workflow_runs: runs.map((run) => ({
             id: run.id,
-            name: 'CI',
             event: 'push',
             status: run.status,
             conclusion: run.conclusion,
@@ -467,7 +464,6 @@ export class FakeGitHub {
       headers,
       body: items.map((pull) => ({
         number: pull.number,
-        title: pull.title,
         state: pull.state,
         html_url: `https://github.com/${repository.fullName}/pull/${pull.number}`,
         head: { ref: pull.headBranch, repo: { full_name: pull.headRepository } },
