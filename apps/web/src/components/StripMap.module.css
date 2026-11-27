@@ -1,0 +1,70 @@
+/*
+ * The line runs down the left edge: 8px for the main line, 6px for the side lines. Each station's
+ * tick (12 x 4px) points from the line to its plate.
+ */
+.strip {
+  --strip-axis: var(--space-4);
+
+  display: grid;
+  min-inline-size: 0;
+  padding-block: var(--space-2);
+}
+
+.stop {
+  position: relative;
+  min-inline-size: 0;
+  padding: 0 0 var(--space-4) calc(var(--strip-axis) + var(--space-5));
+  background: linear-gradient(var(--color-line), var(--color-line)) var(--strip-axis) 0 /
+    var(--line-main) 100% no-repeat;
+}
+
+/* The tick, level with the plate. */
+.stop::before {
+  content: '';
+  position: absolute;
+  inset-block-start: var(--space-4);
+  inset-inline-start: calc(var(--strip-axis) + var(--line-main));
+  inline-size: var(--tick-length);
+  block-size: var(--tick-width);
+  background: var(--color-line);
+}
+
+/* Side sections: the main line continues on the left, the side line runs indented beside it. */
+.side {
+  padding-inline-start: calc(var(--strip-axis) + var(--space-7));
+  background:
+    linear-gradient(var(--color-line), var(--color-line)) var(--strip-axis) 0 / var(--line-main)
+      100% no-repeat,
+    linear-gradient(var(--color-line), var(--color-line)) calc(var(--strip-axis) + var(--space-5))
+      0 / var(--line-branch) 100% no-repeat;
+}
+
+/* Below the side label, which is one 16px line plus its 4px margin. */
+.side::before {
+  inset-block-start: calc(var(--space-4) + var(--space-5) - var(--space-1));
+  inset-inline-start: calc(var(--strip-axis) + var(--space-5) + var(--line-branch));
+}
+
+.sideLabel {
+  margin-block-end: var(--space-1);
+  color: var(--color-ink-3);
+  font: var(--weight-semibold) var(--text-meta) var(--font-sign);
+  letter-spacing: var(--sign-tracking);
+  text-transform: uppercase;
+}
+
+/* The line ends at the Archived terminus with a terminus bar. */
+.terminus {
+  background: linear-gradient(var(--color-line), var(--color-line)) var(--strip-axis) 0 /
+    var(--line-main) var(--space-5) no-repeat;
+}
+
+.terminus::after {
+  content: '';
+  position: absolute;
+  inset-block-start: var(--space-5);
+  inset-inline-start: calc(var(--strip-axis) - var(--space-2));
+  inline-size: calc(var(--line-main) + var(--space-4));
+  block-size: var(--line-main);
+  background: var(--color-line);
+}

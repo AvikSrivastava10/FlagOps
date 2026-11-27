@@ -1,0 +1,64 @@
+.station {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+/* Ink on paper with a 2px rule (ui-design.md 5). Sticky inside the diagram region (D-056). */
+.plate {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: var(--z-sticky);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-2) var(--space-1);
+  border-block-start: var(--rule-structural) solid var(--color-ink);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font: var(--weight-bold) var(--text-lead) var(--font-sign);
+  letter-spacing: var(--sign-tracking);
+  text-transform: uppercase;
+}
+
+.name {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+/* The font shorthand resets numeric variants, so the count sets tabular figures again. */
+.count {
+  flex: none;
+  font: var(--weight-semibold) var(--text-small) var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: normal;
+}
+
+.status {
+  padding: var(--space-2);
+  color: var(--color-ink-3);
+  font: var(--weight-regular) var(--text-small) var(--font-ui);
+}
+
+.list {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-1) 0;
+}
+
+/* Long lists scroll inside the station; the plate and its count stay visible above. */
+.column .list {
+  max-block-size: calc(var(--space-8) * 6);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.strip .plate {
+  font: var(--weight-bold) var(--text-body) var(--font-sign);
+  letter-spacing: var(--sign-tracking);
+}
+
+.strip .list {
+  padding-inline-start: var(--space-4);
+}

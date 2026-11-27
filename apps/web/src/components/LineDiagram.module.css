@@ -1,0 +1,72 @@
+/* Only this region scrolls horizontally; the page never does (ui-design.md 6.3, D-056). */
+.region {
+  max-inline-size: 100%;
+  overflow-x: auto;
+  padding: var(--space-4);
+  border-block: var(--rule-structural) solid var(--color-ink);
+  background: var(--color-paper);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(8, var(--station-min) var(--station-gap)) var(--station-min);
+  inline-size: max-content;
+}
+
+.zone {
+  z-index: var(--z-base);
+}
+
+.trackRow {
+  position: relative;
+  z-index: calc(var(--z-base) + 1);
+  line-height: 0;
+  pointer-events: none;
+}
+
+.track {
+  display: block;
+}
+
+.main {
+  fill: none;
+  stroke: var(--color-line);
+  stroke-width: var(--line-main);
+}
+
+.branch {
+  fill: none;
+  stroke: var(--color-line);
+  stroke-width: var(--line-branch);
+  stroke-linejoin: miter;
+}
+
+.tick {
+  fill: var(--color-line);
+}
+
+.ring {
+  fill: var(--color-paper);
+  stroke: var(--color-ink);
+  stroke-width: var(--interchange-stroke);
+}
+
+/* The spur's vertical runs, in the gap columns beside the stations. */
+.spur {
+  position: relative;
+  z-index: calc(var(--z-base) + 1);
+  background: linear-gradient(var(--color-line), var(--color-line)) center / var(--line-branch) 100%
+    no-repeat;
+}
+
+.slot {
+  position: relative;
+  z-index: calc(var(--z-base) + 2);
+  min-inline-size: 0;
+  padding-block-end: var(--space-4);
+}
+
+/* Focus moves to a station or flag with the arrow keys; keep it clear of the sticky plate. */
+.slot :focus-visible {
+  scroll-margin: var(--space-7) var(--space-4);
+}
