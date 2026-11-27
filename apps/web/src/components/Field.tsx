@@ -1,4 +1,10 @@
-import { useId, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes } from 'react';
+import {
+  useId,
+  type InputHTMLAttributes,
+  type ReactNode,
+  type Ref,
+  type SelectHTMLAttributes,
+} from 'react';
 import { cx } from '../lib/class-names';
 import { Icon, type IconName } from './icons/Icon';
 import styles from './Field.module.css';
@@ -54,6 +60,8 @@ export type TextFieldProps = FieldFrame &
     mono?: boolean | undefined;
     /** A leading glyph, such as search. */
     icon?: IconName | undefined;
+    /** The input element, for example so "/" can focus the board's search (ui-design.md 6.3). */
+    ref?: Ref<HTMLInputElement> | undefined;
   };
 
 /** A labelled text input: 2px ink border, paper-raised fill, the line-colour focus ring. */
