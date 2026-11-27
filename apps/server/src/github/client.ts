@@ -31,6 +31,11 @@ export type GitHubClient = {
   request<T>(spec: GitHubRequest<T>): Promise<T>;
   /** Follows `Link: rel="next"` until the last page and returns the items of every page. */
   paginate<T>(spec: GitHubRequest<T[]>): Promise<T[]>;
+  /**
+   * Downloads a repository's binary resource, such as its tarball (architecture.md 7.2). A
+   * redirect is followed only to `codeload.github.com`, or to the API's own host in tests (19).
+   */
+  download(spec: { repository: string; path: string }): Promise<Uint8Array>;
 };
 
 export type GitHubClientOptions = {
@@ -47,6 +52,11 @@ export type GitHubClientOptions = {
 };
 
 const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+
+/** Downloads take longer than API calls (architecture.md 18.1), and are capped in size. */
+const downloadTimeoutMs = 60_000;
+const maxDownloadBytes = 200 * 1024 * 1024;
+const downloadHost = 'codeload.github.com';
 
 function messageOf(body: unknown): string | undefined {
   return typeof body === 'object' && body !== null && 'message' in body
@@ -97,7 +107,9 @@ export function createGitHubClient(options: GitHubClientOptions): GitHubClient {
     sleep,
   });
 
-  function urlOf(spec: GitHubRequest<unknown>): URL {
+  function urlOf(
+    spec: Pick<GitHubRequest<unknown>, 'method' | 'repository' | 'path' | 'query'>,
+  ): URL {
     if (spec.repository === undefined) {
       if (spec.method !== 'GET') {
         throw new GitHubError(
@@ -181,16 +193,10 @@ export function createGitHubClient(options: GitHubClientOptions): GitHubClient {
   }
 
   /** Idempotent GETs are retried on network errors and 5xx; writes never are (18.1). */
-  async function send<T>(spec: GitHubRequest<T>, url: URL) {
-    if (spec.createsContent === true) {
-      return limiter.serialiseContent(() => attempt(spec, url));
-    }
-    if (spec.method !== 'GET') {
-      return attempt(spec, url);
-    }
+  async function retried<T>(task: () => Promise<T>): Promise<T> {
     for (const delay of retryDelaysMs) {
       try {
-        return await attempt(spec, url);
+        return await task();
       } catch (error) {
         if (!isRetryable(error)) {
           throw error;
@@ -198,7 +204,70 @@ export function createGitHubClient(options: GitHubClientOptions): GitHubClient {
         await sleep(delay);
       }
     }
-    return attempt(spec, url);
+    return task();
+  }
+
+  async function send<T>(spec: GitHubRequest<T>, url: URL) {
+    if (spec.createsContent === true) {
+      return limiter.serialiseContent(() => attempt(spec, url));
+    }
+    return spec.method === 'GET' ? retried(() => attempt(spec, url)) : attempt(spec, url);
+  }
+
+  /** One download attempt: the API answers with a redirect, followed without the token. */
+  async function downloadOnce(url: URL): Promise<Uint8Array> {
+    const request = `GET ${url.pathname}`;
+    await limiter.beforeRequest();
+    let response: Response;
+    try {
+      response = await fetch(url, {
+        headers: {
+          Accept: 'application/vnd.github+json',
+          Authorization: `Bearer ${options.token.reveal()}`,
+          'User-Agent': 'flagops',
+          'X-GitHub-Api-Version': apiVersion,
+        },
+        redirect: 'manual',
+        signal: AbortSignal.timeout(downloadTimeoutMs),
+      });
+      if (response.status >= 300 && response.status < 400) {
+        await response.body?.cancel();
+        const target = new URL(response.headers.get('location') ?? '', url);
+        if (target.host !== downloadHost && target.host !== url.host) {
+          throw unexpectedResponseError(request, `a redirect to ${target.host}`);
+        }
+        response = await fetch(target, {
+          headers: { 'User-Agent': 'flagops' },
+          redirect: 'error',
+          signal: AbortSignal.timeout(downloadTimeoutMs),
+        });
+      }
+      if (!response.ok) {
+        const message = messageOf(parseJson(await response.text()));
+        const hit = rateLimitOf(response.status, response.headers, message, Date.now());
+        if (hit !== undefined) {
+          limiter.record(hit);
+        }
+        throw errorForResponse(
+          {
+            request,
+            status: response.status,
+            message,
+            acceptedPermissions: response.headers.get('x-accepted-github-permissions'),
+          },
+          hit,
+        );
+      }
+      const bytes = new Uint8Array(await response.arrayBuffer());
+      if (bytes.byteLength > maxDownloadBytes) {
+        throw new GitHubError('github_validation', `${request} is larger than 200 MB.`, {
+          details: { request },
+        });
+      }
+      return bytes;
+    } catch (cause) {
+      throw cause instanceof GitHubError ? cause : unreachableError(request, cause);
+    }
   }
 
   return {
@@ -214,6 +283,10 @@ export function createGitHubClient(options: GitHubClientOptions): GitHubClient {
         url = nextPage(page.link, origin);
       }
       return items;
+    },
+    async download(spec) {
+      const url = urlOf({ method: 'GET', repository: spec.repository, path: spec.path });
+      return retried(() => downloadOnce(url));
     },
   };
 }

@@ -4,11 +4,13 @@ import type { FakeFlagsmith } from '../../test/helpers/fake-flagsmith.js';
 import { fakeClient, organisationKey } from '../../test/helpers/flagsmith-client.js';
 import { addSmallProject, manageSmallProject, small } from '../../test/helpers/fake-project.js';
 import type { FlagsmithClient } from './client.js';
+import { uploadCodeReferences } from './code-references.js';
 import { createEnvironment, enableV2Versioning } from './environments.js';
 import { createFeature, updateFeature } from './features.js';
 import { putFlag } from './flag-api.js';
 import { createIdentityOverride, updateIdentityOverride, upsertTraits } from './identities-api.js';
 import { setupMetadataFields } from './metadata.js';
+import { changeOwners } from './owners.js';
 import { createProject } from './projects.js';
 import { createSegment, updateSegment } from './segments.js';
 import { setupTypeTags } from './tags.js';
@@ -152,6 +154,25 @@ describe('the write functions of the adapter', () => {
       (c) => setupMetadataFields(c, organisationKey, { organisationId: 1, projectId: 9 }),
     ],
     ['setupTypeTags', (c) => setupTypeTags(c, organisationKey, 9, {})],
+    [
+      'changeOwners',
+      (c) =>
+        changeOwners(
+          c,
+          organisationKey,
+          { projectId: 9, featureId: 20 },
+          { kind: 'user', action: 'add', ids: [7] },
+        ),
+    ],
+    [
+      'uploadCodeReferences',
+      (c) =>
+        uploadCodeReferences(c, organisationKey, 9, {
+          repositoryUrl: 'https://github.com/acme/shop',
+          revision: 'abc',
+          references: [],
+        }),
+    ],
     ['createSegment', (c) => createSegment(c, organisationKey, 9, segment)],
     ['updateSegment', (c) => updateSegment(c, organisationKey, 9, small.userSegmentId, segment)],
   ];

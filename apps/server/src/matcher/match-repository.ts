@@ -28,6 +28,8 @@ export type RepositoryFile = { path: string; text: string };
 
 export type MatchResult = {
   records: CodeRecord[];
+  /** The code files that were parsed and matched. */
+  filesMatched: number;
   parseErrors: { path: string; message: string }[];
   /** Rejected `flagops.json` files or entries, with reasons. */
   accessorProblems: AccessorProblem[];
@@ -151,6 +153,7 @@ export function matchRepository(
   }
   return {
     records: records.sort(compareRecords),
+    filesMatched: modules.length,
     parseErrors: errors,
     accessorProblems: [...problems, ...validation.problems],
     accessorRules: validation.accessors.map((accessor) => accessor.rule).sort(),

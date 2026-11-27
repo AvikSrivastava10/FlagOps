@@ -2,12 +2,19 @@ import type { Logger } from 'pino';
 import type { AuthService } from '../../src/auth/login.js';
 import { createMemorySessionStore } from '../../src/auth/sessions.js';
 import { buildApp, type App, type AppOptions } from '../../src/http/app.js';
+import type { OwnerMappingService } from '../../src/http/routes/owner-mappings.js';
 
 /** An auth service for route tests that never sign in. */
 const noSignIn: AuthService = {
   signIn: () => Promise.reject(new Error('this test does not sign in')),
   completeMfa: () => Promise.reject(new Error('this test does not sign in')),
   signOut: () => undefined,
+};
+
+/** An ownership service for route tests that do not map owners. */
+const noOwnerMappings: OwnerMappingService = {
+  directory: () => Promise.reject(new Error('this test does not read the directory')),
+  save: () => Promise.reject(new Error('this test does not map owners')),
 };
 
 /**
@@ -27,6 +34,8 @@ export async function buildTestApp(
     sessions: createMemorySessionStore(),
     auth: noSignIn,
     triggerSync: () => 'started',
+    triggerScan: () => 'started',
+    ownerMappings: noOwnerMappings,
     ...overrides,
   });
 }

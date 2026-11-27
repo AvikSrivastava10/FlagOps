@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { gitBlobSha } from '../../src/github/git-data.js';
+import { repositoryTarball } from './tarball.js';
 
 // An in-process stand-in for the parts of GitHub's REST API that FlagOps calls, with git objects
 // kept in memory. It answers the way GitHub does where FlagOps depends on it: 409 for an empty
@@ -190,6 +191,12 @@ export class FakeGitHub {
       body,
       at: Date.now(),
     });
+    // The tarball redirect's target stands in for codeload.github.com, which needs no token.
+    const download = /^\/_codeload\/([^/]+\/[^/]+)\/tar\.gz\/([0-9a-f]{40})$/.exec(url.pathname);
+    if (download !== null) {
+      this.#sendTarball(response, download[1] ?? '', download[2] ?? '');
+      return;
+    }
 
     this.#remaining = Math.max(0, this.#remaining - 1);
     const reply = this.#reply(method, url, request.headers.authorization, body);
@@ -246,6 +253,10 @@ export class FakeGitHub {
     }
     if ((found = /^PATCH \/git\/refs\/heads\/(.+)$/.exec(route))) {
       return this.#moveBranch(repository, decodeURIComponent(found[1] ?? ''), body);
+    }
+    if ((found = /^GET \/tarball\/([0-9a-f]{40})$/.exec(route))) {
+      const location = `${this.url}/_codeload/${repository.fullName}/tar.gz/${found[1] ?? ''}`;
+      return { status: 302, headers: { location } };
     }
     if ((found = /^GET \/git\/commits\/([0-9a-f]{40})$/.exec(route))) {
       const commit = this.#commits.get(found[1] ?? '');
@@ -304,6 +315,23 @@ export class FakeGitHub {
       };
     }
     return notFound();
+  }
+
+  /** The gzipped tarball of a commit, with GitHub's top-level folder. */
+  #sendTarball(response: ServerResponse, fullName: string, sha: string): void {
+    if (!this.#commits.has(sha)) {
+      response.writeHead(404, { 'content-type': 'application/json' });
+      response.end(JSON.stringify({ message: 'Not Found' }));
+      return;
+    }
+    const files = Object.fromEntries(
+      [...this.#treeOfCommit(sha).entries()].map(([path, entry]) => [
+        path,
+        this.#blobs.get(entry.sha) ?? '',
+      ]),
+    );
+    response.writeHead(200, { 'content-type': 'application/x-gzip' });
+    response.end(repositoryTarball(fullName, sha, files));
   }
 
   #repository(fullName: string): FakeRepository {

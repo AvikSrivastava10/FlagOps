@@ -2,7 +2,7 @@ import path from 'node:path';
 import type { z } from 'zod';
 import { envSchema, variableDescriptions, type LogLevel, type VariableName } from './env.js';
 import { resolveFlagsmithUrls, type FlagsmithUrls } from './flagsmith-urls.js';
-import type { Secret } from './secret.js';
+import { Secret } from './secret.js';
 
 /** A configuration problem the operator must fix before FlagOps can start. */
 export class ConfigError extends Error {
@@ -30,9 +30,45 @@ export type Config = Readonly<{
     trustProxy: boolean;
   }>;
   jobs: Readonly<{ syncIntervalSeconds: number }>;
+  /**
+   * GitHub access for scanning and Retire. Without a usable token or any repository, `problem`
+   * says why both are disabled; FlagOps still starts (architecture.md 21).
+   */
+  github: Readonly<{
+    token: Secret | undefined;
+    repositories: readonly string[];
+    problem: string | undefined;
+  }>;
   dataDir: string;
   logLevel: LogLevel;
 }>;
+
+function githubConfig(
+  token: string | undefined,
+  repositories: readonly string[],
+): Config['github'] {
+  const problem = githubProblem(token, repositories);
+  return Object.freeze({
+    token: problem === undefined && token !== undefined ? new Secret(token) : undefined,
+    repositories: Object.freeze([...repositories]),
+    problem,
+  });
+}
+
+function githubProblem(
+  token: string | undefined,
+  repositories: readonly string[],
+): string | undefined {
+  if (token === undefined) {
+    return `GITHUB_TOKEN is not set (${variableDescriptions.GITHUB_TOKEN})`;
+  }
+  if (token.length < 20 || token.length > 255) {
+    return `GITHUB_TOKEN must be 20 to 255 characters (${variableDescriptions.GITHUB_TOKEN})`;
+  }
+  return repositories.length === 0
+    ? `GITHUB_REPOSITORIES is not set (${variableDescriptions.GITHUB_REPOSITORIES})`
+    : undefined;
+}
 
 const defaultAllowedHosts: readonly string[] = ['localhost', '127.0.0.1', '[::1]'];
 
@@ -76,6 +112,7 @@ export function loadConfig(env: NodeJS.ProcessEnv): Config {
       trustProxy: vars.FLAGOPS_TRUST_PROXY ?? false,
     }),
     jobs: Object.freeze({ syncIntervalSeconds: vars.FLAGOPS_SYNC_INTERVAL_SECONDS ?? 60 }),
+    github: githubConfig(vars.GITHUB_TOKEN, vars.GITHUB_REPOSITORIES ?? []),
     dataDir: path.resolve(vars.FLAGOPS_DATA_DIR ?? (inDocker ? '/data' : 'data')),
     logLevel: vars.LOG_LEVEL ?? 'info',
   });

@@ -5,13 +5,16 @@ import { recordJobRun } from '../db/repos/job-runs.js';
 
 export type JobDefinition = {
   name: string;
-  /** The pause between the end of one run and the start of the next. */
-  intervalMs: number;
+  /**
+   * The pause between the end of one run and the start of the next. A job without one runs only
+   * when triggered, and a failed run waits for the next trigger.
+   */
+  intervalMs?: number;
   run(): Promise<void>;
 };
 
 export type Scheduler = {
-  /** Runs every job once now, then at its interval. */
+  /** Runs every job that has an interval once now, then at its interval. */
   start(): void;
   /** Runs the job now, or, when it is running, once more as soon as it finishes. */
   trigger(name: string): 'started' | 'queued';
@@ -37,8 +40,8 @@ type JobState = {
 /**
  * Runs background jobs in the server process. A job never overlaps itself: a trigger during a run
  * queues one more run instead. Every run is recorded in `job_runs`, and a failed run is retried at
- * the next interval. Jobs log their own expected failures, so the scheduler logs only unexpected
- * ones, with the stack.
+ * the next interval or trigger. Jobs log their own expected failures, so the scheduler logs only
+ * unexpected ones, with the stack.
  */
 export function createScheduler(options: SchedulerOptions): Scheduler {
   const now = options.now ?? (() => new Date());
@@ -100,6 +103,9 @@ export function createScheduler(options: SchedulerOptions): Scheduler {
         runNow(state);
         return;
       }
+      if (state.definition.intervalMs === undefined) {
+        return;
+      }
       state.timer = setTimeout(() => {
         runNow(state);
       }, state.definition.intervalMs);
@@ -118,7 +124,9 @@ export function createScheduler(options: SchedulerOptions): Scheduler {
   return {
     start() {
       for (const state of states.values()) {
-        runNow(state);
+        if (state.definition.intervalMs !== undefined) {
+          runNow(state);
+        }
       }
     },
     trigger(name) {

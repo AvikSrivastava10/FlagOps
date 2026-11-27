@@ -38,14 +38,23 @@ function migrationsDir(files: Record<string, string>): URL {
 }
 
 describe('migrate', () => {
-  it('creates the base tables once and records the migration', () => {
+  it('applies the migrations in order, once, and records them', () => {
     db = new Database(':memory:');
 
-    expect(migrate(db)).toEqual(['0001_base.sql']);
-    expect(tableNames(db)).toEqual(['audit_log', 'job_runs', 'schema_migrations', 'settings']);
+    expect(migrate(db)).toEqual(['0001_base.sql', '0002_scans.sql']);
+    expect(tableNames(db)).toEqual([
+      'audit_log',
+      'code_refs',
+      'job_runs',
+      'owner_mappings',
+      'owner_sync',
+      'scans',
+      'schema_migrations',
+      'settings',
+    ]);
     expect(migrate(db)).toEqual([]);
     expect(db.prepare<[], number>('SELECT version FROM schema_migrations').pluck().all()).toEqual([
-      1,
+      1, 2,
     ]);
   });
 

@@ -106,6 +106,17 @@ export type FakeState = {
   /** Tokens Flagsmith issued, by value: the user they belong to. */
   tokens: Map<string, number>;
   ephemeralTokens: Map<string, number>;
+  /** Permission groups, by organisation. */
+  groups: { id: number; organisation: number; name: string }[];
+  /** Feature owners: users and groups. */
+  owners: { feature: number; kind: 'user' | 'group'; id: number }[];
+  /** Every uploaded code references scan, oldest first. */
+  codeReferenceScans: {
+    project: number;
+    repositoryUrl: string;
+    revision: string;
+    references: { feature_name: string; file_path: string; line_number: number }[];
+  }[];
 };
 
 type RecordedRequest = {
@@ -190,6 +201,9 @@ export function createFakeFlagsmith(): FakeFlagsmith {
     users: [],
     tokens: new Map(),
     ephemeralTokens: new Map(),
+    groups: [],
+    owners: [],
+    codeReferenceScans: [],
   };
   const requests: RecordedRequest[] = [];
   const failures: { pattern: RegExp; status: number; body: unknown }[] = [];
@@ -318,15 +332,50 @@ export function createFakeFlagsmith(): FakeFlagsmith {
         integer_value: null,
         boolean_value: null,
       })),
-      owners: [],
-      group_owners: [],
+      owners: state.owners
+        .filter((owner) => owner.feature === feature.id && owner.kind === 'user')
+        .map((owner) => ({
+          id: owner.id,
+          email: state.users.find((user) => user.id === owner.id)?.email ?? '',
+        })),
+      group_owners: state.owners
+        .filter((owner) => owner.feature === feature.id && owner.kind === 'group')
+        .map((owner) => ({
+          id: owner.id,
+          name: state.groups.find((group) => group.id === owner.id)?.name ?? '',
+        })),
       num_segment_overrides: flag?.segment_overrides.length ?? 0,
       // Flagsmith gives null, not 0, for a feature without identity overrides.
       num_identity_overrides: identityOverrides === 0 ? null : identityOverrides,
       last_modified_in_any_environment: feature.created_date,
       lifecycle_stage: environment === undefined ? undefined : 'new',
-      code_references_counts: [],
+      code_references_counts: codeReferenceCounts(feature),
     };
+  }
+
+  /**
+   * As `annotate_feature_queryset_with_code_references_summary` computes them: one entry per
+   * repository that ever listed the feature, counting its references in that repository's
+   * latest scan, 0 when the latest scan has none.
+   */
+  function codeReferenceCounts(feature: FakeState['features'][number]) {
+    const scans = state.codeReferenceScans.filter((scan) => scan.project === feature.project);
+    const repositories = [...new Set(scans.map((scan) => scan.repositoryUrl))].sort();
+    return repositories
+      .filter((url) =>
+        scans.some(
+          (scan) =>
+            scan.repositoryUrl === url &&
+            scan.references.some((reference) => reference.feature_name === feature.name),
+        ),
+      )
+      .map((url) => {
+        const latest = scans.filter((scan) => scan.repositoryUrl === url).at(-1);
+        const count =
+          latest?.references.filter((reference) => reference.feature_name === feature.name)
+            .length ?? 0;
+        return { repository_url: url, count };
+      });
   }
 
   type Handler = (
@@ -608,6 +657,86 @@ export function createFakeFlagsmith(): FakeFlagsmith {
             true,
           ),
         );
+      },
+    ],
+    [
+      'GET',
+      /^\/api\/v1\/organisations\/(\d+)\/users\/$/,
+      (m) =>
+        json(
+          200,
+          state.users
+            .filter((user) => user.roles[Number(m[1])] !== undefined)
+            .map((user) => ({
+              id: user.id,
+              email: user.email,
+              first_name: user.firstName,
+              last_name: user.lastName,
+              role: user.roles[Number(m[1])],
+            })),
+        ),
+    ],
+    [
+      'GET',
+      /^\/api\/v1\/organisations\/(\d+)\/groups\/$/,
+      (m, _r, _b, query) =>
+        json(
+          200,
+          page(
+            state.groups
+              .filter((group) => group.organisation === Number(m[1]))
+              .map((group) => ({ id: group.id, name: group.name, users: [] })),
+            query,
+            false,
+          ),
+        ),
+    ],
+    [
+      'POST',
+      /^\/api\/v1\/projects\/(\d+)\/code-references\/$/,
+      (m, _r, body) => {
+        const input = body as {
+          repository_url: string;
+          revision: string;
+          code_references: { feature_name: string; file_path: string; line_number: number }[];
+        };
+        const project = Number(m[1]);
+        const names = new Set(
+          state.features.filter((feature) => feature.project === project).map((item) => item.name),
+        );
+        // Flagsmith keeps only references to flags the project has, matched exactly.
+        state.codeReferenceScans.push({
+          project,
+          repositoryUrl: input.repository_url,
+          revision: input.revision,
+          references: input.code_references.filter((reference) =>
+            names.has(reference.feature_name),
+          ),
+        });
+        return json(201, { ...input, project, vcs_provider: 'github' });
+      },
+    ],
+    [
+      'POST',
+      /^\/api\/v1\/projects\/(\d+)\/features\/(\d+)\/(add|remove)-(group-)?owners\/$/,
+      (m, _r, body) => {
+        const feature = state.features.find((item) => item.id === Number(m[2]));
+        if (feature === undefined) {
+          return json(404, { detail: 'Not found.' });
+        }
+        const kind: 'user' | 'group' = m[4] === undefined ? 'user' : 'group';
+        const ids =
+          (body as { user_ids?: number[]; group_ids?: number[] })[
+            kind === 'user' ? 'user_ids' : 'group_ids'
+          ] ?? [];
+        state.owners = state.owners.filter(
+          (owner) =>
+            !(owner.feature === feature.id && owner.kind === kind && ids.includes(owner.id)),
+        );
+        if (m[3] === 'add') {
+          state.owners.push(...ids.map((ownerId) => ({ feature: feature.id, kind, id: ownerId })));
+        }
+        return json(200, featureBody(feature));
       },
     ],
     [

@@ -1,5 +1,6 @@
 import { isIP } from 'node:net';
 import { z } from 'zod';
+import { isRepositoryName } from '../github/repo-guard.js';
 import { formatBaseUrl } from './flagsmith-urls.js';
 import { Secret } from './secret.js';
 
@@ -21,6 +22,8 @@ export const variableDescriptions = {
   FLAGOPS_TRUST_PROXY: 'whether FlagOps runs behind a reverse proxy that sets X-Forwarded headers',
   FLAGOPS_DATA_DIR: "directory for FlagOps' database",
   FLAGOPS_SYNC_INTERVAL_SECONDS: 'seconds between syncs from Flagsmith',
+  GITHUB_TOKEN: 'GitHub token that reads the tracked repositories and opens cleanup pull requests',
+  GITHUB_REPOSITORIES: 'comma-separated owner/name repositories that FlagOps scans',
   LOG_LEVEL: 'how much FlagOps logs',
 } as const;
 
@@ -106,6 +109,21 @@ const trueOrFalse = z
   .enum(['true', 'false'], { error: 'must be true or false' })
   .transform((value) => value === 'true');
 
+/** At most 20 `owner/name` repositories (architecture.md 21); an invalid entry is named. */
+const repositories = text
+  .transform((value) => value.split(',').map((entry) => entry.trim()))
+  .superRefine((entries, context) => {
+    const invalid = entries.find((entry) => !isRepositoryName(entry));
+    if (invalid !== undefined) {
+      context.addIssue({
+        code: 'custom',
+        message: `has the entry "${invalid}", which is not an owner/name repository`,
+      });
+    } else if (entries.length > 20) {
+      context.addIssue({ code: 'custom', message: 'lists more than 20 repositories' });
+    }
+  });
+
 export const envSchema = z.object({
   FLAGSMITH_URL: required(httpUrl),
   FLAGSMITH_INTERNAL_URL: optional(httpUrl),
@@ -118,5 +136,8 @@ export const envSchema = z.object({
   FLAGOPS_TRUST_PROXY: optional(trueOrFalse),
   FLAGOPS_DATA_DIR: optional(text),
   FLAGOPS_SYNC_INTERVAL_SECONDS: optional(wholeNumber(15, 3600)),
+  // An unusable token disables scanning and Retire instead of stopping FlagOps (load.ts).
+  GITHUB_TOKEN: optional(text),
+  GITHUB_REPOSITORIES: optional(repositories),
   LOG_LEVEL: optional(z.enum(logLevels, { error: 'must be error, warn, info or debug' })),
 } satisfies Record<VariableName, z.ZodType>);

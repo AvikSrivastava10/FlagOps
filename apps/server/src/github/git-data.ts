@@ -48,6 +48,15 @@ export async function getBranchHead(
   }
 }
 
+/** The gzipped tarball of a commit, whose files sit under one top-level folder (architecture.md 8.5). */
+export function downloadTarball(
+  client: GitHubClient,
+  repository: string,
+  sha: string,
+): Promise<Uint8Array> {
+  return client.download({ repository, path: `/tarball/${encodeURIComponent(sha)}` });
+}
+
 export type Commit = { treeSha: string; parentShas: string[] };
 
 export async function getCommit(

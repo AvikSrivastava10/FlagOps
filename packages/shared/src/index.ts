@@ -1,4 +1,6 @@
 export * from './api/health.js';
+export * from './api/owners.js';
+export * from './api/scans.js';
 export * from './api/session.js';
 export * from './api/sync.js';
 export * from './domain/drift.js';

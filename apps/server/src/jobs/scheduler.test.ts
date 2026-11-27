@@ -140,6 +140,23 @@ describe('createScheduler', () => {
     expect(runs).toBe(3);
   });
 
+  it('runs a job without an interval only when it is triggered', async () => {
+    vi.useFakeTimers();
+    let runs = 0;
+    scheduler = createScheduler({
+      db,
+      logger: createLogger('error'),
+      jobs: [{ name: 'scan', run: async () => void (runs += 1) }],
+    });
+
+    scheduler.start();
+    await vi.advanceTimersByTimeAsync(3_600_000);
+    expect(runs).toBe(0);
+    expect(scheduler.trigger('scan')).toBe('started');
+    await vi.advanceTimersByTimeAsync(3_600_000);
+    expect(runs).toBe(1);
+  });
+
   it('stops the timers and waits for a running job', async () => {
     const job = gatedJob();
     scheduler = createScheduler({ db, logger: createLogger('error'), jobs: [job.definition] });

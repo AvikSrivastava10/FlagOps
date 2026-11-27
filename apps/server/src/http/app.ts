@@ -25,6 +25,8 @@ import { addSecurityHeaders } from './hooks/security-headers.js';
 import { clearSessionCookie, createSessionHook } from './hooks/session.js';
 import { pathOf } from './request-path.js';
 import { healthRoutes } from './routes/health.js';
+import { ownerMappingRoutes, type OwnerMappingService } from './routes/owner-mappings.js';
+import { scanRoutes, type ScanTrigger } from './routes/scans.js';
 import { sessionRoutes } from './routes/session.js';
 import { syncRoutes } from './routes/sync.js';
 import { registerWebApp } from './static.js';
@@ -49,6 +51,9 @@ export type AppOptions = {
   auth: AuthService;
   /** Starts a sync now, or queues one behind the running sync. */
   triggerSync: () => 'started' | 'queued';
+  /** Starts the scan job now, or queues it; refuses an untracked repository. */
+  triggerScan: ScanTrigger;
+  ownerMappings: OwnerMappingService;
 };
 
 async function logRequest(request: FastifyRequest, reply: FastifyReply): Promise<void> {
@@ -101,6 +106,8 @@ export async function buildApp(options: AppOptions): Promise<App> {
   await app.register(healthRoutes);
   await app.register(sessionRoutes(options.auth));
   await app.register(syncRoutes(options.triggerSync));
+  await app.register(scanRoutes(options.triggerScan));
+  await app.register(ownerMappingRoutes(options.ownerMappings));
   await registerWebApp(app, options.webRoot);
   return app;
 }
