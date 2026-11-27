@@ -1,0 +1,31 @@
+.lamp {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+  min-inline-size: 0;
+  font: var(--weight-semibold) var(--text-small) var(--font-ui);
+}
+
+.on .glyph {
+  color: var(--color-lamp-on);
+}
+
+.partial .glyph {
+  color: var(--color-lamp-partial);
+}
+
+.off .glyph {
+  color: var(--color-ink-2);
+}
+
+.label {
+  color: var(--color-ink);
+}
+
+.value {
+  min-inline-size: 0;
+  color: var(--color-ink-2);
+  font: var(--weight-regular) var(--text-small) var(--font-mono);
+  overflow-wrap: anywhere;
+}

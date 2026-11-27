@@ -1,0 +1,7 @@
+/* The icon sits inline after the text, so a long external link still wraps like text. */
+.icon {
+  inline-size: 1em;
+  block-size: 1em;
+  margin-inline-start: 0.2em;
+  vertical-align: -0.125em;
+}

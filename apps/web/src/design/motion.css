@@ -1,0 +1,22 @@
+/*
+ * Motion (ui-design.md 3.4). Motion only marks real changes and nothing loops. The keyframes live
+ * with the component that uses them; the durations come from tokens.css, which sets every one of
+ * them to 0 under reduced motion.
+ *
+ * This rule is the safety net for that setting: whatever a component declares, animations and
+ * transitions finish at once, so every element shows its end state. Components that change content
+ * on a change (FlapText, FlagEntry) also skip the animation in script and show the static
+ * "Changed" marker for 10 seconds instead.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
+}

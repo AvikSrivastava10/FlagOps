@@ -1,0 +1,12 @@
+/*
+ * An inline-block box, so the name has a real width: the board's clipping check compares
+ * scrollWidth with clientWidth on it (ui-design.md 9), and both are 0 on an inline box.
+ */
+.name {
+  display: inline-block;
+  max-inline-size: 100%;
+  min-inline-size: 0;
+  font-family: var(--font-mono);
+  overflow-wrap: anywhere;
+  vertical-align: top;
+}

@@ -1,0 +1,85 @@
+.bullet {
+  display: inline-flex;
+  flex: none;
+  border-radius: var(--radius-full);
+  vertical-align: middle;
+  transition: box-shadow var(--dur-fast) var(--ease-standard);
+}
+
+.bullet svg {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.list {
+  inline-size: var(--bullet-list);
+  block-size: var(--bullet-list);
+}
+
+.header {
+  inline-size: var(--bullet-header);
+  block-size: var(--bullet-header);
+}
+
+/* 3.1: a 1.5px ink outline on every bullet, at least 13.8:1 against every light surface. */
+.shape {
+  stroke: var(--color-ink);
+  stroke-width: var(--bullet-outline);
+}
+
+.release {
+  fill: var(--color-type-release);
+}
+
+.experiment {
+  fill: var(--color-type-experiment);
+}
+
+.ops {
+  fill: var(--color-type-ops);
+}
+
+.permission {
+  fill: var(--color-type-permission);
+}
+
+.unclassified {
+  fill: none;
+  stroke-dasharray: 3 2;
+}
+
+/* White letters on release, ops and permission; ink on experiment and on the unclassified ring. */
+.letter {
+  fill: var(--color-signage-ink);
+  font-family: var(--font-sign);
+  font-weight: var(--weight-bold);
+}
+
+.bullet[data-type='experiment'] .letter,
+.bullet[data-type='unclassified'] .letter {
+  fill: var(--color-ink);
+}
+
+.list .letter {
+  font-size: calc(var(--bullet-list) * 0.55);
+}
+
+.header .letter {
+  font-size: calc(var(--bullet-header) * 0.55);
+}
+
+/* A diamond has less room inside than a circle of the same box. */
+.list .diamondLetter {
+  font-size: calc(var(--bullet-list) * 0.48);
+}
+
+.header .diamondLetter {
+  font-size: calc(var(--bullet-header) * 0.48);
+}
+
+.highlighted {
+  box-shadow:
+    0 0 0 var(--rule-structural) var(--color-paper),
+    0 0 0 calc(var(--rule-structural) * 2) var(--color-line);
+}

@@ -1,0 +1,138 @@
+/*
+ * FlagOps design tokens (ui-design.md section 3). This is the only file that may hold colour
+ * literals; components use these custom properties and nothing else. A unit test enforces it.
+ *
+ * Breakpoints (3.3) cannot be custom properties, because media queries do not read them. The
+ * component styles repeat the three widths: narrow below 720px, medium 720px to 1199px, wide from
+ * 1200px. The board panels move beside the line from 1600px (6.3).
+ */
+
+:root {
+  /* 3.1 Colour. Every pair used for text or meaningful graphics is checked in P2-notes. */
+  --color-paper: #f4f1ea;
+  --color-paper-raised: #fbfaf6;
+  --color-paper-sunken: #ece8de;
+  --color-ink: #141414;
+  --color-ink-2: #4a4740;
+  --color-ink-3: #5e5a52;
+  --color-rule-soft: #cfc9bc;
+  --color-signage: #141414;
+  --color-signage-ink: #ffffff;
+  --color-signage-ink-2: #c9c5bc;
+  --color-line: #0039a6;
+  --color-type-release: #00733a;
+  --color-type-experiment: #ff6319;
+  --color-type-ops: #c8102e;
+  --color-type-permission: #b933ad;
+  --color-zone-new: #e9e4d8;
+  --color-zone-live: #dfe7f0;
+  --color-zone-stale: #f2e4cc;
+  --color-zone-to-remove: #eedbd7;
+  --color-zone-permanent: #e4e3df;
+  --color-lamp-on: #0b7a3e;
+  --color-lamp-partial: #a35f00;
+  --color-amber-ink: #8a5100;
+  --color-notice: #fccc0a;
+  --color-danger: #b3121f;
+  --color-ok: #0b7a3e;
+  --color-diff-add: #dcefd9;
+  --color-diff-del: #f6d8d4;
+  --color-flap-tile: #1f1f1f;
+  --color-flap-ink: #f4f1ea;
+  --color-scrim: rgb(20 20 20 / 0.55);
+
+  /* 3.2 Typography: one sign face, one text face, one mono face, all self-hosted (fonts.ts). */
+  --font-sign: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --font-ui: 'Barlow', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, Consolas, monospace;
+  --sign-tracking: 0.04em;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* Size / line height pairs, written for the `font` shorthand. */
+  --text-meta: 0.75rem / 1rem;
+  --text-small: 0.8125rem / 1.125rem;
+  --text-body: 0.9375rem / 1.375rem;
+  --text-lead: 1.125rem / 1.5rem;
+  --text-h3: 1.375rem / 1.75rem;
+  --text-h2: 1.75rem / 2rem;
+  --text-h1: 2.25rem / 2.5rem;
+  --text-display: 3rem / 3.25rem;
+
+  /* 3.3 Space, grid, shape */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+
+  --grid-columns: 12;
+  --grid-gutter: 24px;
+  --grid-margin: 32px;
+  --content-max: 1440px;
+
+  --station-min: 200px;
+  --station-gap: 16px;
+
+  --radius-0: 0;
+  --radius-full: 9999px;
+
+  --rule-structural: 2px;
+  --rule-row: 1px;
+  --rule-decorative: 1px;
+
+  --line-main: 8px;
+  --line-branch: 6px;
+  --tick-length: 12px;
+  --tick-width: 4px;
+  --interchange-size: 18px;
+  --interchange-stroke: 4px;
+
+  --bullet-outline: 1.5px;
+  --bullet-list: 20px;
+  --bullet-header: 32px;
+
+  --target-min: 24px;
+  --target-primary: 32px;
+
+  --focus-ring: 3px;
+  --focus-offset: 2px;
+
+  /* 3.4 Motion */
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --dur-slow: 320ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --flap-step: 45ms;
+
+  /* 3.5 Layers */
+  --z-base: 0;
+  --z-sticky: 10;
+  --z-banner: 20;
+  --z-overlay: 30;
+  --z-toast: 40;
+}
+
+@media (max-width: 719.98px) {
+  :root {
+    --grid-columns: 4;
+    --grid-gutter: 16px;
+    --grid-margin: 16px;
+  }
+}
+
+/* 3.4: with reduced motion every duration is 0, so every transition shows its end state. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur-base: 0ms;
+    --dur-slow: 0ms;
+    --flap-step: 0ms;
+  }
+}

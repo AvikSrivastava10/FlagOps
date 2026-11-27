@@ -1,0 +1,10 @@
+.marker {
+  display: inline-block;
+  flex: none;
+  padding: 0 var(--space-1);
+  border: var(--rule-row) solid var(--color-ink);
+  background: var(--color-notice);
+  color: var(--color-ink);
+  font: var(--weight-semibold) var(--text-meta) var(--font-ui);
+  white-space: nowrap;
+}
