@@ -2,12 +2,13 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { FlagOpsError } from '@flagops/shared';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { publishDemoShop, readDemoShopFiles, type DemoFile } from '../../src/cli/demo-publish.js';
 import { Secret } from '../../src/config/secret.js';
 import { openDatabase, type Db } from '../../src/db/connection.js';
 import { migrate } from '../../src/db/migrate.js';
+import { listAddedOwners } from '../../src/db/repos/owners.js';
 import { latestSuccessfulScan, scanRecords } from '../../src/db/repos/scans.js';
 import { parseResponse } from '../../src/flagsmith/client.js';
 import { authHeaders } from '../../src/flagsmith/credentials.js';
@@ -112,11 +113,18 @@ describe.skipIf(skip !== undefined)(
       rmSync(dataDir, { recursive: true, force: true });
     }, 2 * minute);
 
+    /** The next runs the helper gave the product in the current test. */
+    let retries = 0;
+    beforeEach(() => {
+      retries = 0;
+    });
+
     /**
      * What the sync job does after each sync: every tracked repository gets its head check. A
-     * Flagsmith write that failed on the network, such as an upload over a connection Flagsmith
-     * had just closed, is retried by the next run (architecture.md 6.5, 18.2), so the helper
-     * gives the product that one next run.
+     * Flagsmith write that failed on the network, such as an upload or an owner change over a
+     * connection Flagsmith had just closed, is repeated by the next run (architecture.md 6.5,
+     * 18.2), so the helper gives the product that next run. It says so in the output, and a test
+     * that needs it twice fails, so the evidence shows how often a write fails.
      */
     async function scanAfterSync() {
       scans.requestAll();
@@ -126,6 +134,15 @@ describe.skipIf(skip !== undefined)(
         if (!(error instanceof FlagOpsError) || error.code !== 'flagsmith_unreachable') {
           throw error;
         }
+        retries += 1;
+        if (retries > 1) {
+          throw new Error(`A second scan run in this test failed: ${error.message}`, {
+            cause: error,
+          });
+        }
+        console.warn(
+          `Running the scan job once more after flagsmith_unreachable: ${error.message}`,
+        );
         scans.requestAll();
         await scans.run();
       }
@@ -300,8 +317,10 @@ describe.skipIf(skip !== undefined)(
           feature.name,
         ).toBe(referenced.has(feature.name) || ownedBefore.has(feature.name));
       }
-      const added = first.state === 'succeeded' ? first.report.added : -1;
-      expect(added).toBe([...referenced].filter((flag) => !ownedBefore.has(flag ?? '')).length);
+      // FlagOps records each owner it added, so the count also holds when a change took a second run.
+      expect(listAddedOwners(db)).toHaveLength(
+        [...referenced].filter((flag) => !ownedBefore.has(flag ?? '')).length,
+      );
 
       // "Scan now" asks for an owner sync even when no scan is due.
       scans.scanNow(undefined);
