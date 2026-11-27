@@ -73,12 +73,17 @@
   min-inline-size: var(--space-6);
 }
 
-/* First column: sticky, on paper so the cells scroll under it. */
+/*
+ * First column: sticky, on paper so the cells scroll under it. Tables ignore a cell's maximum
+ * width but keep a set one, so the column stays 288px, room for a name of about 25 characters on
+ * one line (longer names wrap after their underscores), and the spare width goes to the
+ * environments.
+ */
 .flagCell {
   position: sticky;
   inset-inline-start: 0;
   z-index: calc(var(--z-base) + 1);
-  max-inline-size: calc(var(--station-min) + var(--space-8));
+  inline-size: calc(var(--station-min) + var(--space-8) + var(--space-5));
   border-inline-end: var(--rule-structural) solid var(--color-ink);
   background: var(--color-paper);
   font-weight: var(--weight-regular);
@@ -143,4 +148,12 @@ a.target:hover {
 
 .detail {
   background: var(--color-paper-raised);
+}
+
+/*
+ * The expanded row takes the width the other rows give the table and adds none: without the
+ * containment, a full-width diff inside it widens every column (cells cannot carry it).
+ */
+.detailBody {
+  contain: inline-size;
 }

@@ -152,7 +152,7 @@ function TimetableGrid({
                   </tr>
                   <tr id={detailId} className={styles.detailRow} hidden={!open}>
                     <td colSpan={columns} className={styles.detail}>
-                      {row.detail}
+                      <div className={styles.detailBody}>{row.detail}</div>
                     </td>
                   </tr>
                 </Fragment>
