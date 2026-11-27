@@ -42,6 +42,7 @@
 .environments {
   display: grid;
   margin: 0;
+  font-variant-numeric: tabular-nums;
 }
 
 .environment,
@@ -52,7 +53,7 @@
   justify-content: space-between;
   gap: var(--space-1) var(--space-3);
   min-block-size: var(--target-primary);
-  padding: var(--space-1) 0;
+  padding: var(--space-1) var(--space-2);
   border-block-end: var(--rule-row) solid var(--color-ink-3);
 }
 
@@ -75,6 +76,7 @@
   padding-inline: var(--space-2);
   background: var(--color-paper-sunken);
   font: var(--weight-semibold) var(--text-small) var(--font-ui);
+  font-variant-numeric: tabular-nums;
 }
 
 .drift dd {

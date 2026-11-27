@@ -23,9 +23,11 @@
   color: var(--color-ink);
 }
 
+/* The font shorthand resets numeric variants, so values in tables keep tabular figures here. */
 .value {
   min-inline-size: 0;
   color: var(--color-ink-2);
   font: var(--weight-regular) var(--text-small) var(--font-mono);
+  font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
 }

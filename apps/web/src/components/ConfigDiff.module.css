@@ -31,7 +31,7 @@
 }
 
 /* A changed field: a bar on its leading edge and the text "changed" (ui-design.md 5). */
-.changedRow > :first-child {
+.table .changedRow > :first-child {
   box-shadow: inset var(--space-1) 0 0 var(--color-line);
 }
 

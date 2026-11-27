@@ -6,6 +6,10 @@ import { expect, test, type Page } from '@playwright/test';
 // The P2 gate (plan.md, P2 exit criteria 1 to 4): screenshots of every gallery section, axe, the
 // keyboard checks and reduced motion. Screenshots go to .agents/screenshots/P2/, which git ignores.
 const galleryUrl = 'http://127.0.0.1:5174/gallery.html';
+
+// The dev server compiles the whole gallery on the first visit of each worker, which can take
+// longer than the default 30 seconds on a slow machine.
+test.describe.configure({ timeout: 120_000 });
 const shots = '.agents/screenshots/P2';
 const lineBlue = 'rgb(0, 57, 166)';
 
@@ -72,7 +76,9 @@ test.describe('gallery', () => {
   test('counts and tables use tabular figures', async ({ page }) => {
     const selectors = [
       '[data-station-count]',
-      '[data-timetable] td',
+      // The table's cells on wide screens, the stacked environments on narrow ones.
+      '[data-timetable] :is(td, dd)',
+      '[data-timetable] [data-state] code',
       '[data-gallery-section="impact-summary"] [data-kind] dd a',
     ];
     for (const selector of selectors) {
@@ -111,7 +117,7 @@ test.describe('gallery', () => {
       '[data-gallery-section="inputs"] [aria-pressed]',
       '[data-gallery-section="signage-bar"] nav a',
       '[data-gallery-section="flag-entry"] [data-flag-entry]',
-      '[data-gallery-section="timetable"] [data-roving]',
+      '[data-gallery-section="timetable"] a',
       '[data-gallery-section="confirm-gate"] input',
     ];
     for (const [index, selector] of targets.entries()) {
@@ -260,6 +266,8 @@ test.describe('gallery with reduced motion', () => {
         }).length,
     );
     expect(moving).toBe(0);
+    // Park the pointer, so no hover card covers what the screenshots show.
+    await page.mouse.move(0, 0);
     await flap.screenshot(shot('reduced-motion-flap'));
     await arrival.screenshot(shot('reduced-motion-arrival'));
     await page.screenshot({ ...shot('reduced-motion-full'), fullPage: true });
