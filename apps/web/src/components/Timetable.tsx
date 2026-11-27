@@ -47,8 +47,13 @@ function TimetableGrid({
     setExpanded(next);
   };
 
+  // Without rows nothing inside can take focus, so the scrolling box itself is the tab stop.
+  const scrollStop =
+    loading || rows.length === 0
+      ? { tabIndex: 0, role: 'region', 'aria-label': caption }
+      : undefined;
   return (
-    <div className={styles.scroller} data-timetable="">
+    <div className={styles.scroller} data-timetable="" {...scrollStop}>
       <table className={styles.table} onKeyDown={onKeyDown} aria-busy={loading || undefined}>
         <caption className={styles.caption}>{caption}</caption>
         <thead>
@@ -79,7 +84,7 @@ function TimetableGrid({
           {(loading || rows.length === 0) && (
             <tr>
               <td colSpan={columns} className={styles.status}>
-                {loading ? <FlapText text="Loading" size="small" /> : emptyText}
+                {loading ? <FlapText text="Loading" /> : emptyText}
               </td>
             </tr>
           )}

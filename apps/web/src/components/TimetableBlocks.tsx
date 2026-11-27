@@ -27,7 +27,7 @@ export function TimetableBlocks({
       </h3>
       {loading ? (
         <p className={styles.status}>
-          <FlapText text="Loading" size="small" />
+          <FlapText text="Loading" />
         </p>
       ) : rows.length === 0 ? (
         <p className={styles.status}>{emptyText}</p>

@@ -54,7 +54,9 @@
   overscroll-behavior: contain;
 }
 
+/* On the strip map the page scrolls, and a sticky plate would slide over its own flags. */
 .strip .plate {
+  position: static;
   font: var(--weight-bold) var(--text-body) var(--font-sign);
   letter-spacing: var(--sign-tracking);
 }

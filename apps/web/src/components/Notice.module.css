@@ -13,9 +13,8 @@
   color: var(--color-ink);
 }
 
-/* White on danger red, 6.95:1. The stripe turns white so the band keeps its edge. */
+/* White on danger red, 6.95:1. */
 .danger {
-  border-inline-start-color: var(--color-signage-ink);
   background: var(--color-danger);
   color: var(--color-signage-ink);
 }

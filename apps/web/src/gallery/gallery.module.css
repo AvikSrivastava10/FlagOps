@@ -89,6 +89,7 @@
 
 .stack {
   display: grid;
+  justify-items: start;
   gap: var(--space-3);
   inline-size: 100%;
   min-inline-size: 0;

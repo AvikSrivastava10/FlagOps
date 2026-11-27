@@ -1,5 +1,6 @@
 /* The table scrolls inside its own box, so its header row and first column can stay sticky. */
 .scroller {
+  inline-size: 100%;
   max-inline-size: 100%;
   max-block-size: calc(100dvh - var(--space-8) * 2);
   overflow: auto;

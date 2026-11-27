@@ -1,6 +1,8 @@
+/* A field fills the column it is placed in; the screen's grid decides the width. */
 .field {
   display: grid;
   gap: var(--space-1);
+  inline-size: 100%;
   min-inline-size: 0;
 }
 

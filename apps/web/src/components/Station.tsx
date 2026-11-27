@@ -61,7 +61,7 @@ export function Station({
       {layout === 'strip' && zone !== null && <ZoneTag zone={zone} />}
       {loading ? (
         <p className={styles.status}>
-          <FlapText text="Loading" size="small" />
+          <FlapText text="Loading" />
         </p>
       ) : count === 0 ? (
         <p className={styles.status}>No flags</p>

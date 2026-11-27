@@ -19,11 +19,17 @@
   font: var(--weight-medium) var(--text-h3) var(--font-mono);
 }
 
+/* Lines break only between words; a word's tiles stay together. */
 .tiles {
   display: inline-flex;
   flex-wrap: wrap;
   gap: 0.125em;
   perspective: 12em;
+}
+
+.word {
+  display: inline-flex;
+  gap: 0.125em;
 }
 
 /* Tile proportions are set in em, so every size keeps the same board look. */
@@ -38,14 +44,14 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* The split line across the middle of every tile. */
+/* The split line across the middle of every tile: the dark gap between the two flaps. */
 .tile::after {
   content: '';
   position: absolute;
   inset-inline: 0;
   inset-block-start: 50%;
   block-size: 1px;
-  background: var(--color-ink-2);
+  background: var(--color-ink);
 }
 
 .flip {

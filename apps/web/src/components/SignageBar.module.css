@@ -1,6 +1,7 @@
 /* White on signage black, 18.42:1; secondary text 10.70:1 (ui-design.md 3.1). */
 .bar {
   position: relative;
+  inline-size: 100%;
   background: var(--color-signage);
   color: var(--color-signage-ink);
 }
@@ -15,6 +16,7 @@
   padding: var(--space-3) var(--grid-margin);
 }
 
+/* The skip link is hidden until it has focus, then sits as a paper plate over the band. */
 .skip {
   position: absolute;
   inset-block-start: var(--space-2);
@@ -24,11 +26,15 @@
   background: var(--color-paper);
   color: var(--color-ink);
   font: var(--weight-semibold) var(--text-small) var(--font-ui);
-  translate: 0 calc(-100% - var(--space-4));
 }
 
-.skip:focus-visible {
-  translate: none;
+.skip:not(:focus) {
+  clip-path: inset(50%);
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .wordmark {
