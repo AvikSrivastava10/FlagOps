@@ -1,0 +1,133 @@
+.page {
+  max-inline-size: var(--content-max);
+  margin-inline: auto;
+  padding: var(--space-6) var(--grid-margin) var(--space-8);
+}
+
+.intro {
+  display: grid;
+  gap: var(--space-2);
+  padding-block-end: var(--space-5);
+}
+
+.title {
+  font: var(--weight-bold) var(--text-display) var(--font-sign);
+  letter-spacing: var(--sign-tracking);
+  text-transform: uppercase;
+}
+
+.lead {
+  max-inline-size: 60ch;
+  color: var(--color-ink-2);
+  font: var(--weight-regular) var(--text-lead) var(--font-ui);
+}
+
+.toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  padding: 0;
+  list-style: none;
+  font: var(--weight-medium) var(--text-small) var(--font-ui);
+}
+
+.section {
+  display: grid;
+  gap: var(--space-3);
+  padding-block: var(--space-5);
+  border-block-start: var(--rule-structural) solid var(--color-ink);
+  scroll-margin-block-start: var(--space-4);
+}
+
+.sectionTitle {
+  font: var(--weight-bold) var(--text-h2) var(--font-sign);
+  letter-spacing: var(--sign-tracking);
+  text-transform: uppercase;
+}
+
+.description {
+  max-inline-size: 72ch;
+  color: var(--color-ink-2);
+}
+
+.states {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+  gap: var(--space-5) var(--grid-gutter);
+  align-items: start;
+}
+
+.state {
+  display: grid;
+  gap: var(--space-2);
+  min-inline-size: 0;
+  margin: 0;
+}
+
+.wide {
+  grid-column: 1 / -1;
+}
+
+.caption {
+  color: var(--color-ink-3);
+  font: var(--weight-semibold) var(--text-meta) var(--font-sign);
+  letter-spacing: var(--sign-tracking);
+  text-transform: uppercase;
+}
+
+.frame {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-3);
+  min-inline-size: 0;
+}
+
+.frame > * {
+  max-inline-size: 100%;
+}
+
+.stack {
+  display: grid;
+  gap: var(--space-3);
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.swatch {
+  display: grid;
+  gap: var(--space-1);
+  inline-size: calc(var(--space-8) + var(--space-6));
+  font: var(--weight-regular) var(--text-meta) var(--font-mono);
+}
+
+.chip {
+  block-size: var(--space-7);
+  border: var(--rule-row) solid var(--color-ink);
+}
+
+.narrowFrame {
+  inline-size: min(100%, 24rem);
+  padding: var(--space-3);
+  border: var(--rule-structural) dashed var(--color-ink-3);
+}
+
+.scrollBox {
+  inline-size: 100%;
+  overflow-x: auto;
+  padding: var(--space-3);
+  border: var(--rule-decorative) solid var(--color-rule-soft);
+}
+
+.scrollTrack {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-6);
+  inline-size: calc(var(--station-min) * 5);
+}
+
+.rightEdge {
+  display: flex;
+  justify-content: flex-end;
+  inline-size: 100%;
+}
