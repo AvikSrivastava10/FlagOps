@@ -1,0 +1,25 @@
+.gate {
+  display: grid;
+  gap: var(--space-4);
+  max-inline-size: 40rem;
+  padding: var(--space-4);
+  border: var(--rule-structural) solid var(--color-ink);
+  background: var(--color-paper-raised);
+}
+
+.sentence {
+  font: var(--weight-medium) var(--text-lead) var(--font-ui);
+  font-variant-numeric: tabular-nums;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.blockers {
+  display: grid;
+  gap: var(--space-1);
+  padding-inline-start: var(--space-5);
+}

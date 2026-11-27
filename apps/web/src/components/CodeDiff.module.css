@@ -1,0 +1,105 @@
+.files {
+  display: grid;
+  gap: var(--space-4);
+  min-inline-size: 0;
+}
+
+.file {
+  min-inline-size: 0;
+  border: var(--rule-structural) solid var(--color-ink);
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-block-end: var(--rule-structural) solid var(--color-ink);
+  background: var(--color-paper-sunken);
+}
+
+.path {
+  min-inline-size: 0;
+  font: var(--weight-medium) var(--text-small) var(--font-mono);
+  overflow-wrap: anywhere;
+}
+
+.change {
+  font: var(--weight-semibold) var(--text-meta) var(--font-sign);
+  letter-spacing: var(--sign-tracking);
+  text-transform: uppercase;
+}
+
+/* A deleted file's label is a white-on-danger tag (6.95:1), so a deletion is hard to miss. */
+.file[data-change='deleted'] .change {
+  padding: 0 var(--space-2);
+  background: var(--color-danger);
+  color: var(--color-signage-ink);
+}
+
+.counts {
+  margin-inline-start: auto;
+  color: var(--color-ink-2);
+  font: var(--weight-medium) var(--text-meta) var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.scroller {
+  overflow-x: auto;
+}
+
+.table {
+  inline-size: 100%;
+  min-inline-size: max-content;
+  font: var(--weight-regular) var(--text-small) var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.table td {
+  padding: 0 var(--space-2);
+  vertical-align: top;
+}
+
+.hunk td {
+  padding-block: var(--space-1);
+  background: var(--color-paper-sunken);
+  color: var(--color-ink-3);
+}
+
+/* Ink on the add and delete tints: 15.26:1 and 13.77:1; ink-3 numbers 5.68:1 and 5.13:1. */
+.add {
+  background: var(--color-diff-add);
+}
+
+.del {
+  background: var(--color-diff-del);
+}
+
+.number {
+  inline-size: 1px;
+  color: var(--color-ink-3);
+  text-align: end;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.sign {
+  inline-size: 1px;
+  font-weight: var(--weight-medium);
+  user-select: none;
+}
+
+.code {
+  white-space: pre;
+}
+
+.code code {
+  font: inherit;
+}
+
+.empty {
+  padding: var(--space-2) var(--space-3);
+  color: var(--color-ink-3);
+  font: var(--weight-regular) var(--text-small) var(--font-ui);
+}

@@ -1,0 +1,102 @@
+.table {
+  inline-size: 100%;
+  border-block: var(--rule-structural) solid var(--color-ink);
+  font: var(--weight-regular) var(--text-small) var(--font-ui);
+}
+
+.caption {
+  padding: var(--space-2) 0;
+  font: var(--weight-semibold) var(--text-small) var(--font-ui);
+  text-align: start;
+}
+
+.table th,
+.table td {
+  padding: var(--space-2) var(--space-3);
+  border-block-end: var(--rule-row) solid var(--color-ink-3);
+  text-align: start;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+.table thead th {
+  background: var(--color-paper-sunken);
+  font: var(--weight-semibold) var(--text-small) var(--font-sign);
+  letter-spacing: var(--sign-tracking);
+  text-transform: uppercase;
+}
+
+.label {
+  font-weight: var(--weight-semibold);
+}
+
+/* A changed field: a bar on its leading edge and the text "changed" (ui-design.md 5). */
+.changedRow > :first-child {
+  box-shadow: inset var(--space-1) 0 0 var(--color-line);
+}
+
+.changed,
+.note {
+  display: inline-block;
+  margin-inline-start: var(--space-1);
+  font: var(--weight-semibold) var(--text-meta) var(--font-ui);
+}
+
+/* White on the line colour: 9.83:1, a pair computed for P2. */
+.changed {
+  padding: 0 var(--space-1);
+  background: var(--color-line);
+  color: var(--color-signage-ink);
+}
+
+.note {
+  color: var(--color-ink-2);
+  font-weight: var(--weight-regular);
+}
+
+.mono {
+  font: var(--weight-regular) var(--text-small) var(--font-mono);
+  white-space: pre-wrap;
+}
+
+.unset {
+  color: var(--color-ink-3);
+  font-style: italic;
+}
+
+.list {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.fields {
+  display: grid;
+  margin: 0;
+  border-block-start: var(--rule-structural) solid var(--color-ink);
+}
+
+.item {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  border-block-end: var(--rule-row) solid var(--color-ink-3);
+}
+
+.changedRow.item {
+  box-shadow: inset var(--space-1) 0 0 var(--color-line);
+}
+
+.side {
+  display: grid;
+  gap: var(--space-1);
+  min-inline-size: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.sideName {
+  color: var(--color-ink-3);
+  font: var(--weight-semibold) var(--text-meta) var(--font-sign);
+  letter-spacing: var(--sign-tracking);
+  text-transform: uppercase;
+}
