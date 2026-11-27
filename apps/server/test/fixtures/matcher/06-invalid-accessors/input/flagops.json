@@ -10,6 +10,7 @@
       "export": "Feature",
       "nameProp": "name",
       "renders": "children"
-    }
+    },
+    { "kind": "hook", "module": "src/flags/useFlagList.ts", "export": "useFlagList", "reads": "flags-object" }
   ]
 }

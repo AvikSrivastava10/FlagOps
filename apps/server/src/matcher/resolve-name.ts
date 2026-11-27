@@ -12,31 +12,44 @@ export type NameResolution =
 
 export type NameResolver = (product: Product, literal: string) => NameResolution;
 
-/** Edit distance between two strings, for the nearest-name suggestion of a Zombie reference. */
+/**
+ * Damerau-Levenshtein distance in its optimal-string-alignment form: inserting, deleting or
+ * substituting a character, or swapping two adjacent ones, each count as one edit.
+ */
 function distance(a: string, b: string): number {
-  let previous = Array.from({ length: b.length + 1 }, (_, index) => index);
-  for (let i = 1; i <= a.length; i += 1) {
-    const current = [i];
-    for (let j = 1; j <= b.length; j += 1) {
-      const substitution = (previous[j - 1] ?? 0) + (a[i - 1] === b[j - 1] ? 0 : 1);
-      current.push(Math.min((previous[j] ?? 0) + 1, (current[j - 1] ?? 0) + 1, substitution));
+  const width = b.length + 1;
+  const cells = new Array<number>((a.length + 1) * width).fill(0);
+  const cell = (i: number, j: number): number => cells[i * width + j] ?? 0;
+  for (let i = 0; i <= a.length; i += 1) {
+    for (let j = 0; j <= b.length; j += 1) {
+      if (i === 0 || j === 0) {
+        cells[i * width + j] = i + j;
+        continue;
+      }
+      const substitution = cell(i - 1, j - 1) + (a[i - 1] === b[j - 1] ? 0 : 1);
+      const swap =
+        i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]
+          ? cell(i - 2, j - 2) + 1
+          : Infinity;
+      cells[i * width + j] = Math.min(cell(i - 1, j) + 1, cell(i, j - 1) + 1, substitution, swap);
     }
-    previous = current;
   }
-  return previous[b.length] ?? 0;
+  return cell(a.length, b.length);
 }
 
+/** A Zombie's suggestion is at most this many edits away (architecture.md 5.4). */
+const maxSuggestionDistance = 2;
+
 /**
- * The closest flag name, when it is close enough to be a likely typo: at most a third of the
- * name's length away, and at most 3 edits. Ties go to the alphabetically first name.
+ * The flag with the smallest case-insensitive distance to an unknown name, if that distance is at
+ * most 2. `flags` is sorted, so a tie goes to the alphabetically first name.
  */
 function nearest(literal: string, flags: readonly string[]): string | null {
-  const wanted = normaliseClientName(literal);
-  const limit = Math.min(3, Math.floor(wanted.length / 3));
+  const wanted = literal.toLowerCase();
   let best: { flag: string; score: number } | undefined;
   for (const flag of flags) {
-    const score = distance(wanted, normaliseClientName(flag));
-    if (score <= limit && (best === undefined || score < best.score)) {
+    const score = distance(wanted, flag.toLowerCase());
+    if (score <= maxSuggestionDistance && (best === undefined || score < best.score)) {
       best = { flag, score };
     }
   }

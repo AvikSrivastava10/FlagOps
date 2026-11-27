@@ -12,6 +12,8 @@
       "await": true
     },
     { "kind": "hook", "module": "src/flags/useFeature.ts", "export": "useFeature", "reads": "enabled", "nameArg": 0 },
+    { "kind": "hook", "module": "src/flags/useFeatureSet.ts", "export": "useFeatureSet", "reads": "flags-object", "nameArg": 0 },
+    { "kind": "hook", "module": "src/flags/useFeatures.ts", "export": "useFeatures", "reads": "flags-object", "nameArg": 0 },
     {
       "kind": "hook-result",
       "module": "src/flags/useFlagChecks.ts",

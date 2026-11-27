@@ -1,11 +1,13 @@
 {
-  "description": "An imported constants object and enum, a re-exported client instance, a W1 wrapper, two Flagsmith names that normalise alike, and a custom hook around useFlags without configuration",
+  "description": "An imported constants object and enum, a re-exported client instance, a W1 wrapper, two Flagsmith names that normalise alike (an ambiguous name, which leaves a mention of each candidate), and a custom hook around useFlags without configuration",
   "flags": ["new_checkout", "export_csv", "dark_mode", "beta search", "beta_search"],
   "expect": {
     "records": [
       { "kind": "reference", "flag": "new_checkout", "file": "src/App.tsx", "line": 6, "rule": "C1" },
       { "kind": "reference", "flag": "export_csv", "file": "src/App.tsx", "line": 7, "rule": "W1" },
       { "kind": "ambiguous_name", "flag": "beta_search", "file": "src/App.tsx", "line": 8, "rule": "C1" },
+      { "kind": "mention", "flag": "beta search", "file": "src/App.tsx", "line": 8, "rule": "mention" },
+      { "kind": "mention", "flag": "beta_search", "file": "src/App.tsx", "line": 8, "rule": "mention" },
       { "kind": "mention", "flag": "dark_mode", "file": "src/App.tsx", "line": 9, "rule": "mention" },
       { "kind": "dynamic", "flag": null, "file": "src/lib/useFlag.ts", "line": 4, "rule": "R2" }
     ]

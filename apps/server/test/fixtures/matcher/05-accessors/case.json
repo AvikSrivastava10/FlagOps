@@ -1,10 +1,12 @@
 {
-  "description": "The priority-1 accessor kinds of flagops.json (function, awaited method on a typed field and on a local instance, hook, hook-result destructured and as a member), matched through an import and a re-export; a configured clients receiver; a look-alike isOn that is not bound to the accessor; and no dynamic record for the accessors' own reads",
-  "flags": ["new_checkout", "dark_mode", "export_csv", "fraud_check_v2", "promo_banner", "similar_items"],
+  "description": "The priority-1 accessor kinds of flagops.json (function, awaited method on a typed field and on a local instance, hook, hook-result destructured and as a member), matched through an import and a re-export; flags-object hooks, one passing its list to useFlags and one to the other (valid only in a second round), with destructured keys as use sites; a configured clients receiver; a look-alike isOn that is not bound to the accessor; and no dynamic record for the accessors' own reads",
+  "flags": ["new_checkout", "dark_mode", "export_csv", "fraud_check_v2", "promo_banner", "similar_items", "gift_cards", "loyalty_points"],
   "accessorRules": [
     "via-accessor:function:src/flags/isOn.ts#isOn",
     "via-accessor:hook-result:src/flags/useFlagChecks.ts#useFlagChecks",
     "via-accessor:hook:src/flags/useFeature.ts#useFeature",
+    "via-accessor:hook:src/flags/useFeatureSet.ts#useFeatureSet",
+    "via-accessor:hook:src/flags/useFeatures.ts#useFeatures",
     "via-accessor:method:src/flags/feature.service.ts#FeatureService"
   ],
   "expect": {
@@ -14,6 +16,8 @@
       { "kind": "reference", "flag": "dark_mode", "file": "src/App.tsx", "line": 8, "rule": "via-accessor:hook:src/flags/useFeature.ts#useFeature" },
       { "kind": "reference", "flag": "export_csv", "file": "src/App.tsx", "line": 10, "rule": "via-accessor:hook-result:src/flags/useFlagChecks.ts#useFlagChecks" },
       { "kind": "reference", "flag": "export_csv", "file": "src/App.tsx", "line": 12, "rule": "via-accessor:hook-result:src/flags/useFlagChecks.ts#useFlagChecks" },
+      { "kind": "reference", "flag": "gift_cards", "file": "src/Bundles.tsx", "line": 4, "rule": "via-accessor:hook:src/flags/useFeatures.ts#useFeatures" },
+      { "kind": "reference", "flag": "loyalty_points", "file": "src/Bundles.tsx", "line": 5, "rule": "via-accessor:hook:src/flags/useFeatureSet.ts#useFeatureSet" },
       { "kind": "mention", "flag": "new_checkout", "file": "src/lookalike.ts", "line": 5, "rule": "mention" },
       { "kind": "reference", "flag": "similar_items", "file": "src/nuxt.ts", "line": 5, "rule": "C1" },
       { "kind": "reference", "flag": "fraud_check_v2", "file": "src/orders/orders.service.ts", "line": 7, "rule": "via-accessor:method:src/flags/feature.service.ts#FeatureService" },

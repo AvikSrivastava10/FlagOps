@@ -224,16 +224,17 @@ export function accessorCallOf(
     return undefined;
   }
   const argument = (call.get('arguments') as NodePath[])[accessor.entry.nameArg];
-  const list =
-    accessor.entry.reads === 'flags-object'
-      ? nameList(argument)
-      : { names: argument === undefined ? [] : [argument], dynamic: false };
+  const takesList = accessor.entry.reads === 'flags-object';
+  const list = takesList
+    ? nameList(argument)
+    : { names: argument === undefined ? [] : [argument], dynamic: false };
   return {
     rule: accessor.rule,
     method: methodOf(accessor.entry),
     product: accessor.product,
     via: `${methodOf(accessor.entry)}(), a ${accessor.entry.kind} accessor declared in flagops.json (${accessor.entry.module})`,
     names: list.names,
+    list: takesList ? argument : undefined,
     listIsDynamic: list.dynamic,
   };
 }

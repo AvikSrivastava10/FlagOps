@@ -2,7 +2,10 @@ import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 import { importOf, propertyKey } from './names.js';
 import {
+  clientFactory,
+  clientGlobal,
   clientGlobals,
+  nodeClientClass,
   nodeFlagsFetches,
   reactHooks,
   sdkModule,
@@ -38,8 +41,8 @@ function classifyModuleExport(
     if (imported === 'default') {
       return { kind: 'client', via: `the default import of '${source}'` };
     }
-    return imported === 'createFlagsmithInstance'
-      ? { kind: 'factory', via: `createFlagsmithInstance() from '${source}'` }
+    return imported === clientFactory
+      ? { kind: 'factory', via: `${clientFactory}() from '${source}'` }
       : undefined;
   }
   if (product === 'react') {
@@ -49,8 +52,8 @@ function classifyModuleExport(
       : { kind: 'hook', hook, via: `${hook}() from '${source}'` };
   }
   if (product === 'node') {
-    return imported === 'Flagsmith' || imported === 'default'
-      ? { kind: 'node-class', via: `Flagsmith from '${source}'` }
+    return imported === nodeClientClass || imported === 'default'
+      ? { kind: 'node-class', via: `${nodeClientClass} from '${source}'` }
       : undefined;
   }
   return product === 'types' ? undefined : exports.lookupSdk(file, source, imported);
@@ -151,8 +154,10 @@ export class Classifier {
     const name = path.node.name;
     const binding = path.scope.getBinding(name);
     if (binding === undefined) {
-      // The browser builds assign the client to the global `flagsmith`.
-      return name === 'flagsmith' ? { kind: 'client', via: 'the global flagsmith' } : undefined;
+      // The browser builds assign the client to a global.
+      return name === clientGlobal
+        ? { kind: 'client', via: `the global ${clientGlobal}` }
+        : undefined;
     }
     const imported = importOf(path, name);
     if (imported !== undefined) {
@@ -216,7 +221,7 @@ export class Classifier {
       return undefined;
     }
     if (
-      name === 'flagsmith' &&
+      name === clientGlobal &&
       object.isIdentifier() &&
       (clientGlobals as readonly string[]).includes(object.node.name) &&
       object.scope.getBinding(object.node.name) === undefined

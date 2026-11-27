@@ -26,7 +26,10 @@ export type FileMatch = {
   records: CodeRecord[];
   /** Literals that hold a matched name, so the mention pass skips them. */
   consumed: Origin[];
-  /** Offsets of the keys of `useFlags` destructuring patterns, which are use sites, not mentions. */
+  /**
+   * Offsets of the keys destructured from `useFlags` or a flags-object accessor, which are use
+   * sites, not mentions.
+   */
   patternKeys: Set<number>;
 };
 
@@ -111,7 +114,9 @@ function draftsOf(call: Call, site: ReadSite, context: FileContext, match: FileM
       });
     }
   };
-  if (site.listIsDynamic) {
+  // A flags-object accessor hands its own list parameter to `useFlags`; its call sites carry the names.
+  const ownList = site.list !== undefined && isOwnParameter(site.list, context);
+  if (site.listIsDynamic && !ownList) {
     dynamic(call.node.start ?? 0, `${site.method}() with a name list that is not a literal`);
   }
   for (const name of site.names) {
@@ -127,10 +132,12 @@ function draftsOf(call: Call, site: ReadSite, context: FileContext, match: FileM
       );
       continue;
     }
-    match.consumed.push(resolved.origin, { file: context.file, start: at });
     const resolution = context.resolveName(site.product, resolved.value);
     const evidence = `${site.rule}: ${site.method}() on ${site.via}`;
     if (resolution.kind === 'flag') {
+      // Only a name that reads a flag leaves the mention pass. An ambiguous or unknown name keeps
+      // its literal there, so every flag it could stand for stays guarded (D-044).
+      match.consumed.push(resolved.origin, { file: context.file, start: at });
       drafts.push({
         ...base,
         kind: context.isTest ? 'test_reference' : 'reference',
@@ -167,9 +174,12 @@ function draftsOf(call: Call, site: ReadSite, context: FileContext, match: FileM
   return drafts;
 }
 
-/** The keys of `const { a, b: alias } = useFlags([...])`, which are use sites of R1. */
+/**
+ * The keys of `const { a, b: alias } = useFlags([...])` (R1), or of the same pattern on a
+ * flags-object accessor's result: use sites, not mentions.
+ */
 function collectPatternKeys(call: Call, site: ReadSite, match: FileMatch): void {
-  if (site.kind !== 'read' || site.rule !== 'R1') {
+  if (site.kind !== 'read' || site.list === undefined) {
     return;
   }
   const declarator = call.parentPath.node;

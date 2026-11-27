@@ -1,5 +1,5 @@
 {
-  "description": "flagops.json entries that are rejected with their reason: a missing module, a missing export, a body that never passes the name to a Flagsmith read, and the component kind, which is not matched yet. Calls to rejected accessors stay unmatched, so their names count as mentions",
+  "description": "flagops.json entries that are rejected with their reason: a missing module, a missing export, a body that never passes the name to a Flagsmith read, the component kind, which is not matched yet, and a flags-object hook that reads one name instead of passing its list. Calls to rejected accessors stay unmatched, so their names count as mentions, and a rejected accessor's own read is dynamic",
   "flags": ["new_checkout"],
   "accessorRules": [],
   "accessorProblems": [
@@ -18,11 +18,16 @@
     {
       "entry": "accessors[3] (component Feature in src/flags/Feature.tsx)",
       "reason": "Component accessors are not matched yet, so the flag names passed to them count as mentions."
+    },
+    {
+      "entry": "accessors[4] (hook useFlagList in src/flags/useFlagList.ts)",
+      "reason": "useFlagList in src/flags/useFlagList.ts does not pass parameter 1, its list of names, to useFlags or to another flags-object accessor."
     }
   ],
   "expect": {
     "records": [
-      { "kind": "mention", "flag": "new_checkout", "file": "src/App.tsx", "line": 3, "rule": "mention" }
+      { "kind": "mention", "flag": "new_checkout", "file": "src/App.tsx", "line": 3, "rule": "mention" },
+      { "kind": "dynamic", "flag": null, "file": "src/flags/useFlagList.ts", "line": 4, "rule": "R2" }
     ]
   }
 }

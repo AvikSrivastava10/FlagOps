@@ -2,7 +2,8 @@
  * What the matcher knows about the Flagsmith SDKs, as data (architecture.md 8.2 and 8.3, D-042).
  * Verified against `@flagsmith/flagsmith` 12.6.0, `flagsmith` 10.0.0, `@flagsmith/nodejs` 9.5.0,
  * `flagsmith-nodejs` 8.1.2 and `@flagsmith/react-native` 12.6.0 (codemod REPORT section 1). Only
- * this file names SDK packages and methods.
+ * this file names SDK packages, exports, methods and options; other modules use these constants,
+ * or the `ReactHook` type for the hooks.
  */
 
 /** The SDK a read goes through; it decides how a flag name is looked up (D-043). */
@@ -101,8 +102,35 @@ export const nodeFlagsFetches = ['getEnvironmentFlags', 'getIdentityFlags'] as c
 export const untracedClientMethods = new Set(['hasFeature', 'getValue', 'getExperimentFlag']);
 export const untracedHooks = new Set(['useFlags', 'useExperiment']);
 
-/** The browser builds install the client on these globals (codemod REPORT 1.1). */
+/** The client reads a W1 wrapper may pass its name to: C1 and C2 (D-043). */
+export const wrappableClientReads: ReadonlySet<string> = new Set(['hasFeature', 'getValue']);
+
+/** The Node `Flags` reads a W1 wrapper may pass its name to: N1 and N2. */
+export const wrappableNodeReads: ReadonlySet<string> = new Set([
+  'isFeatureEnabled',
+  'getFeatureValue',
+]);
+
+/** The client module's factory: its result is a client. */
+export const clientFactory = 'createFlagsmithInstance';
+
+/** The Node module's class: `new Flagsmith(...)` is a Node client. */
+export const nodeClientClass = 'Flagsmith';
+
+/** The global the browser builds assign the client to (codemod REPORT 1.1). */
+export const clientGlobal = 'flagsmith';
+
+/** The browser builds also install the client on these globals, as `window.flagsmith`. */
 export const clientGlobals = ['window', 'globalThis', 'self'] as const;
+
+/**
+ * Where the client takes its `defaultFlags` option (rule D1): the client's `init(options)`, and
+ * the `options` prop of the React provider.
+ */
+export const defaultFlagsOption = 'defaultFlags';
+export const clientInit = 'init';
+export const reactProvider = 'FlagsmithProvider';
+export const reactProviderOptions = 'options';
 
 /** The client SDK's own key rule: `key.toLowerCase().replace(/ /g, '_')`. */
 export function normaliseClientName(name: string): string {

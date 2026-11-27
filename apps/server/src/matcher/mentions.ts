@@ -5,7 +5,13 @@ import { traverse } from './parse.js';
 import type { CodeRecord, SourceLines } from './records.js';
 import { mentionedFlags } from './resolve-name.js';
 import { memberName, type Classifier } from './receivers.js';
-import { sdkModule } from './sdk-modules.js';
+import {
+  clientInit,
+  defaultFlagsOption,
+  reactProvider,
+  reactProviderOptions,
+  sdkModule,
+} from './sdk-modules.js';
 
 /**
  * Mentions (architecture.md 8.3, D-044): string literals, template literals without substitutions
@@ -46,7 +52,10 @@ function isProviderOptions(object: NodePath): boolean {
     return false;
   }
   const attribute = container.parentPath;
-  if (!attribute.isJSXAttribute() || !t.isJSXIdentifier(attribute.node.name, { name: 'options' })) {
+  if (
+    !attribute.isJSXAttribute() ||
+    !t.isJSXIdentifier(attribute.node.name, { name: reactProviderOptions })
+  ) {
     return false;
   }
   const element = attribute.parentPath;
@@ -57,7 +66,7 @@ function isProviderOptions(object: NodePath): boolean {
   return (
     imported !== undefined &&
     sdkModule(imported.source) === 'react' &&
-    imported.imported === 'FlagsmithProvider'
+    imported.imported === reactProvider
   );
 }
 
@@ -67,7 +76,7 @@ function isDefaultFlagsKey(property: NodePath<t.ObjectProperty>, classifier: Cla
   if (
     holder === null ||
     !holder.isObjectProperty() ||
-    propertyKey(holder.node.key, holder.node.computed) !== 'defaultFlags'
+    propertyKey(holder.node.key, holder.node.computed) !== defaultFlagsOption
   ) {
     return false;
   }
@@ -79,7 +88,8 @@ function isDefaultFlagsKey(property: NodePath<t.ObjectProperty>, classifier: Cla
   if (call.isCallExpression() && call.node.arguments[0] === options.node) {
     const callee = call.get('callee');
     return (
-      memberName(callee) === 'init' && classifier.classify(callee.get('object'))?.kind === 'client'
+      memberName(callee) === clientInit &&
+      classifier.classify(callee.get('object'))?.kind === 'client'
     );
   }
   return isProviderOptions(options);

@@ -28,7 +28,12 @@ export type ReadSite =
       via: string;
       /** The flag-name arguments: one, or each element of a `useFlags` list. */
       names: NodePath[];
-      /** A `useFlags` list that is not a literal array or string. */
+      /**
+       * The name-list argument of a list-shaped read, `useFlags` or a flags-object accessor;
+       * undefined for reads of one name.
+       */
+      list: NodePath | undefined;
+      /** A list that is not a literal array or string. */
       listIsDynamic: boolean;
     }
   | { kind: 'unattributed'; method: string; via: string; argument: NodePath | undefined };
@@ -42,6 +47,7 @@ export type AccessorCall = {
   product: Product;
   via: string;
   names: NodePath[];
+  list: NodePath | undefined;
   listIsDynamic: boolean;
 };
 
@@ -85,7 +91,17 @@ function read(
   names: NodePath[],
   traced = true,
 ): Extract<ReadSite, { kind: 'read' }> {
-  return { kind: 'read', rule, method, product, traced, via, names, listIsDynamic: false };
+  return {
+    kind: 'read',
+    rule,
+    method,
+    product,
+    traced,
+    via,
+    names,
+    list: undefined,
+    listIsDynamic: false,
+  };
 }
 
 /** An imported or same-file pass-through wrapper (W1). */
@@ -208,7 +224,7 @@ function hookCall(
     const parent = call.parentPath;
     const destructured = parent.isVariableDeclarator() && t.isObjectPattern(parent.node.id);
     const site = read(destructured ? 'R1' : 'R2', 'useFlags', 'react', traced.via, list.names);
-    return { ...site, listIsDynamic: list.dynamic };
+    return { ...site, list: args[0], listIsDynamic: list.dynamic };
   }
   if (traced?.kind === 'hook' && traced.hook === 'useExperiment') {
     return read('R3', 'useExperiment', 'react', traced.via, args[0] === undefined ? [] : [args[0]]);

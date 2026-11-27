@@ -2,7 +2,13 @@ import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 import { propertyKey } from './names.js';
 import { memberName, type Classifier } from './receivers.js';
-import { clientReads, nodeFlagsReads, type Product } from './sdk-modules.js';
+import {
+  clientReads,
+  nodeFlagsReads,
+  wrappableClientReads,
+  wrappableNodeReads,
+  type Product,
+} from './sdk-modules.js';
 
 /**
  * Pass-through wrappers (rule W1, D-043): `(name, ...) => <traced client or Flags>.<read>(name)`,
@@ -65,13 +71,10 @@ export function wrapperOf(
   }
   const receiver = classifier.classify(callee.get('object'));
   const where = `${file}:${line(fn.node.start ?? 0)}`;
-  if (receiver?.kind === 'client' && (method === 'hasFeature' || method === 'getValue')) {
+  if (receiver?.kind === 'client' && wrappableClientReads.has(method)) {
     return { method, product: 'client', where, parameter };
   }
-  if (
-    receiver?.kind === 'flags' &&
-    (method === 'isFeatureEnabled' || method === 'getFeatureValue')
-  ) {
+  if (receiver?.kind === 'flags' && wrappableNodeReads.has(method)) {
     return { method, product: 'node', where, parameter };
   }
   return undefined;

@@ -142,12 +142,20 @@ function nameParameter(fn: NodePath<t.Function>, position: number): t.Identifier
     : undefined;
 }
 
-/** The product of the first read in the body that receives the parameter, or undefined. */
+/**
+ * The product of the first read in the body that receives the parameter, or undefined. A
+ * flags-object accessor's parameter is a list of names, so it must reach a list-shaped read whole:
+ * `useFlags(names)` or another flags-object accessor. Any other accessor passes one name.
+ */
 function readOfParameter(
   fn: NodePath<t.Function>,
   parameter: t.Identifier,
+  takesList: boolean,
   context: ReadContext,
 ): Product | undefined {
+  const isParameter = (name: NodePath | undefined): boolean =>
+    name?.isIdentifier() === true &&
+    name.scope.getBinding(name.node.name)?.identifier === parameter;
   let product: Product | undefined;
   fn.traverse({
     'CallExpression|OptionalCallExpression'(path: NodePath) {
@@ -155,13 +163,10 @@ function readOfParameter(
         return;
       }
       const site = readSiteOf(path as Call, context);
-      const passes =
-        site?.kind === 'read' &&
-        site.names.some(
-          (name) =>
-            name.isIdentifier() && name.scope.getBinding(name.node.name)?.identifier === parameter,
-        );
-      if (passes) {
+      if (site?.kind !== 'read') {
+        return;
+      }
+      if (takesList ? isParameter(site.list) : site.names.some(isParameter)) {
         product = site.product;
       }
     },
@@ -198,11 +203,14 @@ function validate(
       reason: `Parameter ${entry.nameArg + 1} of ${entry.export} is not a plain name.`,
     };
   }
-  const read = readOfParameter(fn, parameter, contextOf(definition.file));
+  const takesList = entry.reads === 'flags-object';
+  const read = readOfParameter(fn, parameter, takesList, contextOf(definition.file));
   if (read === undefined) {
     return {
       ok: false,
-      reason: `${entry.export} in ${definition.file} does not pass parameter ${entry.nameArg + 1} to a Flagsmith read or to another configured accessor.`,
+      reason: takesList
+        ? `${entry.export} in ${definition.file} does not pass parameter ${entry.nameArg + 1}, its list of names, to useFlags or to another flags-object accessor.`
+        : `${entry.export} in ${definition.file} does not pass parameter ${entry.nameArg + 1} to a Flagsmith read or to another configured accessor.`,
     };
   }
   const product: Product = entry.sdk ?? read;

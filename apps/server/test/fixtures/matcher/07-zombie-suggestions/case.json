@@ -1,0 +1,13 @@
+{
+  "description": "Zombie suggestions (architecture.md 5.4): the flag at the smallest case-insensitive Damerau-Levenshtein distance, if at most 2, ties alphabetical. A swap of two adjacent letters counts as one edit, two edits get a suggestion, three do not, and upper case does not count",
+  "flags": ["beta_a", "beta_b", "dark", "free_shipping_threshold", "recommendations_v2"],
+  "expect": {
+    "records": [
+      { "kind": "unresolved_name", "flag": "dakr", "file": "src/zombies.ts", "line": 3, "rule": "C1", "suggestion": "dark" },
+      { "kind": "unresolved_name", "flag": "recomendatons_v2", "file": "src/zombies.ts", "line": 4, "rule": "C1", "suggestion": "recommendations_v2" },
+      { "kind": "unresolved_name", "flag": "fre_shiping_treshold", "file": "src/zombies.ts", "line": 5, "rule": "C1" },
+      { "kind": "unresolved_name", "flag": "beta_c", "file": "src/zombies.ts", "line": 6, "rule": "C1", "suggestion": "beta_a" },
+      { "kind": "unresolved_name", "flag": "FREE_SHIPPING_THRESHOLDS", "file": "src/zombies.ts", "line": 7, "rule": "C2", "suggestion": "free_shipping_threshold" }
+    ]
+  }
+}
