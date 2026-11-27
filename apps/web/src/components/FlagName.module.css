@@ -1,6 +1,8 @@
 /*
  * An inline-block box, so the name has a real width: the board's clipping check compares
- * scrollWidth with clientWidth on it (ui-design.md 9), and both are 0 on an inline box.
+ * scrollWidth with clientWidth on it (ui-design.md 9), and both are 0 on an inline box. A link's
+ * underline does not reach into an inline-block, so the box takes its parent's decoration: a
+ * linked name stays underlined, and a plain one stays plain.
  */
 .name {
   display: inline-block;
@@ -8,5 +10,6 @@
   min-inline-size: 0;
   font-family: var(--font-mono);
   overflow-wrap: anywhere;
+  text-decoration: inherit;
   vertical-align: top;
 }
