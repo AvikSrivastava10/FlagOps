@@ -71,6 +71,7 @@ export const driftRows: readonly TimetableRow[] = [
             },
           ]}
         />
+        <p className={styles.caption}>Observation history</p>
         {detail(['serves more later since 2026-11-26 09:14', 'aligned before 2026-11-26 09:14'])}
       </div>
     ),
