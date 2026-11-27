@@ -7,7 +7,11 @@ import { promisify } from 'node:util';
 import { FlagOpsError } from '@flagops/shared';
 import type { Logger } from 'pino';
 import { Secret } from '../config/secret.js';
-import { createGitHubClient, type GitHubClient } from '../github/client.js';
+import {
+  createGitHubClient,
+  type GitHubClient,
+  type GitHubClientOptions,
+} from '../github/client.js';
 import {
   createCommit,
   createFirstCommit,
@@ -222,13 +226,33 @@ export async function readDemoShopFiles(root: string = demoShopRoot): Promise<De
   return files;
 }
 
+/**
+ * The demo shop's paths that git has not committed: edited, staged, deleted and untracked files,
+ * never ignored ones. Paths are relative to the repository's root, as git prints them.
+ */
+export async function listUncommittedPaths(root: string = demoShopRoot): Promise<string[]> {
+  const status = await promisify(execFile)(
+    'git',
+    ['status', '--porcelain', '--untracked-files=all', '--no-renames', '-z', '--', '.'],
+    { cwd: root, maxBuffer: 64 * 1024 * 1024 },
+  );
+  // Each entry is "XY <path>", where XY is the path's state in the index and the working tree.
+  return status.stdout
+    .split('\0')
+    .filter((entry) => entry !== '')
+    .map((entry) => entry.slice(3));
+}
+
+/** Every token permission the publish as a whole uses (architecture.md 7.1). */
+const tokenPermissions = 'Contents, Workflows and Pull requests, all read and write';
+
 const variables = {
-  GITHUB_TOKEN: 'GitHub token with Contents, Pull requests and Workflows write access to DEMO_REPO',
+  GITHUB_TOKEN: `GitHub token with ${tokenPermissions}, on DEMO_REPO`,
   DEMO_REPO: 'owner/name of the demo shop repository',
 } as const;
 
 /** The publish reads its own two variables; config/env.ts holds only the server's. */
-function readEnvironment(env: NodeJS.ProcessEnv): {
+export function readEnvironment(env: NodeJS.ProcessEnv): {
   token: string;
   repository: string;
   problems: string[];
@@ -249,23 +273,58 @@ function readEnvironment(env: NodeJS.ProcessEnv): {
   return { token, repository, problems };
 }
 
-async function main(): Promise<void> {
-  const logger = createLogger('info');
-  const { token, repository, problems } = readEnvironment(process.env);
+/**
+ * What an operator reads about a failure. A 403 names only what the refused request accepts, and
+ * a token fixed to match just that can fail a later write after the first commit, so a missing
+ * permission also names everything the publish needs.
+ */
+function failureMessage(error: FlagOpsError, repository: string): string {
+  if (error.code !== 'github_missing_permission') {
+    return error.message;
+  }
+  return `${error.message} The publish as a whole needs ${tokenPermissions}, on ${repository}. Grant all three before the next run, so that no later step stops it after a partial write.`;
+}
+
+/** What `main` reads from its surroundings. The CLI uses the defaults; tests replace them. */
+export type PublishCommandOptions = {
+  env?: NodeJS.ProcessEnv;
+  logger?: Logger;
+  /** The demo shop checkout to publish. */
+  root?: string;
+  /** Tests point the client at the fake GitHub and shorten its pacing. */
+  github?: Pick<GitHubClientOptions, 'baseUrl' | 'contentIntervalMs' | 'retryDelaysMs'>;
+};
+
+/**
+ * `pnpm demo:publish`. It refuses to publish while the demo shop has changes git has not
+ * committed, so only a clean, committed tree reaches the public DEMO_REPO. Returns the exit code.
+ */
+export async function main(options: PublishCommandOptions = {}): Promise<number> {
+  const logger = options.logger ?? createLogger('info');
+  const root = options.root ?? demoShopRoot;
+  const { token, repository, problems } = readEnvironment(options.env ?? process.env);
   if (problems.length > 0) {
     for (const problem of problems) {
       logger.error(problem);
     }
-    process.exitCode = 1;
-    return;
+    return 1;
   }
   try {
+    const uncommitted = await listUncommittedPaths(root);
+    if (uncommitted.length > 0) {
+      logger.error(
+        { paths: uncommitted },
+        `The demo shop has changes that git has not committed, and pnpm demo:publish publishes only a clean, committed tree. Commit or remove them first: ${uncommitted.join(', ')}`,
+      );
+      return 1;
+    }
     const client = createGitHubClient({
+      ...options.github,
       token: new Secret(token),
       repositories: [repository],
       logger,
     });
-    const result = await publishDemoShop(client, repository, await readDemoShopFiles(), logger);
+    const result = await publishDemoShop(client, repository, await readDemoShopFiles(root), logger);
     logger.info(
       {
         repository,
@@ -275,13 +334,14 @@ async function main(): Promise<void> {
       },
       'DEMO_REPO holds the pristine demo shop',
     );
+    return 0;
   } catch (error) {
     if (error instanceof FlagOpsError) {
-      logger.error({ code: error.code, details: error.details }, error.message);
+      logger.error({ code: error.code, details: error.details }, failureMessage(error, repository));
     } else {
       logger.error({ err: error }, 'pnpm demo:publish failed');
     }
-    process.exitCode = 1;
+    return 1;
   }
 }
 
@@ -299,5 +359,5 @@ function isEntryPoint(): boolean {
 }
 
 if (isEntryPoint()) {
-  await main();
+  process.exitCode = await main();
 }
