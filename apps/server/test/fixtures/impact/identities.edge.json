@@ -17,5 +17,9 @@
 {"identifier": "team", "identityId": 80003, "traits": {}},
 {"identifier": "alpha", "identityId": 80004, "traits": {}},
 {"identifier": "solo", "identityId": 80002, "traits": {}},
-{"identifier": "mv_holder", "identityId": 80005, "traits": {}}
+{"identifier": "mv_holder", "identityId": 80005, "traits": {}},
+{"identifier": "p3_01", "identityId": 82001, "traits": {"mod_negative": {"value": -3, "valueType": "int"}, "mod_three": {"value": 3, "valueType": "int"}, "mod_thirteen": {"value": 13, "valueType": "int"}, "mod_text": {"value": "3px", "valueType": "unicode"}, "mod_word": {"value": "abc", "valueType": "unicode"}, "split_zero": {"value": 0, "valueType": "int"}, "split_empty": {"value": "", "valueType": "unicode"}, "split_tiny": {"value": 1e-05, "valueType": "float"}, "split_plain": {"value": 1.25, "valueType": "float"}, "split_bool": {"value": true, "valueType": "bool"}, "regex_tiny": {"value": 1e-05, "valueType": "float"}, "regex_float": {"value": 2.5, "valueType": "float"}, "float_t": {"value": 1.5, "valueType": "float"}, "in_flag": {"value": true, "valueType": "bool"}, "in_off": {"value": false, "valueType": "bool"}, "in_level": {"value": 2, "valueType": "int"}, "a.b": {"value": "x", "valueType": "unicode"}, "1st": {"value": "x", "valueType": "unicode"}, "my-trait": {"value": "x", "valueType": "unicode"}, "t_x": {"value": "x", "valueType": "unicode"}}},
+{"identifier": "p3_02", "identityId": 82002, "traits": {"in_level": {"value": 1, "valueType": "int"}}},
+{"identifier": "007", "identityId": 82003, "traits": {}},
+{"identifier": "p3_modulo_by_zero", "identityId": 82004, "traits": {"mod_zero": {"value": 4, "valueType": "int"}}}
 ]

@@ -63,58 +63,146 @@
     },
     {
       "label": "edge-probes",
-      "identities": 19,
+      "identities": 23,
       "reference": "flagsmith-flag-engine 11.1.2",
       "c5": {
-        "results": 456,
+        "results": 1342,
         "mismatches": [
           "edge_01 probe_bool_modulo enabled,segment",
           "edge_01 probe_bool_regex enabled,segment",
+          "edge_01 probe_dependency_on_bool_regex enabled,segment",
+          "edge_01 probe_environment_name_numeric enabled,segment",
           "edge_01 probe_float_in enabled,segment",
           "edge_01 probe_in_empty_string enabled,segment",
           "edge_01 probe_int_vs_decimal_condition enabled,segment",
+          "edge_01 probe_is_not_set_without_property enabled,segment",
           "edge_01 probe_not_equal_non_numeric enabled,segment",
+          "edge_01 probe_split_value_letters enabled,segment",
           "edge_01 probe_whole_float_regex enabled,segment",
+          "edge_02 probe_environment_name_numeric enabled,segment",
+          "edge_02 probe_is_not_set_without_property enabled,segment",
           "edge_02 probe_not_equal_non_numeric enabled,segment",
           "edge_02 probe_regex_python_syntax enabled,segment",
           "edge_02 probe_split_on_trait enabled,segment",
+          "edge_02 probe_split_value_letters enabled,segment",
+          "edge_03 probe_environment_name_numeric enabled,segment",
           "edge_03 probe_float_in enabled,segment",
+          "edge_03 probe_is_not_set_without_property enabled,segment",
           "edge_03 probe_not_equal_non_numeric enabled,segment",
           "edge_03 probe_split_on_trait enabled,segment",
+          "edge_03 probe_split_value_letters enabled,segment",
           "edge_04 probe_bool_modulo enabled,segment",
           "edge_04 probe_bool_regex enabled,segment",
+          "edge_04 probe_dependency_on_bool_regex enabled,segment",
+          "edge_04 probe_environment_name_numeric enabled,segment",
           "edge_04 probe_int_vs_decimal_condition enabled,segment",
+          "edge_04 probe_is_not_set_without_property enabled,segment",
           "edge_04 probe_not_equal_non_numeric enabled,segment",
           "edge_04 probe_split_on_trait enabled,segment",
+          "edge_04 probe_split_value_letters enabled,segment",
           "edge_04 probe_whole_float_regex enabled,segment",
+          "edge_05 probe_environment_name_numeric enabled,segment",
           "edge_05 probe_float_in enabled,segment",
+          "edge_05 probe_is_not_set_without_property enabled,segment",
           "edge_05 probe_not_equal_non_numeric enabled,segment",
+          "edge_05 probe_split_value_letters enabled,segment",
           "edge_06 probe_bool_modulo enabled,segment",
           "edge_06 probe_bool_regex enabled,segment",
+          "edge_06 probe_dependency_on_bool_regex enabled,segment",
+          "edge_06 probe_environment_name_numeric enabled,segment",
           "edge_06 probe_float_in enabled,segment",
           "edge_06 probe_int_vs_decimal_condition enabled,segment",
+          "edge_06 probe_is_not_set_without_property enabled,segment",
           "edge_06 probe_not_equal_non_numeric enabled,segment",
           "edge_06 probe_split_on_trait enabled,segment",
+          "edge_06 probe_split_value_letters enabled,segment",
           "edge_06 probe_whole_float_regex enabled,segment",
+          "edge_07 probe_environment_name_numeric enabled,segment",
+          "edge_07 probe_is_not_set_without_property enabled,segment",
           "edge_07 probe_not_equal_non_numeric enabled,segment",
           "edge_07 probe_regex_python_syntax enabled,segment",
+          "edge_07 probe_split_value_letters enabled,segment",
           "edge_08 probe_bool_modulo enabled,segment",
           "edge_08 probe_bool_regex enabled,segment",
+          "edge_08 probe_dependency_on_bool_regex enabled,segment",
+          "edge_08 probe_environment_name_numeric enabled,segment",
+          "edge_08 probe_is_not_set_without_property enabled,segment",
           "edge_08 probe_not_equal_non_numeric enabled,segment",
           "edge_08 probe_split_on_trait enabled,segment",
+          "edge_08 probe_split_value_letters enabled,segment",
+          "edge_09 probe_environment_name_numeric enabled,segment",
+          "edge_09 probe_is_not_set_without_property enabled,segment",
           "edge_09 probe_split_on_trait enabled,segment",
+          "edge_09 probe_split_value_letters enabled,segment",
+          "edge_10 probe_environment_name_numeric enabled,segment",
+          "edge_10 probe_is_not_set_without_property enabled,segment",
+          "edge_10 probe_split_value_letters enabled,segment",
+          "edge_11 probe_environment_name_numeric enabled,segment",
+          "edge_11 probe_is_not_set_without_property enabled,segment",
           "edge_11 probe_split_on_trait enabled,segment",
+          "edge_11 probe_split_value_letters enabled,segment",
+          "edge_12 probe_environment_name_numeric enabled,segment",
           "edge_12 probe_in_json_numbers enabled,segment",
+          "edge_12 probe_is_not_set_without_property enabled,segment",
+          "edge_12 probe_split_value_letters enabled,segment",
+          "edge_13 probe_environment_name_numeric enabled,segment",
           "edge_13 probe_in_zero enabled,segment",
-          "edge_13 probe_split_on_trait enabled,segment"
+          "edge_13 probe_is_not_set_without_property enabled,segment",
+          "edge_13 probe_split_on_trait enabled,segment",
+          "edge_13 probe_split_value_letters enabled,segment",
+          "edge_14 probe_environment_name_numeric enabled,segment",
+          "edge_14 probe_is_not_set_without_property enabled,segment",
+          "edge_14 probe_split_value_letters enabled,segment",
+          "team,alpha probe_environment_name_numeric enabled,segment",
+          "team,alpha probe_is_not_set_without_property enabled,segment",
+          "team,alpha probe_split_value_letters enabled,segment",
+          "team probe_environment_name_numeric enabled,segment",
+          "team probe_is_not_set_without_property enabled,segment",
+          "team probe_split_value_letters enabled,segment",
+          "alpha probe_environment_name_numeric enabled,segment",
+          "alpha probe_is_not_set_without_property enabled,segment",
+          "alpha probe_split_value_letters enabled,segment",
+          "solo probe_environment_name_numeric enabled,segment",
+          "solo probe_is_not_set_without_property enabled,segment",
+          "solo probe_split_value_letters enabled,segment",
+          "mv_holder probe_environment_name_numeric enabled,segment",
+          "mv_holder probe_is_not_set_without_property enabled,segment",
+          "mv_holder probe_split_value_letters enabled,segment",
+          "p3_01 probe_environment_name_numeric enabled,segment",
+          "p3_01 probe_float_compared_with_text enabled,segment",
+          "p3_01 probe_in_json_float_literals enabled,segment",
+          "p3_01 probe_is_not_set_without_property enabled,segment",
+          "p3_01 probe_modulo_letters enabled,segment",
+          "p3_01 probe_modulo_negative_divisor enabled,segment",
+          "p3_01 probe_modulo_negative_trait enabled,segment",
+          "p3_01 probe_modulo_number_text enabled,segment",
+          "p3_01 probe_modulo_underscore enabled,segment",
+          "p3_01 probe_regex_exponent_float enabled,segment",
+          "p3_01 probe_split_boolean enabled,segment",
+          "p3_01 probe_split_empty_trait enabled,segment",
+          "p3_01 probe_split_exponent_float enabled,segment",
+          "p3_01 probe_split_value_letters enabled,segment",
+          "p3_01 probe_split_zero_trait enabled,segment",
+          "p3_01 probe_trait_path_digit_name enabled,segment",
+          "p3_01 probe_trait_path_dotted_name enabled,segment",
+          "p3_02 probe_environment_name_numeric enabled,segment",
+          "p3_02 probe_in_json_nan enabled,segment",
+          "p3_02 probe_is_not_set_without_property enabled,segment",
+          "p3_02 probe_split_value_letters enabled,segment",
+          "007 probe_environment_name_numeric enabled,segment",
+          "007 probe_identifier_numeric enabled,segment",
+          "007 probe_is_not_set_without_property enabled,segment",
+          "007 probe_split_value_letters enabled,segment"
         ],
-        "failures": []
+        "failures": [
+          "p3_modulo_by_zero ZeroDivisionError: float modulo by zero"
+        ]
       },
       "c1": {
-        "results": 456,
+        "results": 1403,
         "mismatches": 0
       },
-      "sha256": "eeecaf021eb979e6b59c43ff129246405f765dfc414d1a12dc422155293b459e"
+      "sha256": "b37305aa88799c35648285b66a3fce8c89f7103c9f7c98167a89f0f87a2aa305"
     }
   ],
   "edgeProbesApproximate": {
@@ -130,10 +218,34 @@
         "description": "REGEX on a boolean trait"
       }
     ],
+    "probe_dependency_on_bool_regex": [
+      {
+        "code": "R10",
+        "description": "reads probe_bool_regex through $.flags, which may differ"
+      }
+    ],
+    "probe_environment_name_numeric": [
+      {
+        "code": "R4",
+        "description": "condition on a context value that Python reads as a number"
+      }
+    ],
     "probe_equal_decimal_string": [
       {
         "code": "R5",
         "description": "integer trait compared with a value that is not an integer"
+      }
+    ],
+    "probe_flags_value_path": [
+      {
+        "code": "R16",
+        "description": "JSONPath property that the two engines may resolve differently"
+      }
+    ],
+    "probe_float_compared_with_text": [
+      {
+        "code": "R5",
+        "description": "float trait compared with a value that is not a number"
       }
     ],
     "probe_float_in": [
@@ -146,10 +258,34 @@
         "description": "float trait with whole values, such as 3.0, which JavaScript reads as integers"
       }
     ],
+    "probe_identifier_numeric": [
+      {
+        "code": "R4",
+        "description": "condition on a context value that Python reads as a number"
+      }
+    ],
     "probe_in_empty_string": [
       {
         "code": "R6",
         "description": "IN on a trait that is 0 or \"\""
+      }
+    ],
+    "probe_in_json_exponent": [
+      {
+        "code": "R6",
+        "description": "IN with a JSON list of floats, booleans, nulls or large integers"
+      }
+    ],
+    "probe_in_json_float_literals": [
+      {
+        "code": "R6",
+        "description": "IN with a JSON list of floats, booleans, nulls or large integers"
+      }
+    ],
+    "probe_in_json_nan": [
+      {
+        "code": "R6",
+        "description": "IN with a JSON list of floats, booleans, nulls or large integers"
       }
     ],
     "probe_in_json_numbers": [
@@ -178,10 +314,58 @@
         "description": "integer trait compared with a value that is not an integer"
       }
     ],
+    "probe_is_not_set_without_property": [
+      {
+        "code": "R16",
+        "description": "IS_NOT_SET without a property, which Python matches for everyone and Node never"
+      }
+    ],
+    "probe_modulo_by_zero": [
+      {
+        "code": "R15",
+        "description": "MODULO by zero, which fails Flagsmith's evaluation of identities with a number"
+      }
+    ],
+    "probe_modulo_letters": [
+      {
+        "code": "R5",
+        "description": "MODULO value that Python and JavaScript may read as different numbers"
+      }
+    ],
+    "probe_modulo_negative_divisor": [
+      {
+        "code": "R15",
+        "description": "MODULO with a negative number, where Python and JavaScript differ in sign"
+      }
+    ],
+    "probe_modulo_negative_trait": [
+      {
+        "code": "R15",
+        "description": "MODULO with a negative number, where Python and JavaScript differ in sign"
+      }
+    ],
+    "probe_modulo_number_text": [
+      {
+        "code": "R7",
+        "description": "MODULO on a text trait that starts with a number"
+      }
+    ],
+    "probe_modulo_underscore": [
+      {
+        "code": "R5",
+        "description": "MODULO value that Python and JavaScript may read as different numbers"
+      }
+    ],
     "probe_not_equal_non_numeric": [
       {
         "code": "R5",
         "description": "integer trait compared with a value that is not an integer"
+      }
+    ],
+    "probe_regex_exponent_float": [
+      {
+        "code": "R3",
+        "description": "REGEX on a float that Python and JavaScript write differently"
       }
     ],
     "probe_regex_python_syntax": [
@@ -190,10 +374,52 @@
         "description": "REGEX pattern that JavaScript rejects"
       }
     ],
+    "probe_split_boolean": [
+      {
+        "code": "R3",
+        "description": "percentage split on a boolean trait"
+      }
+    ],
+    "probe_split_empty_trait": [
+      {
+        "code": "R8",
+        "description": "percentage split on a trait that is 0 or \"\", which Node treats as missing"
+      }
+    ],
+    "probe_split_exponent_float": [
+      {
+        "code": "R3",
+        "description": "percentage split on a float that Python and JavaScript write differently"
+      }
+    ],
     "probe_split_on_trait": [
       {
         "code": "R8",
         "description": "percentage split on a plain trait name"
+      }
+    ],
+    "probe_split_value_letters": [
+      {
+        "code": "R5",
+        "description": "percentage split value that Python and JavaScript may read as different numbers"
+      }
+    ],
+    "probe_split_zero_trait": [
+      {
+        "code": "R8",
+        "description": "percentage split on a trait that is 0 or \"\", which Node treats as missing"
+      }
+    ],
+    "probe_trait_path_digit_name": [
+      {
+        "code": "R16",
+        "description": "JSONPath property that the two engines may resolve differently"
+      }
+    ],
+    "probe_trait_path_dotted_name": [
+      {
+        "code": "R16",
+        "description": "JSONPath property that the two engines may resolve differently"
       }
     ],
     "probe_whole_float_regex": [

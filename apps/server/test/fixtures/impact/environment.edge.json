@@ -1,7 +1,7 @@
 {
   "id": 2,
   "api_key": "EdgeProbeEnvKey",
-  "name": "Edge probes",
+  "name": "007",
   "use_identity_composite_key_for_hashing": true,
   "use_identity_overrides_in_local_eval": true,
   "hide_disabled_flags": null,
@@ -329,6 +329,508 @@
           },
           "mv_fs_value_uuid": "00020000-0000-4000-8000-00000000002f",
           "percentage_allocation": 0
+        }
+      ]
+    },
+    {
+      "django_id": 3000050,
+      "enabled": false,
+      "feature": {
+        "id": 400300,
+        "name": "probe_modulo_negative_trait",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-000000000037",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000052,
+      "enabled": false,
+      "feature": {
+        "id": 400301,
+        "name": "probe_modulo_negative_divisor",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-000000000039",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000054,
+      "enabled": false,
+      "feature": {
+        "id": 400302,
+        "name": "probe_modulo_by_zero",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-00000000003b",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000056,
+      "enabled": false,
+      "feature": {
+        "id": 400303,
+        "name": "probe_modulo_letters",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-00000000003d",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000058,
+      "enabled": false,
+      "feature": {
+        "id": 400304,
+        "name": "probe_modulo_underscore",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-00000000003f",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000060,
+      "enabled": false,
+      "feature": {
+        "id": 400305,
+        "name": "probe_modulo_number_text",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-000000000041",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000062,
+      "enabled": false,
+      "feature": {
+        "id": 400306,
+        "name": "probe_modulo_other_text",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-000000000043",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000064,
+      "enabled": false,
+      "feature": {
+        "id": 400307,
+        "name": "probe_modulo_integer",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-000000000045",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000066,
+      "enabled": false,
+      "feature": {
+        "id": 400308,
+        "name": "probe_split_zero_trait",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-000000000047",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000068,
+      "enabled": false,
+      "feature": {
+        "id": 400309,
+        "name": "probe_split_empty_trait",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-000000000049",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000070,
+      "enabled": false,
+      "feature": {
+        "id": 400310,
+        "name": "probe_split_value_letters",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-00000000004b",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000072,
+      "enabled": false,
+      "feature": {
+        "id": 400311,
+        "name": "probe_split_exponent_float",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-00000000004d",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000074,
+      "enabled": false,
+      "feature": {
+        "id": 400312,
+        "name": "probe_split_plain_float",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-00000000004f",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000076,
+      "enabled": false,
+      "feature": {
+        "id": 400313,
+        "name": "probe_split_boolean",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-000000000051",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000078,
+      "enabled": false,
+      "feature": {
+        "id": 400314,
+        "name": "probe_regex_exponent_float",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-000000000053",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000080,
+      "enabled": false,
+      "feature": {
+        "id": 400315,
+        "name": "probe_regex_plain_float",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-000000000055",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000082,
+      "enabled": false,
+      "feature": {
+        "id": 400316,
+        "name": "probe_float_compared_with_text",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-000000000057",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000084,
+      "enabled": false,
+      "feature": {
+        "id": 400317,
+        "name": "probe_identifier_numeric",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-000000000059",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000086,
+      "enabled": false,
+      "feature": {
+        "id": 400318,
+        "name": "probe_environment_name_numeric",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-00000000005b",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000088,
+      "enabled": false,
+      "feature": {
+        "id": 400319,
+        "name": "probe_in_boolean_words",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-00000000005d",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000090,
+      "enabled": false,
+      "feature": {
+        "id": 400320,
+        "name": "probe_in_boolean_one",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-00000000005f",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000092,
+      "enabled": false,
+      "feature": {
+        "id": 400321,
+        "name": "probe_in_boolean_false",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-000000000061",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000094,
+      "enabled": false,
+      "feature": {
+        "id": 400322,
+        "name": "probe_in_json_float_literals",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-000000000063",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000096,
+      "enabled": false,
+      "feature": {
+        "id": 400323,
+        "name": "probe_in_json_exponent",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-000000000065",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000098,
+      "enabled": false,
+      "feature": {
+        "id": 400324,
+        "name": "probe_in_json_nan",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-000000000067",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000100,
+      "enabled": false,
+      "feature": {
+        "id": 400325,
+        "name": "probe_is_not_set_without_property",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-000000000069",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000102,
+      "enabled": false,
+      "feature": {
+        "id": 400326,
+        "name": "probe_equal_without_property",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-00000000006b",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000104,
+      "enabled": false,
+      "feature": {
+        "id": 400327,
+        "name": "probe_trait_path_dotted_name",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-00000000006d",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000106,
+      "enabled": false,
+      "feature": {
+        "id": 400328,
+        "name": "probe_trait_path_digit_name",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-00000000006f",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000108,
+      "enabled": false,
+      "feature": {
+        "id": 400329,
+        "name": "probe_trait_path_hyphen",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-000000000071",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000110,
+      "enabled": false,
+      "feature": {
+        "id": 400330,
+        "name": "probe_trait_path_single_quoted",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-000000000073",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000112,
+      "enabled": false,
+      "feature": {
+        "id": 400331,
+        "name": "probe_trait_path_double_quoted",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-000000000075",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000114,
+      "enabled": false,
+      "feature": {
+        "id": 400332,
+        "name": "probe_flags_value_path",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-000000000077",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000116,
+      "enabled": false,
+      "feature": {
+        "id": 400333,
+        "name": "probe_verified_context_paths",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-000000000079",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000118,
+      "enabled": false,
+      "feature": {
+        "id": 400334,
+        "name": "probe_trait_named_constructor",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-00000000007b",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000120,
+      "enabled": false,
+      "feature": {
+        "id": 400335,
+        "name": "probe_dependency_on_bool_regex",
+        "type": "STANDARD"
+      },
+      "feature_segment": null,
+      "feature_state_value": null,
+      "featurestate_uuid": "00020000-0000-4000-8000-00000000007d",
+      "multivariate_feature_state_values": []
+    },
+    {
+      "django_id": 3000122,
+      "enabled": true,
+      "feature": {
+        "id": 400336,
+        "name": "probe_mv_unkeyed",
+        "type": "MULTIVARIATE"
+      },
+      "feature_segment": null,
+      "feature_state_value": "default",
+      "featurestate_uuid": "00020000-0000-4000-8000-000000000081",
+      "multivariate_feature_state_values": [
+        {
+          "id": 950003,
+          "multivariate_feature_option": {
+            "id": 701,
+            "key": null,
+            "value": "first"
+          },
+          "mv_fs_value_uuid": "00020000-0000-4000-8000-00000000007f",
+          "percentage_allocation": 30
+        },
+        {
+          "id": 950004,
+          "multivariate_feature_option": {
+            "id": 702,
+            "key": null,
+            "value": "second"
+          },
+          "mv_fs_value_uuid": "00020000-0000-4000-8000-000000000080",
+          "percentage_allocation": 30
         }
       ]
     }
@@ -1305,6 +1807,1451 @@
             },
             "feature_state_value": null,
             "featurestate_uuid": "00020000-0000-4000-8000-000000000016",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 600,
+        "name": "segment_modulo_negative_trait",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "MODULO",
+                    "property_": "mod_negative",
+                    "value": "2|1"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000051,
+            "enabled": true,
+            "feature": {
+              "id": 400300,
+              "name": "probe_modulo_negative_trait",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-000000000038",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 601,
+        "name": "segment_modulo_negative_divisor",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "MODULO",
+                    "property_": "mod_three",
+                    "value": "-2|1"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000053,
+            "enabled": true,
+            "feature": {
+              "id": 400301,
+              "name": "probe_modulo_negative_divisor",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-00000000003a",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 602,
+        "name": "segment_modulo_by_zero",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "MODULO",
+                    "property_": "mod_zero",
+                    "value": "0|0"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000055,
+            "enabled": true,
+            "feature": {
+              "id": 400302,
+              "name": "probe_modulo_by_zero",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-00000000003c",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 603,
+        "name": "segment_modulo_letters",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "MODULO",
+                    "property_": "mod_three",
+                    "value": "2abc|1"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000057,
+            "enabled": true,
+            "feature": {
+              "id": 400303,
+              "name": "probe_modulo_letters",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-00000000003e",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 604,
+        "name": "segment_modulo_underscore",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "MODULO",
+                    "property_": "mod_thirteen",
+                    "value": "1_0|3"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000059,
+            "enabled": true,
+            "feature": {
+              "id": 400304,
+              "name": "probe_modulo_underscore",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-000000000040",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 605,
+        "name": "segment_modulo_number_text",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "MODULO",
+                    "property_": "mod_text",
+                    "value": "2|1"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000061,
+            "enabled": true,
+            "feature": {
+              "id": 400305,
+              "name": "probe_modulo_number_text",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-000000000042",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 606,
+        "name": "segment_modulo_other_text",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "MODULO",
+                    "property_": "mod_word",
+                    "value": "2|1"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000063,
+            "enabled": true,
+            "feature": {
+              "id": 400306,
+              "name": "probe_modulo_other_text",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-000000000044",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 607,
+        "name": "segment_modulo_integer",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "MODULO",
+                    "property_": "mod_three",
+                    "value": "2|1"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000065,
+            "enabled": true,
+            "feature": {
+              "id": 400307,
+              "name": "probe_modulo_integer",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-000000000046",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 608,
+        "name": "segment_split_zero_trait",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "PERCENTAGE_SPLIT",
+                    "property_": "$.identity.traits.split_zero",
+                    "value": "100"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000067,
+            "enabled": true,
+            "feature": {
+              "id": 400308,
+              "name": "probe_split_zero_trait",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-000000000048",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 609,
+        "name": "segment_split_empty_trait",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "PERCENTAGE_SPLIT",
+                    "property_": "$.identity.traits.split_empty",
+                    "value": "100"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000069,
+            "enabled": true,
+            "feature": {
+              "id": 400309,
+              "name": "probe_split_empty_trait",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-00000000004a",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 610,
+        "name": "segment_split_value_letters",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "PERCENTAGE_SPLIT",
+                    "property_": null,
+                    "value": "100abc"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000071,
+            "enabled": true,
+            "feature": {
+              "id": 400310,
+              "name": "probe_split_value_letters",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-00000000004c",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 611,
+        "name": "segment_split_exponent_float",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "PERCENTAGE_SPLIT",
+                    "property_": "$.identity.traits.split_tiny",
+                    "value": "50"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000073,
+            "enabled": true,
+            "feature": {
+              "id": 400311,
+              "name": "probe_split_exponent_float",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-00000000004e",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 612,
+        "name": "segment_split_plain_float",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "PERCENTAGE_SPLIT",
+                    "property_": "$.identity.traits.split_plain",
+                    "value": "50"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000075,
+            "enabled": true,
+            "feature": {
+              "id": 400312,
+              "name": "probe_split_plain_float",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-000000000050",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 613,
+        "name": "segment_split_boolean",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "PERCENTAGE_SPLIT",
+                    "property_": "$.identity.traits.split_bool",
+                    "value": "50"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000077,
+            "enabled": true,
+            "feature": {
+              "id": 400313,
+              "name": "probe_split_boolean",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-000000000052",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 614,
+        "name": "segment_regex_exponent_float",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "REGEX",
+                    "property_": "regex_tiny",
+                    "value": "^1e"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000079,
+            "enabled": true,
+            "feature": {
+              "id": 400314,
+              "name": "probe_regex_exponent_float",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-000000000054",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 615,
+        "name": "segment_regex_plain_float",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "REGEX",
+                    "property_": "regex_float",
+                    "value": "^2\\.5$"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000081,
+            "enabled": true,
+            "feature": {
+              "id": 400315,
+              "name": "probe_regex_plain_float",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-000000000056",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 616,
+        "name": "segment_float_compared_with_text",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "NOT_EQUAL",
+                    "property_": "float_t",
+                    "value": "abc"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000083,
+            "enabled": true,
+            "feature": {
+              "id": 400316,
+              "name": "probe_float_compared_with_text",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-000000000058",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 617,
+        "name": "segment_identifier_numeric",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "EQUAL",
+                    "property_": "$.identity.identifier",
+                    "value": "7"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000085,
+            "enabled": true,
+            "feature": {
+              "id": 400317,
+              "name": "probe_identifier_numeric",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-00000000005a",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 618,
+        "name": "segment_environment_name_numeric",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "EQUAL",
+                    "property_": "$.environment.name",
+                    "value": "7"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000087,
+            "enabled": true,
+            "feature": {
+              "id": 400318,
+              "name": "probe_environment_name_numeric",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-00000000005c",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 619,
+        "name": "segment_in_boolean_words",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "IN",
+                    "property_": "in_flag",
+                    "value": "True,true"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000089,
+            "enabled": true,
+            "feature": {
+              "id": 400319,
+              "name": "probe_in_boolean_words",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-00000000005e",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 620,
+        "name": "segment_in_boolean_one",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "IN",
+                    "property_": "in_flag",
+                    "value": "1"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000091,
+            "enabled": true,
+            "feature": {
+              "id": 400320,
+              "name": "probe_in_boolean_one",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-000000000060",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 621,
+        "name": "segment_in_boolean_false",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "IN",
+                    "property_": "in_off",
+                    "value": "False,false,0"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000093,
+            "enabled": true,
+            "feature": {
+              "id": 400321,
+              "name": "probe_in_boolean_false",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-000000000062",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 622,
+        "name": "segment_in_json_float_literals",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "IN",
+                    "property_": "in_level",
+                    "value": "[1.0, 2]"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000095,
+            "enabled": true,
+            "feature": {
+              "id": 400322,
+              "name": "probe_in_json_float_literals",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-000000000064",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 623,
+        "name": "segment_in_json_exponent",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "IN",
+                    "property_": "in_level",
+                    "value": "[1e0]"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000097,
+            "enabled": true,
+            "feature": {
+              "id": 400323,
+              "name": "probe_in_json_exponent",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-000000000066",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 624,
+        "name": "segment_in_json_nan",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "IN",
+                    "property_": "in_level",
+                    "value": "[NaN, 1]"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000099,
+            "enabled": true,
+            "feature": {
+              "id": 400324,
+              "name": "probe_in_json_nan",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-000000000068",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 625,
+        "name": "segment_is_not_set_without_property",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "IS_NOT_SET",
+                    "property_": null,
+                    "value": null
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000101,
+            "enabled": true,
+            "feature": {
+              "id": 400325,
+              "name": "probe_is_not_set_without_property",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-00000000006a",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 626,
+        "name": "segment_equal_without_property",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "EQUAL",
+                    "property_": null,
+                    "value": ""
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000103,
+            "enabled": true,
+            "feature": {
+              "id": 400326,
+              "name": "probe_equal_without_property",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-00000000006c",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 627,
+        "name": "segment_trait_path_dotted_name",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "EQUAL",
+                    "property_": "$.identity.traits.a.b",
+                    "value": "x"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000105,
+            "enabled": true,
+            "feature": {
+              "id": 400327,
+              "name": "probe_trait_path_dotted_name",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-00000000006e",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 628,
+        "name": "segment_trait_path_digit_name",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "EQUAL",
+                    "property_": "$.identity.traits.1st",
+                    "value": "x"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000107,
+            "enabled": true,
+            "feature": {
+              "id": 400328,
+              "name": "probe_trait_path_digit_name",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-000000000070",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 629,
+        "name": "segment_trait_path_hyphen",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "EQUAL",
+                    "property_": "$.identity.traits.my-trait",
+                    "value": "x"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000109,
+            "enabled": true,
+            "feature": {
+              "id": 400329,
+              "name": "probe_trait_path_hyphen",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-000000000072",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 630,
+        "name": "segment_trait_path_single_quoted",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "EQUAL",
+                    "property_": "$.identity.traits['a.b']",
+                    "value": "x"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000111,
+            "enabled": true,
+            "feature": {
+              "id": 400330,
+              "name": "probe_trait_path_single_quoted",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-000000000074",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 631,
+        "name": "segment_trait_path_double_quoted",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "EQUAL",
+                    "property_": "$.identity.traits[\"t_x\"]",
+                    "value": "x"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000113,
+            "enabled": true,
+            "feature": {
+              "id": 400331,
+              "name": "probe_trait_path_double_quoted",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-000000000076",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 632,
+        "name": "segment_flags_value_path",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "EQUAL",
+                    "property_": "$.flags.probe_mv_identity_override.value",
+                    "value": "A"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000115,
+            "enabled": true,
+            "feature": {
+              "id": 400332,
+              "name": "probe_flags_value_path",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-000000000078",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 633,
+        "name": "segment_verified_context_paths",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ALL",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "EQUAL",
+                    "property_": "$.environment.key",
+                    "value": "EdgeProbeEnvKey"
+                  },
+                  {
+                    "operator": "EQUAL",
+                    "property_": "$.identity.key",
+                    "value": "EdgeProbeEnvKey_p3_01"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000117,
+            "enabled": true,
+            "feature": {
+              "id": 400333,
+              "name": "probe_verified_context_paths",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-00000000007a",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 634,
+        "name": "segment_trait_named_constructor",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "IS_SET",
+                    "property_": "constructor",
+                    "value": null
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000119,
+            "enabled": true,
+            "feature": {
+              "id": 400334,
+              "name": "probe_trait_named_constructor",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-00000000007c",
+            "multivariate_feature_state_values": []
+          }
+        ]
+      },
+      {
+        "id": 635,
+        "name": "segment_dependency_on_bool_regex",
+        "rules": [
+          {
+            "type": "ALL",
+            "rules": [
+              {
+                "type": "ANY",
+                "rules": [],
+                "conditions": [
+                  {
+                    "operator": "EQUAL",
+                    "property_": "$.flags[\"probe_bool_regex\"].enabled",
+                    "value": "true"
+                  }
+                ]
+              }
+            ],
+            "conditions": []
+          }
+        ],
+        "feature_states": [
+          {
+            "django_id": 3000121,
+            "enabled": true,
+            "feature": {
+              "id": 400335,
+              "name": "probe_dependency_on_bool_regex",
+              "type": "STANDARD"
+            },
+            "feature_segment": {
+              "priority": 0
+            },
+            "feature_state_value": null,
+            "featurestate_uuid": "00020000-0000-4000-8000-00000000007e",
             "multivariate_feature_state_values": []
           }
         ]

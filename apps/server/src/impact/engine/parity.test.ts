@@ -273,27 +273,75 @@ describe('C5 golden parity: the server profile against the Python engine', () =>
 
   it('differs on the edge probes only for flags the divergence lint marks', () => {
     const { run, golden, c5 } = resultOf('edge-probes');
+    const identifiers = run.map((evaluation) => evaluation.identifier);
+    const failed = Object.keys(golden.failures ?? {});
 
-    expect(run.map((evaluation) => evaluation.identifier)).toEqual(Object.keys(golden.results));
-    // 19 identities x 24 flags. The spike found the same 39 differences (REPORT section 4).
-    expect(c5.results).toBe(456);
-    expect(c5.mismatches).toHaveLength(39);
+    expect(Object.keys(golden.results)).toEqual(identifiers.filter((id) => !failed.includes(id)));
+    // Python raises on the MODULO by zero of this identity, so Flagsmith serves it nothing (R15).
+    expect(c5.failures).toEqual(['p3_modulo_by_zero ZeroDivisionError: float modulo by zero']);
+    expect(edgeLint.approximate['probe_modulo_by_zero']?.map((found) => found.code)).toEqual([
+      'R15',
+    ]);
+    // The other 22 identities x 61 flags.
+    expect(c5.results).toBe(22 * 61);
     const unmarked = c5.mismatches.filter(
       (mismatch) => !Object.hasOwn(edgeLint.approximate, mismatch.split(' ')[1] ?? ''),
     );
     expect(unmarked).toEqual([]);
+    // The spike's 24 probes and 19 identities come first. On them, the engines differ in the 39
+    // results the spike found (REPORT section 4).
+    const spikeFlags = new Set(
+      documentOf('edge-probes')
+        .feature_states.slice(0, 24)
+        .map((state) => state.feature.name),
+    );
+    const spikeIdentities = new Set(identifiers.slice(0, 19));
+    const onSpikeProbes = c5.mismatches.filter((mismatch) => {
+      const [identifier = '', flag = ''] = mismatch.split(' ');
+      return spikeIdentities.has(identifier) && spikeFlags.has(flag);
+    });
+    expect(onSpikeProbes).toHaveLength(39);
+    expect(c5.mismatches).toHaveLength(125);
+    // A split between options without a key, which C5 compares like every other flag.
+    const unkeyed = run.map((evaluation) => evaluation.flags['probe_mv_unkeyed']);
+    expect(new Set(unkeyed.map((outcome) => outcome?.variant))).toEqual(new Set([null, 'control']));
+    expect(unkeyed.every((outcome) => outcome?.fromSplit)).toBe(true);
+    // Every probe left out gives both engines the same results.
     expect(Object.keys(edgeLint.approximate)).toEqual([
       'probe_bool_modulo',
       'probe_bool_regex',
+      'probe_dependency_on_bool_regex',
+      'probe_environment_name_numeric',
       'probe_equal_decimal_string',
+      'probe_flags_value_path',
+      'probe_float_compared_with_text',
       'probe_float_in',
+      'probe_identifier_numeric',
       'probe_in_empty_string',
+      'probe_in_json_exponent',
+      'probe_in_json_float_literals',
+      'probe_in_json_nan',
       'probe_in_json_numbers',
       'probe_in_zero',
       'probe_int_vs_decimal_condition',
+      'probe_is_not_set_without_property',
+      'probe_modulo_by_zero',
+      'probe_modulo_letters',
+      'probe_modulo_negative_divisor',
+      'probe_modulo_negative_trait',
+      'probe_modulo_number_text',
+      'probe_modulo_underscore',
       'probe_not_equal_non_numeric',
+      'probe_regex_exponent_float',
       'probe_regex_python_syntax',
+      'probe_split_boolean',
+      'probe_split_empty_trait',
+      'probe_split_exponent_float',
       'probe_split_on_trait',
+      'probe_split_value_letters',
+      'probe_split_zero_trait',
+      'probe_trait_path_digit_name',
+      'probe_trait_path_dotted_name',
       'probe_whole_float_regex',
     ]);
   });

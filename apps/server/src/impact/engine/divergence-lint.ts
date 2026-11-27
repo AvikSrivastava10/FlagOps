@@ -5,8 +5,10 @@
  * flags "approximate" with the cause instead of presenting their numbers as exact.
  *
  * The codes R2 to R13 are those of the impact-preview spike report, section 4. R15 (MODULO
- * arithmetic) and R16 (condition properties) were found later, each by running the condition
- * through both engines. Where a check cannot tell, it warns.
+ * arithmetic) and R16 (condition properties) were found later, by running conditions through
+ * both engines. The edge probes of the parity suite hold a condition for every check, and the
+ * suite fails when the engines differ on a flag the lint does not mark. Where a check cannot
+ * tell, it warns.
  */
 import {
   anchorLikePythonMatch,
