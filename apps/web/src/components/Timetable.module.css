@@ -1,0 +1,131 @@
+/* The table scrolls inside its own box, so its header row and first column can stay sticky. */
+.scroller {
+  max-inline-size: 100%;
+  max-block-size: calc(100dvh - var(--space-8) * 2);
+  overflow: auto;
+  border-block: var(--rule-structural) solid var(--color-ink);
+}
+
+.table {
+  inline-size: max-content;
+  min-inline-size: 100%;
+  font: var(--weight-regular) var(--text-small) var(--font-ui);
+}
+
+.caption {
+  padding: var(--space-2) var(--space-3);
+  font: var(--weight-semibold) var(--text-small) var(--font-ui);
+  text-align: start;
+}
+
+.table th,
+.table td {
+  padding: var(--space-2) var(--space-3);
+  border-block-end: var(--rule-row) solid var(--color-ink-3);
+  text-align: start;
+  vertical-align: middle;
+}
+
+/* The font shorthand resets numeric variants, so cells set tabular figures again. */
+.table td {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Header row: sign type on paper-sunken (ink-3 text 5.61:1, ink 15.06:1). */
+.table thead th {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: var(--z-sticky);
+  border-block-end: var(--rule-structural) solid var(--color-ink);
+  background: var(--color-paper-sunken);
+  font: var(--weight-semibold) var(--text-small) var(--font-sign);
+  letter-spacing: var(--sign-tracking);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.corner {
+  inset-inline-start: 0;
+  z-index: calc(var(--z-sticky) + 1);
+}
+
+.environment {
+  min-inline-size: calc(var(--space-8) * 2);
+}
+
+.gutterHead {
+  min-inline-size: var(--space-6);
+}
+
+/* First column: sticky, on paper so the cells scroll under it. */
+.flagCell {
+  position: sticky;
+  inset-inline-start: 0;
+  z-index: calc(var(--z-base) + 1);
+  max-inline-size: calc(var(--station-min) + var(--space-8));
+  border-inline-end: var(--rule-structural) solid var(--color-ink);
+  background: var(--color-paper);
+  font-weight: var(--weight-regular);
+}
+
+.flagHead {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  min-inline-size: 0;
+}
+
+.toggle {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  inline-size: var(--target-min);
+  block-size: var(--target-min);
+  padding: 0;
+  border: var(--rule-structural) solid var(--color-ink);
+  border-radius: var(--radius-0);
+  background: transparent;
+  color: var(--color-ink);
+  cursor: pointer;
+}
+
+.flagLink {
+  min-inline-size: 0;
+  color: var(--color-ink);
+  font: var(--weight-regular) var(--text-small) var(--font-mono);
+}
+
+.cell {
+  white-space: nowrap;
+}
+
+.gutter {
+  padding-inline: var(--space-2);
+  background: var(--color-paper-sunken);
+  white-space: nowrap;
+}
+
+.target {
+  display: inline-flex;
+  min-block-size: var(--target-min);
+  align-items: center;
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+a.target:hover {
+  text-decoration: underline;
+}
+
+.status {
+  padding: var(--space-4) var(--space-3);
+  color: var(--color-ink-3);
+}
+
+.detailRow[hidden] {
+  display: none;
+}
+
+.detail {
+  background: var(--color-paper-raised);
+}

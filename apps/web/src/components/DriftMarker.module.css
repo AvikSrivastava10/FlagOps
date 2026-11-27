@@ -1,0 +1,19 @@
+.marker {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-ink);
+  font: var(--weight-semibold) var(--text-meta) var(--font-ui);
+  white-space: nowrap;
+}
+
+.glyph {
+  inline-size: var(--space-4);
+  block-size: var(--space-4);
+  color: var(--color-line);
+}
+
+/* The production case of this marker is a health condition, so it reads in amber ink (5.71:1). */
+.marker[data-drift='later_serves_more'] {
+  color: var(--color-amber-ink);
+}

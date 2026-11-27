@@ -1,0 +1,110 @@
+.blocks {
+  display: grid;
+  gap: var(--space-3);
+  min-inline-size: 0;
+}
+
+.caption {
+  font: var(--weight-semibold) var(--text-small) var(--font-ui);
+}
+
+.status {
+  color: var(--color-ink-3);
+  font: var(--weight-regular) var(--text-small) var(--font-ui);
+}
+
+.list {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.block {
+  display: grid;
+  gap: var(--space-2);
+  padding-block-start: var(--space-2);
+  border-block-start: var(--rule-structural) solid var(--color-ink);
+  list-style: none;
+}
+
+.flag {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  min-inline-size: 0;
+}
+
+.flagLink {
+  min-inline-size: 0;
+  color: var(--color-ink);
+  font: var(--weight-medium) var(--text-small) var(--font-mono);
+}
+
+.environments {
+  display: grid;
+  margin: 0;
+}
+
+.environment,
+.drift {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+  min-block-size: var(--target-primary);
+  padding: var(--space-1) 0;
+  border-block-end: var(--rule-row) solid var(--color-ink-3);
+}
+
+.environment dt {
+  font: var(--weight-semibold) var(--text-small) var(--font-sign);
+  letter-spacing: var(--sign-tracking);
+  text-transform: uppercase;
+}
+
+.environment dd {
+  min-inline-size: 0;
+}
+
+.cellLink {
+  color: var(--color-ink);
+}
+
+/* A marker as a text row, on paper-sunken like the timetable's gutters. */
+.drift {
+  padding-inline: var(--space-2);
+  background: var(--color-paper-sunken);
+  font: var(--weight-semibold) var(--text-small) var(--font-ui);
+}
+
+.drift dd {
+  display: grid;
+  gap: var(--space-1);
+  min-inline-size: 0;
+}
+
+.tip {
+  color: var(--color-ink-2);
+  font: var(--weight-regular) var(--text-meta) var(--font-ui);
+}
+
+.toggle {
+  justify-self: start;
+  min-block-size: var(--target-primary);
+  padding: var(--space-1) var(--space-3);
+  border: var(--rule-structural) solid var(--color-ink);
+  border-radius: var(--radius-0);
+  background: transparent;
+  color: var(--color-ink);
+  font: var(--weight-semibold) var(--text-small) var(--font-ui);
+  cursor: pointer;
+}
+
+.detail {
+  padding: var(--space-3);
+  background: var(--color-paper-raised);
+}
+
+.detail[hidden] {
+  display: none;
+}
