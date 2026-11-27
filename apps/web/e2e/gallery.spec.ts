@@ -1,7 +1,7 @@
 // The callbacks passed to evaluate() run in the browser, so this file needs the DOM types.
 /// <reference lib="dom" />
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 
 // The P2 gate (plan.md, P2 exit criteria 1 to 4): screenshots of every gallery section, axe, the
 // keyboard checks and reduced motion. Screenshots go to .agents/screenshots/P2/, which git ignores.
@@ -32,6 +32,36 @@ function shot(name: string): { path: string } {
   return { path: `${shots}/${test.info().project.name}-${name}.png` };
 }
 
+// Reviewers open these images and never open one over 2000px a side (brief 0i).
+const maxShotSide = 2000;
+
+/**
+ * Saves the element as one image, or, when it is taller than maxShotSide, as viewport-high
+ * segments from top to bottom (`<name>-01.png`, ...). The whole page is the `html` element.
+ */
+async function saveShots(page: Page, element: Locator, name: string) {
+  const box = await element.boundingBox();
+  if (box === null || box.height <= maxShotSide) {
+    await element.screenshot(shot(name));
+    return;
+  }
+  const step = page.viewportSize()?.height ?? maxShotSide;
+  const top = box.y + (await page.evaluate(() => window.scrollY));
+  for (let index = 0, offset = 0; offset < box.height; index++, offset += step) {
+    await page.evaluate((y) => {
+      window.scrollTo(0, y);
+    }, top + offset);
+    // Measured again: near the end of the page the scroll stops short of the segment's top.
+    const now = await element.boundingBox();
+    if (now === null) throw new Error(`${name} left the page while it was captured`);
+    const height = Math.min(step, box.height - offset);
+    await page.screenshot({
+      path: shot(`${name}-${String(index + 1).padStart(2, '0')}`).path,
+      clip: { x: now.x, y: now.y + offset, width: now.width, height },
+    });
+  }
+}
+
 test.describe('gallery', () => {
   test.beforeEach(async ({ page }) => {
     await openGallery(page);
@@ -42,9 +72,9 @@ test.describe('gallery', () => {
     expect(sections.length).toBeGreaterThanOrEqual(24);
     for (const section of sections) {
       const id = await section.getAttribute('data-gallery-section');
-      await section.screenshot(shot(`section-${id ?? 'unknown'}`));
+      await saveShots(page, section, `section-${id ?? 'unknown'}`);
     }
-    await page.screenshot({ ...shot('full'), fullPage: true });
+    await saveShots(page, page.locator('html'), 'page');
 
     const pageOverflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
@@ -270,6 +300,6 @@ test.describe('gallery with reduced motion', () => {
     await page.mouse.move(0, 0);
     await flap.screenshot(shot('reduced-motion-flap'));
     await arrival.screenshot(shot('reduced-motion-arrival'));
-    await page.screenshot({ ...shot('reduced-motion-full'), fullPage: true });
+    await saveShots(page, page.locator('html'), 'reduced-motion-page');
   });
 });
