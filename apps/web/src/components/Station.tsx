@@ -18,6 +18,8 @@ export type StationProps = {
   zone?: FlagsmithZone | null | undefined;
   /** Props of the station's roving items: item 0 is the plate, the flags follow. */
   roving?: ((item: number) => RovingItemProps) | undefined;
+  /** The IDs of flags that have just moved here after a sync; the line diagram knows them. */
+  arrived?: ReadonlySet<string> | undefined;
 };
 
 /**
@@ -32,6 +34,7 @@ export function Station({
   layout = 'column',
   zone = null,
   roving,
+  arrived,
 }: StationProps) {
   const plateId = useId();
   const count = flags.length;
@@ -68,7 +71,12 @@ export function Station({
       ) : (
         <ul className={styles.list}>
           {flags.map((flag, index) => (
-            <FlagEntry key={flag.id} {...flag} roving={roving?.(index + 1)} />
+            <FlagEntry
+              key={flag.id}
+              {...flag}
+              roving={roving?.(index + 1)}
+              arrived={arrived?.has(flag.id)}
+            />
           ))}
         </ul>
       )}

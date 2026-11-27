@@ -22,25 +22,29 @@ export type FlagEntryData = EvidenceCardData & {
   health: readonly HealthId[];
   /** The flag page. */
   href: string;
-  /** A new value when the flag has just moved to this station after a sync. */
-  changeKey?: number | null | undefined;
 };
 
 export type FlagEntryProps = FlagEntryData & {
   /** Set by the line diagram or the strip map, which make the board one tab stop. */
   roving?: RovingItemProps | undefined;
+  /**
+   * Set by the line diagram or the strip map when the entry mounts because the flag has just
+   * moved to this station after a sync. Read when the entry mounts.
+   */
+  arrived?: boolean | undefined;
 };
 
 /**
  * Compact entry inside a station (ui-design.md 5): route bullet, flag name and notice glyphs. The
  * name wraps after underscores, so it never clips. Hover or focus highlights the bullet and opens
- * the evidence card, which describes the entry; Enter or a click opens the flag page.
+ * the evidence card, which describes the entry; Enter or a click opens the flag page. An entry that
+ * arrived after a sync slides in once, or shows the static "Changed" marker under reduced motion.
  */
-export function FlagEntry({ roving, changeKey = null, ...flag }: FlagEntryProps) {
+export function FlagEntry({ roving, arrived = false, ...flag }: FlagEntryProps) {
   const cardId = useId();
   const [anchor, setAnchor] = useState<HTMLAnchorElement | null>(null);
   const { open, triggerProps, contentProps } = useHoverFocus();
-  const { animate, showMarker } = useChangeMarker(changeKey);
+  const { animate, showMarker } = useChangeMarker(null, arrived);
   return (
     <li className={styles.entry}>
       <Link
@@ -59,8 +63,8 @@ export function FlagEntry({ roving, changeKey = null, ...flag }: FlagEntryProps)
           triggerProps.onFocus();
         }}
       >
-        {/* Keyed on the change, so each arrival at a new station plays once. */}
-        <span key={changeKey ?? 'initial'} className={cx(styles.body, animate && styles.arrived)}>
+        {/* A moved flag mounts a new entry at its new station, so the slide plays once. */}
+        <span className={cx(styles.body, animate && styles.arrived)}>
           <RouteBullet type={flag.type} highlighted={open} />
           <FlagName name={flag.name} className={styles.name} />
           {flag.health.length > 0 && (

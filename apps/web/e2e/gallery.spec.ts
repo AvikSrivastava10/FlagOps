@@ -285,9 +285,15 @@ test.describe('gallery with reduced motion', () => {
     await flap.getByRole('button', { name: 'Change status' }).click();
     await expect(flap.locator('[data-flipping]')).toHaveCount(0);
     await expect(flap.locator('[data-changed-marker]')).toBeVisible();
+    // The sync moves dark_mode from Rolling out to Released; only the moved flag is marked.
     const arrival = page.locator('[data-gallery-state="Arrival after a sync"]');
     await arrival.getByRole('button', { name: 'Simulate a sync' }).click();
-    await expect(arrival.locator('[data-changed-marker]')).toBeVisible();
+    const moved = arrival.locator('section[data-stage="released"] [data-flag-entry]', {
+      hasText: 'dark_mode',
+    });
+    await expect(moved.locator('[data-changed-marker]')).toBeVisible();
+    await expect(arrival.locator('[data-changed-marker]')).toHaveCount(1);
+    await moved.scrollIntoViewIfNeeded();
     const moving = await page.evaluate(
       () =>
         document.getAnimations().filter((animation) => {
@@ -299,7 +305,7 @@ test.describe('gallery with reduced motion', () => {
     // Park the pointer, so no hover card covers what the screenshots show.
     await page.mouse.move(0, 0);
     await flap.screenshot(shot('reduced-motion-flap'));
-    await arrival.screenshot(shot('reduced-motion-arrival'));
+    await saveShots(page, arrival, 'reduced-motion-arrival');
     await saveShots(page, page.locator('html'), 'reduced-motion-page');
   });
 });

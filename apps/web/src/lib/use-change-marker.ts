@@ -16,30 +16,34 @@ export type ChangeDisplay = {
 
 /**
  * Decides how an item shows that it changed (ui-design.md 3.4: motion only marks real changes).
- * `changeKey` takes a new value on every change. The key an item mounts with counts as already
- * seen, so returning to a screen animates nothing. With motion the item animates; with reduced
- * motion it shows the static marker for 10 seconds instead, counted from the latest change.
+ * `changeKey` takes a new value on every change while the item stays mounted. The key an item
+ * mounts with counts as seen, so returning to a screen animates nothing. `changedOnMount` counts
+ * the mount itself as a change instead, for an item that mounts because it changed, such as a flag
+ * arriving at its new station; it is read when the item mounts. With motion the item animates;
+ * with reduced motion it shows the static marker for 10 seconds instead, counted from the latest
+ * change.
  */
-export function useChangeMarker(changeKey: number | null): ChangeDisplay {
+export function useChangeMarker(changeKey: number | null, changedOnMount = false): ChangeDisplay {
   const reduced = useReducedMotion();
   const [seenKey, setSeenKey] = useState(changeKey);
-  const [changed, setChanged] = useState(false);
-  const [markedKey, setMarkedKey] = useState<number | null>(null);
+  const [changed, setChanged] = useState(changedOnMount);
+  // Counts the changes since the marker last cleared; 0 while no marker shows.
+  const [marked, setMarked] = useState(changedOnMount ? 1 : 0);
   if (changeKey !== seenKey) {
     setSeenKey(changeKey);
     setChanged(changeKey !== null);
-    setMarkedKey(changeKey);
+    setMarked(changeKey === null ? 0 : marked + 1);
   }
 
   useEffect(() => {
-    if (markedKey === null) return;
+    if (marked === 0) return;
     const timer = window.setTimeout(() => {
-      setMarkedKey(null);
+      setMarked(0);
     }, changedMarkerMs);
     return () => {
       window.clearTimeout(timer);
     };
-  }, [markedKey]);
+  }, [marked]);
 
-  return { animate: changed && !reduced, showMarker: reduced && markedKey !== null };
+  return { animate: changed && !reduced, showMarker: reduced && marked !== 0 };
 }

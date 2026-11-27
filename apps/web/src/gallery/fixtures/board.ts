@@ -65,6 +65,35 @@ export const darkMode = flag({
   ],
 });
 
+const freeShipping = flag({
+  name: 'free_shipping_threshold',
+  type: 'release',
+  health: [],
+  zone: 'live',
+  evidence: [
+    ['ON for everyone in ', { text: '3 of 3 environments', ...environments }, ' since today'],
+    ['0 segment overrides'],
+    [{ text: '2 references', ...scan }, ' in 1 repository'],
+  ],
+});
+
+/** dark_mode after its promotion to Production: ON for everyone, so it moves to Released. */
+const darkModeReleased: FlagEntryData = {
+  ...darkMode,
+  health: [],
+  evidence: [
+    ['ON for everyone in ', { text: '3 of 3 environments', ...environments }, ' since today'],
+    [{ text: '2 references', ...scan }],
+  ],
+  history: [...darkMode.history, { stage: 'released', since: '2026-11-28' }],
+};
+
+/** The board before and after a sync that moves dark_mode from Rolling out to Released. */
+export const syncBoards: readonly [before: BoardStations, after: BoardStations] = [
+  { rolling_out: [darkMode], released: [freeShipping] },
+  { released: [freeShipping, darkModeReleased] },
+];
+
 export const boardStations: BoardStations = {
   new: [
     flag({
@@ -105,19 +134,7 @@ export const boardStations: BoardStations = {
     }),
   ],
   rolling_out: [darkMode],
-  released: [
-    flag({
-      name: 'free_shipping_threshold',
-      type: 'release',
-      health: [],
-      zone: 'live',
-      evidence: [
-        ['ON for everyone in ', { text: '3 of 3 environments', ...environments }, ' since today'],
-        ['0 segment overrides'],
-        [{ text: '2 references', ...scan }, ' in 1 repository'],
-      ],
-    }),
-  ],
+  released: [freeShipping],
   permanent: [
     flag({
       name: 'payments_kill_switch',

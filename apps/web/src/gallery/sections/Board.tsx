@@ -5,20 +5,49 @@ import { LineDiagram } from '../../components/LineDiagram';
 import { SidePanel } from '../../components/SidePanel';
 import { Station } from '../../components/Station';
 import { StripMap } from '../../components/StripMap';
+import { narrowQuery, useMediaQuery } from '../../lib/use-media-query';
 import {
   boardStations,
   crowdedStation,
   darkMode,
   newCheckout,
   notPlaced,
+  syncBoards,
   unknownNames,
 } from '../fixtures/board';
 import { Section, State } from '../Specimen';
 import styles from '../gallery.module.css';
 
+/**
+ * A sync that moves dark_mode between Rolling out and Released, on the layout the board uses at
+ * this width: the strip map below 720px, the line diagram from 720px.
+ */
+function ArrivalBoard() {
+  const narrow = useMediaQuery(narrowQuery);
+  const [synced, setSynced] = useState(false);
+  const stations = syncBoards[synced ? 1 : 0];
+  const label = 'Lifecycle line, arrival after a sync';
+  return (
+    <div className={styles.stack}>
+      {narrow ? (
+        <StripMap stations={stations} label={label} />
+      ) : (
+        <LineDiagram stations={stations} label={label} />
+      )}
+      <Button
+        variant="secondary"
+        onClick={() => {
+          setSynced(!synced);
+        }}
+      >
+        Simulate a sync
+      </Button>
+    </div>
+  );
+}
+
 /** Flag entries, stations, the line diagram, the strip map and the side panels (ui-design.md 6.3). */
 export function Board() {
-  const [arrival, setArrival] = useState<number | null>(null);
   return (
     <>
       <Section
@@ -34,21 +63,6 @@ export function Board() {
               <FlagEntry key={flag.id} {...flag} />
             ))}
           </ul>
-        </State>
-        <State label="Arrival after a sync">
-          <div className={styles.stack}>
-            <ul>
-              <FlagEntry {...darkMode} changeKey={arrival} />
-            </ul>
-            <Button
-              variant="secondary"
-              onClick={() => {
-                setArrival((arrival ?? 0) + 1);
-              }}
-            >
-              Simulate a sync
-            </Button>
-          </div>
         </State>
       </Section>
       <Section
@@ -72,13 +86,16 @@ export function Board() {
       <Section
         id="line-diagram"
         title="Line diagram"
-        description="Zone bands, the line with its Abandoned spur and Permanent loop, and every station. The region scrolls horizontally; the page does not."
+        description="Zone bands, the line with its Abandoned spur and Permanent loop, and every station. The region scrolls horizontally; the page does not. A flag that moves station after a sync slides in."
       >
         <State label="Demo project" wide>
           <LineDiagram stations={boardStations} />
         </State>
         <State label="Loading" wide>
           <LineDiagram stations={{}} loading label="Lifecycle line, loading" />
+        </State>
+        <State label="Arrival after a sync" wide>
+          <ArrivalBoard />
         </State>
       </Section>
       <Section

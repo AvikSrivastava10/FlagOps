@@ -10,6 +10,7 @@ import {
   spurGridColumns,
 } from './LineTrack';
 import { Station } from './Station';
+import { useArrivals } from './use-arrivals';
 import { ZoneBand, type FlagsmithZone } from './ZoneBand';
 import styles from './LineDiagram.module.css';
 
@@ -48,7 +49,7 @@ function placement(stage: StationStage): CSSProperties {
  * Abandoned spur and the Permanent loop, and the stations, which carry all content and semantics.
  * The region scrolls horizontally when the stations do not fit (D-056). The board is one tab
  * stop: Left and Right move between stations, Up and Down between flags, Home and End go to the
- * first and last station.
+ * first and last station. A flag that moves station after a sync slides into its new station.
  */
 export function LineDiagram({
   stations,
@@ -58,6 +59,7 @@ export function LineDiagram({
   const flagsAt = (stage: StationStage) => stations[stage] ?? [];
   const sizes = stationOrder.map((stage) => 1 + (loading ? 0 : flagsAt(stage).length));
   const { itemProps, onKeyDown } = useRovingFocus(sizes, moveInStations);
+  const arrived = useArrivals(stations);
   return (
     <div
       role="region"
@@ -96,6 +98,7 @@ export function LineDiagram({
               flags={flagsAt(stage)}
               loading={loading}
               roving={(item) => itemProps(group, item)}
+              arrived={arrived}
             />
           </div>
         ))}

@@ -2,6 +2,7 @@ import { cx } from '../lib/class-names';
 import { moveInStations, useRovingFocus } from '../lib/roving-focus';
 import { stationOrder, stationZones, type BoardStations, type StationStage } from './board-layout';
 import { Station } from './Station';
+import { useArrivals } from './use-arrivals';
 import styles from './StripMap.module.css';
 
 export type StripMapProps = {
@@ -19,12 +20,14 @@ const sideLines: Readonly<Partial<Record<StationStage, string>>> = {
 /**
  * The line for narrow screens, like the strip maps inside train cars (ui-design.md 5): stations
  * from top to bottom with their flags indented under each, Permanent and Abandoned as side
- * sections after Released, and the Archived terminus at the end. Keys work as on the line diagram.
+ * sections after Released, and the Archived terminus at the end. Keys and arrivals work as on the
+ * line diagram.
  */
 export function StripMap({ stations, loading = false, label = 'Lifecycle line' }: StripMapProps) {
   const flagsAt = (stage: StationStage) => stations[stage] ?? [];
   const sizes = stationOrder.map((stage) => 1 + (loading ? 0 : flagsAt(stage).length));
   const { itemProps, onKeyDown } = useRovingFocus(sizes, moveInStations);
+  const arrived = useArrivals(stations);
   return (
     <div
       role="region"
@@ -52,6 +55,7 @@ export function StripMap({ stations, loading = false, label = 'Lifecycle line' }
               layout="strip"
               zone={stationZones[stage]}
               roving={(item) => itemProps(group, item)}
+              arrived={arrived}
             />
           </div>
         );
