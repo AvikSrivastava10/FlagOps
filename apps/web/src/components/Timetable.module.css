@@ -54,6 +54,16 @@
   min-inline-size: calc(var(--space-8) * 2);
 }
 
+/*
+ * Gutters shrink to their marker, so the spare width of a wide table goes to the environments
+ * and the gutters stay narrow (ui-design.md 6.5).
+ */
+.gutterHead,
+.gutter {
+  inline-size: 1px;
+  white-space: nowrap;
+}
+
 .gutterHead {
   min-inline-size: var(--space-6);
 }
@@ -103,7 +113,6 @@
 .gutter {
   padding-inline: var(--space-2);
   background: var(--color-paper-sunken);
-  white-space: nowrap;
 }
 
 .target {

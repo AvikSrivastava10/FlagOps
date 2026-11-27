@@ -31,7 +31,10 @@ export function driftText(category: DriftCategory): string {
   return `${marker.visible}${marker.hidden}`;
 }
 
-/** A drift marker: an arrow where it has one, and always text (ui-design.md 8). */
+/**
+ * A drift marker: an arrow where it has one, and always text (ui-design.md 8). Aligned shows
+ * nothing, but a focused aligned marker shows its word, so focus never rings empty space.
+ */
 export function DriftMarker({ category }: { category: DriftCategory }) {
   const marker = markers[category];
   return (
@@ -39,6 +42,11 @@ export function DriftMarker({ category }: { category: DriftCategory }) {
       {marker.glyph !== undefined && <Icon name={marker.glyph} className={styles.glyph} />}
       {marker.visible !== '' && <span>{marker.visible}</span>}
       {marker.hidden !== '' && <span className="visually-hidden">{marker.hidden}</span>}
+      {category === 'aligned' && (
+        <span className={styles.focusLabel} aria-hidden="true" data-focus-label="">
+          {marker.hidden}
+        </span>
+      )}
     </span>
   );
 }

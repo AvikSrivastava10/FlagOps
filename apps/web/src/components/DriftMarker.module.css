@@ -17,3 +17,17 @@
 .marker[data-drift='later_serves_more'] {
   color: var(--color-amber-ink);
 }
+
+/*
+ * Aligned is silent (ui-design.md 6.5), but its gutter is a roving item. While it has focus it
+ * shows its word, ink-3 on paper-sunken (5.61:1), inside the ring. Hidden, the word keeps its
+ * room, so focus never moves a column. Assistive technology reads the visually hidden copy.
+ */
+.focusLabel {
+  color: var(--color-ink-3);
+  visibility: hidden;
+}
+
+:focus-visible > .marker > .focusLabel {
+  visibility: visible;
+}

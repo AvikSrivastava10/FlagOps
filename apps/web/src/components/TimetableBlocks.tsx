@@ -108,6 +108,8 @@ function Block({
         }}
       >
         {open ? 'Hide the comparison' : 'Show the comparison'}
+        {/* Every block has this button, so its name says which flag it is for. */}
+        <span className="visually-hidden"> for {row.flag.name}</span>
       </button>
       <div id={detailId} className={styles.detail} hidden={!open}>
         {row.detail}
