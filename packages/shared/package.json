@@ -1,0 +1,21 @@
+{
+  "name": "@flagops/shared",
+  "version": "0.0.0",
+  "private": true,
+  "description": "API contract and domain vocabulary shared by the FlagOps server and web app",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "development": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "zod": "4.6.7"
+  }
+}

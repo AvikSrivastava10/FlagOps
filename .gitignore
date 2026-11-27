@@ -27,6 +27,8 @@ playwright-report/
 *.sqlite
 *.sqlite3
 *.db
+# FlagOps data directory (FLAGOPS_DATA_DIR): the database with its -wal and -shm files, scan trees
+/data/
 
 # Logs
 *.log

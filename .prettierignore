@@ -1,0 +1,13 @@
+/.agents
+/docs
+/examples
+/data
+/.worktrees
+dist
+coverage
+test-results
+playwright-report
+pnpm-lock.yaml
+apps/server/src/flagsmith/openapi/flagsmith-2.295.2.json
+apps/server/src/flagsmith/openapi/schema.d.ts
+apps/server/test/fixtures
