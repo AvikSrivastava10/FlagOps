@@ -1,0 +1,74 @@
+/* Square, at least 32px high: a primary control (ui-design.md 3.3). */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-block-size: var(--target-primary);
+  padding: var(--space-1) var(--space-4);
+  border: var(--rule-structural) solid var(--color-ink);
+  border-radius: var(--radius-0);
+  font: var(--weight-semibold) var(--text-body) var(--font-ui);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-fast) var(--ease-standard),
+    color var(--dur-fast) var(--ease-standard);
+}
+
+/* White on ink, 18.42:1; hover inverts to ink on paper. */
+.primary {
+  background: var(--color-ink);
+  color: var(--color-signage-ink);
+}
+
+.primary:hover {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+.secondary {
+  background: transparent;
+  color: var(--color-ink);
+}
+
+.secondary:hover {
+  background: var(--color-ink);
+  color: var(--color-signage-ink);
+}
+
+/* White on danger red, 6.95:1. */
+.danger {
+  border-color: var(--color-danger);
+  background: var(--color-danger);
+  color: var(--color-signage-ink);
+}
+
+.danger:hover {
+  background: var(--color-paper);
+  color: var(--color-danger);
+}
+
+/* Disabled: ink-3 text on paper, 6.08:1, with the reason beside it. */
+.disabled,
+.disabled:hover {
+  border-color: var(--color-ink-3);
+  background: transparent;
+  color: var(--color-ink-3);
+  cursor: not-allowed;
+}
+
+.disabledGroup {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+  max-inline-size: 100%;
+}
+
+.reason {
+  min-inline-size: 0;
+  color: var(--color-ink-2);
+  font: var(--weight-regular) var(--text-small) var(--font-ui);
+}

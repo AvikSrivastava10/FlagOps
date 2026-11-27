@@ -1,0 +1,138 @@
+/* White on signage black, 18.42:1; secondary text 10.70:1 (ui-design.md 3.1). */
+.bar {
+  position: relative;
+  background: var(--color-signage);
+  color: var(--color-signage-ink);
+}
+
+.inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-5);
+  max-inline-size: var(--content-max);
+  margin-inline: auto;
+  padding: var(--space-3) var(--grid-margin);
+}
+
+.skip {
+  position: absolute;
+  inset-block-start: var(--space-2);
+  inset-inline-start: var(--space-2);
+  z-index: var(--z-toast);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font: var(--weight-semibold) var(--text-small) var(--font-ui);
+  translate: 0 calc(-100% - var(--space-4));
+}
+
+.skip:focus-visible {
+  translate: none;
+}
+
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-signage-ink);
+  font: var(--weight-bold) var(--text-h3) var(--font-sign);
+  letter-spacing: var(--sign-tracking);
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.mark {
+  inline-size: var(--space-5);
+  block-size: var(--space-5);
+}
+
+.project {
+  color: var(--color-signage-ink-2);
+  font: var(--weight-medium) var(--text-small) var(--font-ui);
+}
+
+.nav {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+}
+
+.plates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  list-style: none;
+}
+
+/* Sign plates: capitals in the sign face. The current plate turns to paper with ink text. */
+.plate {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--target-primary);
+  padding: var(--space-1) var(--space-3);
+  border: var(--rule-structural) solid var(--color-signage-ink-2);
+  color: var(--color-signage-ink);
+  font: var(--weight-semibold) var(--text-small) var(--font-sign);
+  letter-spacing: var(--sign-tracking);
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.plate:hover {
+  border-color: var(--color-signage-ink);
+}
+
+.plate[aria-current='page'] {
+  border-color: var(--color-paper);
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  font: var(--weight-regular) var(--text-small) var(--font-ui);
+  font-variant-numeric: tabular-nums;
+}
+
+.sync {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-signage-ink-2);
+}
+
+.syncGlyph {
+  inline-size: var(--space-4);
+  block-size: var(--space-4);
+}
+
+/* Ink on notice yellow, 12.09:1: a failed sync stands out on the band. */
+.syncFailed {
+  padding: 0 var(--space-2);
+  background: var(--color-notice);
+  color: var(--color-ink);
+  font-weight: var(--weight-semibold);
+}
+
+.user {
+  color: var(--color-signage-ink-2);
+}
+
+.signOut {
+  min-block-size: var(--target-primary);
+  padding: var(--space-1) var(--space-3);
+  border: var(--rule-structural) solid var(--color-signage-ink);
+  border-radius: var(--radius-0);
+  background: transparent;
+  color: var(--color-signage-ink);
+  font: var(--weight-semibold) var(--text-small) var(--font-ui);
+  cursor: pointer;
+}
+
+.signOut:hover {
+  background: var(--color-signage-ink);
+  color: var(--color-ink);
+}

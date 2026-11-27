@@ -1,0 +1,77 @@
+.field {
+  display: grid;
+  gap: var(--space-1);
+  min-inline-size: 0;
+}
+
+.label {
+  font: var(--weight-semibold) var(--text-small) var(--font-ui);
+}
+
+.hint {
+  color: var(--color-ink-3);
+  font: var(--weight-regular) var(--text-small) var(--font-ui);
+}
+
+/* Danger text on paper, 6.16:1. */
+.error {
+  color: var(--color-danger);
+  font: var(--weight-semibold) var(--text-small) var(--font-ui);
+}
+
+.control {
+  position: relative;
+  display: block;
+  min-inline-size: 0;
+}
+
+/* 2px ink border, paper-raised fill (ui-design.md 5). The ring comes from base.css. */
+.input {
+  display: block;
+  inline-size: 100%;
+  min-block-size: var(--target-primary);
+  padding: var(--space-1) var(--space-3);
+  border: var(--rule-structural) solid var(--color-ink);
+  border-radius: var(--radius-0);
+  background: var(--color-paper-raised);
+  color: var(--color-ink);
+  appearance: none;
+}
+
+.input::placeholder {
+  color: var(--color-ink-3);
+}
+
+.input[aria-invalid='true'] {
+  border-color: var(--color-danger);
+  border-inline-start-width: var(--space-2);
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+.withIcon .input {
+  padding-inline-start: calc(var(--space-3) + var(--space-5));
+}
+
+.icon,
+.chevron {
+  position: absolute;
+  inset-block-start: 50%;
+  translate: 0 -50%;
+  pointer-events: none;
+}
+
+.icon {
+  inset-inline-start: var(--space-2);
+}
+
+.select .input {
+  padding-inline-end: calc(var(--space-3) + var(--space-5));
+  cursor: pointer;
+}
+
+.chevron {
+  inset-inline-end: var(--space-2);
+}

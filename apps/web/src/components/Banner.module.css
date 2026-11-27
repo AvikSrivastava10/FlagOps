@@ -1,0 +1,57 @@
+.banner {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: var(--z-banner);
+  border-block-end: var(--rule-structural) solid var(--color-ink);
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  max-inline-size: var(--content-max);
+  margin-inline: auto;
+  padding: var(--space-2) var(--grid-margin);
+}
+
+/* White on danger red, 6.95:1. */
+.danger {
+  background: var(--color-danger);
+  color: var(--color-signage-ink);
+}
+
+/* Ink on notice yellow, 12.09:1. */
+.notice {
+  background: var(--color-notice);
+  color: var(--color-ink);
+}
+
+.message {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  font: var(--weight-medium) var(--text-small) var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.message code {
+  font: var(--weight-medium) var(--text-small) var(--font-mono);
+}
+
+.message a {
+  color: inherit;
+}
+
+.dismiss {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  inline-size: var(--target-primary);
+  block-size: var(--target-primary);
+  padding: 0;
+  border: var(--rule-structural) solid currentColor;
+  border-radius: var(--radius-0);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}

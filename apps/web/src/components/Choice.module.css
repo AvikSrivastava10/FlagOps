@@ -1,0 +1,52 @@
+.choice {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  min-block-size: var(--target-min);
+  cursor: pointer;
+}
+
+/* base.css sizes checkboxes and radios to 24px and tints them with the line colour. */
+.input {
+  flex: none;
+  cursor: pointer;
+}
+
+.label {
+  padding-block-start: 1px;
+  font: var(--weight-regular) var(--text-body) var(--font-ui);
+}
+
+/* Square, 32px high, 2px ink outline; pressed turns to ink with white text (18.42:1). */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: var(--target-primary);
+  padding: var(--space-1) var(--space-3);
+  border: var(--rule-structural) solid var(--color-ink);
+  border-radius: var(--radius-0);
+  background: transparent;
+  color: var(--color-ink);
+  font: var(--weight-medium) var(--text-small) var(--font-ui);
+  cursor: pointer;
+  transition:
+    background-color var(--dur-fast) var(--ease-standard),
+    color var(--dur-fast) var(--ease-standard);
+}
+
+.chip[aria-pressed='true'] {
+  background: var(--color-ink);
+  color: var(--color-signage-ink);
+}
+
+.state {
+  inline-size: var(--space-4);
+  block-size: var(--space-4);
+}
+
+.chipLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
