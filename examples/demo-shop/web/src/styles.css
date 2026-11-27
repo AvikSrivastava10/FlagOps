@@ -1,0 +1,93 @@
+:root {
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+}
+
+body {
+  margin: 0;
+}
+
+.shop {
+  min-height: 100vh;
+  background: #fafaf7;
+  color: #1d1d1b;
+}
+
+.shop[data-theme='dark'] {
+  background: #161614;
+  color: #ecebe6;
+}
+
+.shop-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid currentColor;
+}
+
+.account-nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.account-nav a {
+  color: inherit;
+}
+
+.shop-main {
+  display: grid;
+  gap: 2rem;
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 2rem;
+  background: #b3261e;
+  color: #fff;
+}
+
+.banner p {
+  margin: 0;
+}
+
+.checkout fieldset {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0 0 1rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.field-error {
+  color: #b3261e;
+}
+
+.order-lines {
+  padding: 0;
+  list-style: none;
+}
+
+.order-lines li,
+.totals {
+  display: flex;
+  justify-content: space-between;
+}
+
+.totals {
+  flex-wrap: wrap;
+}
+
+.totals dt,
+.totals dd {
+  width: 50%;
+  margin: 0;
+}

@@ -1,0 +1,20 @@
+{
+  "name": "@demo-shop/api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "The shop's API: Fastify, with flags from the Flagsmith Node.js SDK in remote evaluation",
+  "type": "module",
+  "scripts": {
+    "dev": "node --env-file-if-exists=.env --watch --experimental-strip-types src/main.ts",
+    "typecheck": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/main.js"
+  },
+  "dependencies": {
+    "@flagsmith/nodejs": "9.5.0",
+    "fastify": "5.12.8"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.7"
+  }
+}
