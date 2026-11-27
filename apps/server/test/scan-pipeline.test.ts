@@ -179,6 +179,34 @@ describe('the scan pipeline on the demo shop', () => {
     expect(ownersOf('new_checkout')).toEqual([operator]);
   });
 
+  it('marks a failed Code References upload and sends it again on the next run, without a new download', async () => {
+    pushFiles({ ...demoFiles, 'README.md': `${demoFiles['README.md'] ?? ''}\nOne more line.\n` });
+    run.fake.failNext(/^\/api\/v1\/projects\/\d+\/code-references\/$/, 502, { detail: 'down' });
+
+    await expect(scanAfterSync()).rejects.toMatchObject({ code: 'flagsmith_server_error' });
+
+    const failed = latestSuccessfulScan(db, repository);
+    expect(failed).toMatchObject({
+      commitSha: github.head(repository),
+      uploadedAt: null,
+      uploadErrorCode: 'flagsmith_server_error',
+    });
+    const downloads = github.requests.filter((request) => request.path.includes('/tarball/'));
+    const uploads = run.fake.state.codeReferenceScans.length;
+
+    await scanAfterSync();
+
+    expect(latestSuccessfulScan(db, repository)).toMatchObject({
+      id: failed?.id,
+      uploadErrorCode: null,
+    });
+    expect(latestSuccessfulScan(db, repository)?.uploadedAt).not.toBeNull();
+    expect(run.fake.state.codeReferenceScans).toHaveLength(uploads + 1);
+    expect(github.requests.filter((request) => request.path.includes('/tarball/'))).toHaveLength(
+      downloads.length,
+    );
+  });
+
   it('rescans the same commit when the set of flag names changes', async () => {
     const before = latestSuccessfulScan(db, repository);
     run.fake.state.features.push({
