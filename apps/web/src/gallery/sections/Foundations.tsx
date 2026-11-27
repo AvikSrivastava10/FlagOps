@@ -12,6 +12,7 @@ const colours = [
   'ink-3',
   'rule-soft',
   'signage',
+  'signage-ink',
   'signage-ink-2',
   'line',
   'type-release',
@@ -28,9 +29,12 @@ const colours = [
   'amber-ink',
   'notice',
   'danger',
+  'ok',
   'diff-add',
   'diff-del',
   'flap-tile',
+  'flap-ink',
+  'scrim',
 ];
 
 const scale = ['display', 'h1', 'h2', 'h3', 'lead', 'body', 'small', 'meta'] as const;

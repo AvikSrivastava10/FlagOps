@@ -50,7 +50,9 @@ export function FlapText({ text, changeKey = null, cells = 0, size = 'regular' }
   else if (change.text !== text) setChange({ key: changeKey, text, previous: text });
 
   const tiles = text.toUpperCase().padEnd(cells, ' ');
-  const flipped = animate ? changedPositions(change.previous.toUpperCase(), tiles) : [];
+  // Both texts are padded the same way, so a blank tile that stays blank does not flip.
+  const previousTiles = change.previous.toUpperCase().padEnd(cells, ' ');
+  const flipped = animate ? changedPositions(previousTiles, tiles) : [];
   return (
     <span className={cx(styles.flap, styles[size])} data-flap="">
       <span className="visually-hidden">{text}</span>

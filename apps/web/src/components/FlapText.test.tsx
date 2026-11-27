@@ -54,6 +54,18 @@ describe('FlapText', () => {
     expect(second[0]).not.toBe(first[0]);
   });
 
+  it('flips no blank padding tile when the board has a fixed width', () => {
+    const { container, rerender } = render(<FlapText text="Ready" cells={9} changeKey={1} />);
+    rerender(<FlapText text="Boarding" cells={9} changeKey={2} />);
+    expect(tiles(container)).toBe('BOARDING\u00a0');
+    // READY____ to BOARDING_: positions 0, 1, 3, 4, 5, 6 and 7 change; 2 (A) and 8 (blank) stay.
+    const tileElements = [...container.querySelectorAll('[aria-hidden="true"] span span')];
+    const flippedAt = tileElements
+      .map((tile, index) => (tile.hasAttribute('data-flipping') ? index : -1))
+      .filter((index) => index >= 0);
+    expect(flippedAt).toEqual([0, 1, 3, 4, 5, 6, 7]);
+  });
+
   it('counts only the characters that changed', () => {
     expect(changedPositions('READY', 'HELD ')).toEqual([0, 2, 4]);
     expect(changedPositions('DELAYED', 'DEPARTED')).toEqual([2, 4, 5, 6, 7]);
