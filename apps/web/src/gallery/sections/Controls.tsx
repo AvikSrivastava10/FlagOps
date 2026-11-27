@@ -3,7 +3,6 @@ import { Button, ButtonLink } from '../../components/Button';
 import { Choice, FilterChip } from '../../components/Choice';
 import { ConfirmGate } from '../../components/ConfirmGate';
 import { SelectField, TextField } from '../../components/Field';
-import { RouteBullet } from '../../components/RouteBullet';
 import { Section, State } from '../Specimen';
 
 const environments = [
@@ -94,11 +93,7 @@ export function Controls() {
         </State>
         <State label="Filter chips, on and off">
           <FilterChip
-            label={
-              <>
-                <RouteBullet type="release" /> Release
-              </>
-            }
+            label="Release"
             pressed={chips.release}
             onPressedChange={(pressed) => {
               setChips({ ...chips, release: pressed });
