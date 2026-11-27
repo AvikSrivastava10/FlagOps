@@ -1,5 +1,6 @@
 import type { DriftCategory, FlagType } from '@flagops/shared';
 import type { ReactNode } from 'react';
+import type { HeadingLevel } from './Heading';
 import type { ServeState } from './Lamp';
 
 export type TimetableEnvironment = { id: string; name: string };
@@ -33,4 +34,9 @@ export type TimetableProps = {
   loading?: boolean | undefined;
   /** Shown when there are no rows, for example when filters match no flag. */
   emptyText?: string | undefined;
+  /**
+   * The level of the caption's heading on narrow screens, where the blocks replace the table and
+   * its caption. Defaults to 3.
+   */
+  headingLevel?: HeadingLevel | undefined;
 };

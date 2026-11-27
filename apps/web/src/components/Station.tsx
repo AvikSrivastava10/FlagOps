@@ -4,6 +4,7 @@ import { cx } from '../lib/class-names';
 import type { RovingItemProps } from '../lib/roving-focus';
 import { FlagEntry, type FlagEntryData } from './FlagEntry';
 import { FlapText } from './FlapText';
+import { Heading, type HeadingLevel } from './Heading';
 import { ZoneTag, type FlagsmithZone } from './ZoneBand';
 import styles from './Station.module.css';
 
@@ -20,6 +21,8 @@ export type StationProps = {
   roving?: ((item: number) => RovingItemProps) | undefined;
   /** The IDs of flags that have just moved here after a sync; the line diagram knows them. */
   arrived?: ReadonlySet<string> | undefined;
+  /** The level of the name plate's heading, to fit the screen's outline. Defaults to 3. */
+  headingLevel?: HeadingLevel | undefined;
 };
 
 /**
@@ -35,6 +38,7 @@ export function Station({
   zone = null,
   roving,
   arrived,
+  headingLevel = 3,
 }: StationProps) {
   const plateId = useId();
   const count = flags.length;
@@ -46,7 +50,8 @@ export function Station({
       aria-busy={loading || undefined}
       data-stage={stage}
     >
-      <h3
+      <Heading
+        level={headingLevel}
         id={plateId}
         className={styles.plate}
         tabIndex={plateRoving?.tabIndex}
@@ -60,7 +65,7 @@ export function Station({
             <span className="visually-hidden">{count === 1 ? ' flag' : ' flags'}</span>
           </span>
         )}
-      </h3>
+      </Heading>
       {layout === 'strip' && zone !== null && <ZoneTag zone={zone} />}
       {loading ? (
         <p className={styles.status}>

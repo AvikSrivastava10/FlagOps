@@ -1,5 +1,6 @@
 import { useId } from 'react';
 import { FlagName } from './FlagName';
+import { Heading, type HeadingLevel } from './Heading';
 import { Icon } from './icons/Icon';
 import { Link } from './Link';
 import styles from './SidePanel.module.css';
@@ -18,13 +19,15 @@ export type SidePanelProps = {
   /** "Unknown names" or "Not placed". */
   title: string;
   items: readonly SidePanelItem[];
+  /** The level of the title's heading, to fit the screen's outline. Defaults to 3. */
+  headingLevel?: HeadingLevel | undefined;
 };
 
 /**
  * A board side panel (ui-design.md 5 and 6.3): a "no such station" sign plate, then a list. An
  * empty panel is not shown.
  */
-export function SidePanel({ title, items }: SidePanelProps) {
+export function SidePanel({ title, items, headingLevel = 3 }: SidePanelProps) {
   const titleId = useId();
   if (items.length === 0) return null;
   return (
@@ -32,13 +35,13 @@ export function SidePanel({ title, items }: SidePanelProps) {
       <header className={styles.plate}>
         <Icon name="zombie-reference" className={styles.glyph} />
         <p className={styles.caption}>No such station</p>
-        <h3 id={titleId} className={styles.title}>
+        <Heading level={headingLevel} id={titleId} className={styles.title}>
           {title}
           <span className={styles.count}>
             {items.length}
             <span className="visually-hidden">{items.length === 1 ? ' entry' : ' entries'}</span>
           </span>
-        </h3>
+        </Heading>
       </header>
       <ul className={styles.list}>
         {items.map((item) => (

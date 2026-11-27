@@ -1,5 +1,6 @@
 import { useId } from 'react';
 import type { CodeDiffProps, DiffFile, DiffLine } from './diff-data';
+import { Heading, type HeadingLevel } from './Heading';
 import styles from './CodeDiff.module.css';
 
 const changeLabels: Readonly<Record<DiffFile['change'], string>> = {
@@ -30,26 +31,26 @@ function counts(file: DiffFile): { added: number; removed: number } {
  * The unified code diff (ui-design.md 5): mono, line numbers, add and delete backgrounds, plus
  * and minus signs. Each file scrolls horizontally inside its own block (ui-design.md 6.8).
  */
-export function CodeDiff({ files }: Omit<CodeDiffProps, 'mode'>) {
+export function CodeDiff({ files, headingLevel = 4 }: Omit<CodeDiffProps, 'mode'>) {
   if (files.length === 0) return <p className={styles.empty}>No changes.</p>;
   return (
     <div className={styles.files}>
       {files.map((file) => (
-        <FileDiff key={file.path} file={file} />
+        <FileDiff key={file.path} file={file} headingLevel={headingLevel} />
       ))}
     </div>
   );
 }
 
-function FileDiff({ file }: { file: DiffFile }) {
+function FileDiff({ file, headingLevel }: { file: DiffFile; headingLevel: HeadingLevel }) {
   const titleId = useId();
   const { added, removed } = counts(file);
   return (
     <section className={styles.file} data-change={file.change}>
       <header className={styles.header}>
-        <h4 id={titleId} className={styles.path}>
+        <Heading level={headingLevel} id={titleId} className={styles.path}>
           {file.path}
-        </h4>
+        </Heading>
         <span className={styles.change}>{changeLabels[file.change]}</span>
         <span className={styles.counts}>
           <span>+{added}</span>{' '}

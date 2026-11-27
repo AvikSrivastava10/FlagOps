@@ -1,5 +1,6 @@
 import { useId } from 'react';
 import { FlagName } from './FlagName';
+import { Heading, type HeadingLevel } from './Heading';
 import { Icon, type IconName } from './icons/Icon';
 import { Link } from './Link';
 import styles from './ImpactSummary.module.css';
@@ -27,6 +28,8 @@ export type ImpactBlock = {
 
 export type ImpactSummaryProps = {
   blocks: readonly ImpactBlock[];
+  /** The level of each block's heading, to fit the screen's outline. Defaults to 3. */
+  headingLevel?: HeadingLevel | undefined;
 };
 
 const kinds: Readonly<Record<ImpactKind, { label: string; glyphs: readonly IconName[] }>> = {
@@ -44,29 +47,29 @@ const numberFormat = new Intl.NumberFormat('en');
  * OFF to ON, ON to OFF, value changed, unchanged and value estimated. Each number filters the
  * identity table, and an "approximate" tag names the cause when the lint marks the flag.
  */
-export function ImpactSummary({ blocks }: ImpactSummaryProps) {
+export function ImpactSummary({ blocks, headingLevel = 3 }: ImpactSummaryProps) {
   if (blocks.length === 0) return <p className={styles.empty}>No flags evaluated.</p>;
   return (
     <div className={styles.summary}>
       {blocks.map((block) => (
-        <Block key={block.flagName} block={block} />
+        <Block key={block.flagName} block={block} headingLevel={headingLevel} />
       ))}
     </div>
   );
 }
 
-function Block({ block }: { block: ImpactBlock }) {
+function Block({ block, headingLevel }: { block: ImpactBlock; headingLevel: HeadingLevel }) {
   const titleId = useId();
   const approximate = block.approximate ?? null;
   return (
     <section className={styles.block} aria-labelledby={titleId} data-role={block.role}>
       <header className={styles.header}>
-        <h3 id={titleId} className={styles.title}>
+        <Heading level={headingLevel} id={titleId} className={styles.title}>
           <FlagName name={block.flagName} />
           <span className={styles.role}>
             {block.role === 'promoted' ? 'Promoted flag' : 'Depends on the promoted flag'}
           </span>
-        </h3>
+        </Heading>
         {approximate !== null && (
           <p className={styles.approximate}>
             <span className={styles.tag}>Approximate</span> {approximate}

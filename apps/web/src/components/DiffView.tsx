@@ -19,5 +19,9 @@ export type {
  * (BN-2).
  */
 export function DiffView(props: DiffViewProps) {
-  return props.mode === 'config' ? <ConfigDiff {...props} /> : <CodeDiff files={props.files} />;
+  return props.mode === 'config' ? (
+    <ConfigDiff {...props} />
+  ) : (
+    <CodeDiff files={props.files} headingLevel={props.headingLevel} />
+  );
 }

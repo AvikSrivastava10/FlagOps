@@ -9,6 +9,7 @@ import {
   mainTrackHeight,
   spurGridColumns,
 } from './LineTrack';
+import type { HeadingLevel } from './Heading';
 import { Station } from './Station';
 import { useArrivals } from './use-arrivals';
 import { ZoneBand, type FlagsmithZone } from './ZoneBand';
@@ -20,6 +21,8 @@ export type LineDiagramProps = {
   loading?: boolean | undefined;
   /** The region's accessible name. */
   label?: string | undefined;
+  /** The level of the station plates' headings. Defaults to 3. */
+  headingLevel?: HeadingLevel | undefined;
 };
 
 /*
@@ -55,6 +58,7 @@ export function LineDiagram({
   stations,
   loading = false,
   label = 'Lifecycle line',
+  headingLevel,
 }: LineDiagramProps) {
   const flagsAt = (stage: StationStage) => stations[stage] ?? [];
   const sizes = stationOrder.map((stage) => 1 + (loading ? 0 : flagsAt(stage).length));
@@ -99,6 +103,7 @@ export function LineDiagram({
               loading={loading}
               roving={(item) => itemProps(group, item)}
               arrived={arrived}
+              headingLevel={headingLevel}
             />
           </div>
         ))}

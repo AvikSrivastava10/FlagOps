@@ -2,6 +2,7 @@ import { Fragment, useId, useState } from 'react';
 import { driftText, servesMoreLaterTip } from './DriftMarker';
 import { FlagName } from './FlagName';
 import { FlapText } from './FlapText';
+import { Heading } from './Heading';
 import { Lamp } from './Lamp';
 import { Link } from './Link';
 import { RouteBullet } from './RouteBullet';
@@ -18,13 +19,14 @@ export function TimetableBlocks({
   rows,
   loading = false,
   emptyText = 'No flags to compare.',
+  headingLevel = 3,
 }: TimetableProps) {
   const captionId = useId();
   return (
     <section className={styles.blocks} aria-labelledby={captionId} data-timetable="">
-      <h3 id={captionId} className={styles.caption}>
+      <Heading level={headingLevel} id={captionId} className={styles.caption}>
         {caption}
-      </h3>
+      </Heading>
       {loading ? (
         <p className={styles.status}>
           <FlapText text="Loading" />

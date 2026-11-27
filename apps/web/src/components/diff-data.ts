@@ -1,3 +1,5 @@
+import type { HeadingLevel } from './Heading';
+
 /** One side of a configuration field; null when the field is not set on that side. */
 export type ConfigValue = {
   text: string;
@@ -50,6 +52,8 @@ export type DiffFile = {
 export type CodeDiffProps = {
   mode: 'code';
   files: readonly DiffFile[];
+  /** The level of each file path's heading, to fit the screen's outline. Defaults to 4. */
+  headingLevel?: HeadingLevel | undefined;
 };
 
 export type DiffViewProps = ConfigDiffProps | CodeDiffProps;
