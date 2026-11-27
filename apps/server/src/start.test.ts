@@ -1,8 +1,11 @@
 import { existsSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { fakeOrganisationKey } from '../test/helpers/fake-flagsmith.js';
+import { FakeGitHub } from '../test/helpers/fake-github.js';
 import { captureLogs } from '../test/helpers/log-capture.js';
+import { seeder } from '../test/helpers/seeded-fake.js';
 import { loadConfig, type Config } from './config/load.js';
 import { createLogger } from './logger.js';
 import { start, type RunningServer } from './start.js';
@@ -79,6 +82,50 @@ describe('start', () => {
     expect(existsSync(path.join(dataDir, 'flagops.db'))).toBe(true);
     expect(logs.entries()).toContainEqual(expect.objectContaining({ migration: '0001_base.sql' }));
     expect(response.status).toBe(200);
+  });
+
+  it('scans the tracked repositories after the first sync and uploads them to Code References', async () => {
+    const run = seeder();
+    await run.seed();
+    const github = await FakeGitHub.start();
+    github.addRepository('acme/shop', {
+      files: {
+        'package.json': '{ "dependencies": { "@flagsmith/nodejs": "9.5.0" } }\n',
+        'src/checkout.ts':
+          "export const isNew = (flags) => flags.isFeatureEnabled('new_checkout');\n",
+      },
+    });
+    try {
+      server = await start(
+        testConfig({
+          FLAGSMITH_URL: 'http://flagsmith.test',
+          FLAGSMITH_ORG_API_KEY: fakeOrganisationKey,
+          GITHUB_TOKEN: github.token,
+          GITHUB_REPOSITORIES: 'acme/shop',
+        }),
+        createLogger('error', captureLogs().destination),
+        { fetch: run.fake.fetch, githubBaseUrl: github.url },
+      );
+
+      // The sync job requests the scan when it finishes; wait for the upload it leads to.
+      await vi.waitFor(
+        () => {
+          expect(run.fake.state.codeReferenceScans).toHaveLength(1);
+        },
+        { timeout: 20_000, interval: 20 },
+      );
+      expect(run.fake.state.codeReferenceScans[0]).toMatchObject({
+        repositoryUrl: 'https://github.com/acme/shop',
+        revision: github.head('acme/shop'),
+        references: [
+          { feature_name: 'new_checkout', file_path: 'src/checkout.ts', line_number: 1 },
+        ],
+      });
+    } finally {
+      await server?.close();
+      server = undefined;
+      await github.close();
+    }
   });
 });
 
