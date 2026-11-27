@@ -40,7 +40,8 @@ export async function readCapped(
   if (response.body === null) {
     return new Uint8Array();
   }
-  const reader = response.body.getReader();
+  // Node's fetch types the body as a stream of `any`; its chunks are bytes.
+  const reader = (response.body as ReadableStream<Uint8Array>).getReader();
   const chunks: Uint8Array[] = [];
   let total = 0;
   for (;;) {
