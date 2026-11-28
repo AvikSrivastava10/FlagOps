@@ -105,6 +105,8 @@ export function createOwnerSyncer(options: OwnerSyncerOptions): OwnerSyncer {
               ],
         ),
       );
+      // Cleared before the sync, so a "Scan now" made while it runs keeps the next run due.
+      due = false;
       try {
         const report = await syncOwners(
           {
@@ -118,7 +120,7 @@ export function createOwnerSyncer(options: OwnerSyncerOptions): OwnerSyncer {
         );
         warnNewFailures(report);
         status = { state: 'succeeded', at: options.now().toISOString(), report };
-        due = report.failures.some((failure) => repeatedByNextRun.has(failure.code));
+        due ||= report.failures.some((failure) => repeatedByNextRun.has(failure.code));
         syncedMappings = mappings;
         const [failure] = report.failures;
         return failure === undefined
@@ -128,6 +130,7 @@ export function createOwnerSyncer(options: OwnerSyncerOptions): OwnerSyncer {
               `Owner sync failed for ${failure.flag}: ${failure.message}`,
             );
       } catch (error) {
+        due = true;
         if (!(error instanceof FlagOpsError)) {
           throw error;
         }

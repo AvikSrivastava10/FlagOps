@@ -247,16 +247,18 @@ export function createScanService(options: ScanServiceOptions): ScanService {
       if (error.code === 'github_not_found') {
         defaultBranches.delete(repository);
       }
-      // Log the first failure of an outage only (architecture.md 18.2), and a bug with its stack.
-      if (latestScan(options.db, repository)?.outcome !== 'failed') {
-        if (error.code === 'internal_error') {
+      // A bug is logged with its stack once, even in the middle of an outage, and any other
+      // failure on the first failed scan of an outage only (architecture.md 18.2, D-094).
+      const latest = latestScan(options.db, repository);
+      if (error.code === 'internal_error') {
+        if (latest?.errorCode !== 'internal_error') {
           options.logger.error({ err: caught, repository }, `Scan of ${repository} failed`);
-        } else {
-          options.logger.warn(
-            { repository, code: error.code },
-            `Scan of ${repository} failed: ${error.message}`,
-          );
         }
+      } else if (latest?.outcome !== 'failed') {
+        options.logger.warn(
+          { repository, code: error.code },
+          `Scan of ${repository} failed: ${error.message}`,
+        );
       }
       insertFailedScan(options.db, {
         repository,
